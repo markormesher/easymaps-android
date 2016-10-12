@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context="uk.co.markormesher.prjandroid.scannerapp.ScannerActivity">
+
+	<ListView
+			android:id="@+id/mac_address_list"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_above="@+id/scan_status"
+			tools:listitem="@layout/list_item_scan_result"/>
+
+	<TextView
+			android:id="@id/scan_status"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="@dimen/space_micro"
+			android:paddingBottom="@dimen/space_micro"
+			android:layout_alignParentBottom="true"
+			android:gravity="center"
+			android:background="#10000000"
+			style="@android:style/TextAppearance.Small"/>
+
+</RelativeLayout>
