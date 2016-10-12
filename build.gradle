@@ -1,0 +1,54 @@
+buildscript {
+	ext.kotlin_version = '1.0.4'
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.android.tools.build:gradle:2.2.0'
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
+}
+
+allprojects {
+	repositories {
+		jcenter()
+	}
+}
+
+task clean(type: Delete) {
+	delete rootProject.buildDir
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+static
+def getSecrets() {
+	try {
+		// load in default file
+		def Properties secrets = new Properties()
+		secrets.load(new FileInputStream(new File('secrets.properties')))
+
+		// fix keystore path
+		secrets['KEYSTORE_PATH'] = new File('.').absolutePath + '/' + secrets['KEYSTORE_PATH']
+
+		return secrets
+	} catch (Exception ignored) {
+		System.out.println("Warning: secrets file not loaded")
+		return new Properties();
+	}
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+static
+def getAppProperties() {
+	try {
+		// load in default file
+		def Properties properties = new Properties()
+		properties.load(new FileInputStream(new File('app.properties')))
+
+		return properties
+	} catch (Exception ignored) {
+		System.out.println("Warning: app properties file not loaded")
+		return new Properties();
+	}
+}
