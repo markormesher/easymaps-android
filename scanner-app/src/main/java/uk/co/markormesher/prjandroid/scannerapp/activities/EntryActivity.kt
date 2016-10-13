@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import uk.co.markormesher.prjandroid.scannerapp.services.setupAlarmForBackgroundUploaderService
 import uk.co.markormesher.prjandroid.sdk.checkPermissionList
 import uk.co.markormesher.prjandroid.sdk.checkPermissionRequestResult
 import uk.co.markormesher.prjandroid.sdk.requestPermissionList
@@ -14,7 +15,8 @@ class EntryActivity : AppCompatActivity() {
 			Manifest.permission.ACCESS_WIFI_STATE,
 			Manifest.permission.CHANGE_WIFI_STATE,
 			Manifest.permission.ACCESS_COARSE_LOCATION,
-			Manifest.permission.ACCESS_FINE_LOCATION
+			Manifest.permission.ACCESS_FINE_LOCATION,
+			Manifest.permission.RECEIVE_BOOT_COMPLETED
 	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +38,7 @@ class EntryActivity : AppCompatActivity() {
 	}
 
 	fun permissionsGrantedSuccessfully() {
+		setupAlarmForBackgroundUploaderService()
 		startActivity(Intent(this, MainActivity::class.java))
 		finish()
 	}

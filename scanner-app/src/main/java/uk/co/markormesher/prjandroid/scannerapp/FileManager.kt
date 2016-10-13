@@ -6,6 +6,7 @@ import uk.co.markormesher.prjandroid.sdk.WifiScanResult
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import java.util.*
 
 private var activeFile: File? = null
 
@@ -22,6 +23,14 @@ fun Context.writeScanResultsToFile(results: List<WifiScanResult>) {
 
 fun Context.closeScanResultsFile() {
 	createNewActiveFile()
+}
+
+fun Context.getClosedScanResultsFiles(): List<File> {
+	val output = ArrayList<File>()
+	getActiveFile().parentFile.listFiles()
+			.filter { it.name != getActiveFile().name }
+			.forEach { output.add(it) }
+	return output
 }
 
 private fun Context.getActiveFile(): File {
