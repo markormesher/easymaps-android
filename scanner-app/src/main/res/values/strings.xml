@@ -2,7 +2,7 @@
 <resources>
 
 	<string name="intent_toggle_scan">uk.co.markormesher.prjandroid.scannerapp.toggle_scan</string>
-	<string name="intent_stop_scan">uk.co.markormesher.prjandroid.scannerapp.start_scan</string>
+	<string name="intent_stop_scan">uk.co.markormesher.prjandroid.scannerapp.stop_scan</string>
 	<string name="intent_scan_status_updated">uk.co.markormesher.prjandroid.scannerapp.scan_status_updated</string>
 
 	<string name="app_name">PRJ Scanner</string>

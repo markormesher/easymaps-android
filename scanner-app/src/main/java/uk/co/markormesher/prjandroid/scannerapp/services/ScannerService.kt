@@ -10,15 +10,15 @@ import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
-import uk.co.markormesher.prjandroid.scannerapp.LOG_TAG
 import uk.co.markormesher.prjandroid.scannerapp.R
+import uk.co.markormesher.prjandroid.scannerapp.SCAN_INTERVAL
 import uk.co.markormesher.prjandroid.scannerapp.activities.EntryActivity
+import uk.co.markormesher.prjandroid.scannerapp.closeScanResultsFile
+import uk.co.markormesher.prjandroid.scannerapp.writeScanResultsToFile
 import uk.co.markormesher.prjandroid.sdk.WifiScanner
 import uk.co.markormesher.prjandroid.sdk.getLongPref
 import uk.co.markormesher.prjandroid.sdk.setLongPref
 
-// TODO: save wifi scans to disk
 // TODO: kill service after a long period of scanning
 
 class ScannerService : Service() {
@@ -77,7 +77,7 @@ class ScannerService : Service() {
 		if (running) return
 		running = true
 		sessionDataPoints = 0L
-		WifiScanner.start(this, 10000)
+		WifiScanner.start(this, SCAN_INTERVAL)
 		stateUpdated()
 	}
 
@@ -91,17 +91,17 @@ class ScannerService : Service() {
 		if (!running) return
 		running = false
 		WifiScanner.stop(this)
+		closeScanResultsFile()
 		stateUpdated()
 	}
 
 	private val scanResultReceiver = object : BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			if (!running) return
-			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains("", true) }
+			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains("", true) } // TODO: real filter
 			lifetimeDataPoints += latestResults.size
 			sessionDataPoints += latestResults.size
-			Log.d(LOG_TAG, "Scan complete @ ${System.currentTimeMillis()}")
-			latestResults.forEach { Log.d(LOG_TAG, "- $it") }
+			writeScanResultsToFile(latestResults)
 			stateUpdated()
 		}
 	}

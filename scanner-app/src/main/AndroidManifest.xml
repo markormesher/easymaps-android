@@ -28,8 +28,6 @@
 				android:name=".activities.MainActivity"
 				android:launchMode="singleTask"/>
 
-		<activity android:name=".activities.ScannerActivity"/>
-
 		<service
 				android:name=".services.ScannerService"
 				android:exported="false"
