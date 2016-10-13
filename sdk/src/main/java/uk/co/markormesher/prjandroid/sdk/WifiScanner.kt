@@ -1,6 +1,5 @@
 package uk.co.markormesher.prjandroid.sdk
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,7 +7,6 @@ import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.LocalBroadcastManager
 import java.util.*
 
 object WifiScanner {
@@ -37,29 +35,28 @@ object WifiScanner {
 
 	val rescanRunnable = Runnable { wifiManager?.startScan() }
 
-	fun start(activity: Activity, interval: Long) {
+	fun start(context: Context, interval: Long) {
 		if (running) return
 		running = true
 
 		this.interval = interval
 
-		activity.registerReceiver(scanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-		wifiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
+		context.registerReceiver(scanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
+		wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 		wifiManager?.startScan()
 		resetScheduler()
 	}
 
-	fun stop(activity: Activity) {
+	fun stop(context: Context) {
 		if (!running) return
 		running = false
 
-		activity.unregisterReceiver(scanReceiver)
+		context.unregisterReceiver(scanReceiver)
 		wifiManager = null
 	}
 
 	private fun sendUpdateBroadcast(context: Context) {
-		val lbm = LocalBroadcastManager.getInstance(context)
-		lbm.sendBroadcast(Intent(INTENT_SCAN_RESULTS_UPDATED))
+		context.sendBroadcast(Intent(INTENT_SCAN_RESULTS_UPDATED))
 	}
 
 	private fun resetScheduler() {

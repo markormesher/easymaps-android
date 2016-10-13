@@ -8,16 +8,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.support.v4.app.NotificationCompat
+import android.util.Log
+import uk.co.markormesher.prjandroid.scannerapp.LOG_TAG
 import uk.co.markormesher.prjandroid.scannerapp.R
 import uk.co.markormesher.prjandroid.scannerapp.activities.EntryActivity
+import uk.co.markormesher.prjandroid.sdk.WifiScanner
 import uk.co.markormesher.prjandroid.sdk.getLongPref
 import uk.co.markormesher.prjandroid.sdk.setLongPref
 
-// TODO: actually scan wifi, rather than incrementing a pointless counter
 // TODO: save wifi scans to disk
 // TODO: kill service after a long period of scanning
 
@@ -25,8 +25,9 @@ class ScannerService : Service() {
 
 	private val localBinder by lazy { LocalBinder() }
 
-	var scannerRunning = false
+	var running = false
 	var lifetimeDataPoints = 0L
+	var sessionDataPoints = 0L
 	private val LIFETIME_COUNT_KEY = "lifetime_data_points"
 
 	override fun onCreate() {
@@ -36,6 +37,7 @@ class ScannerService : Service() {
 
 		registerReceiver(toggleScanReceiver, IntentFilter(getString(R.string.intent_toggle_scan)))
 		registerReceiver(stopScanReceiver, IntentFilter(getString(R.string.intent_stop_scan)))
+		registerReceiver(scanResultReceiver, IntentFilter(WifiScanner.INTENT_SCAN_RESULTS_UPDATED))
 	}
 
 	override fun onDestroy() {
@@ -43,11 +45,12 @@ class ScannerService : Service() {
 
 		unregisterReceiver(toggleScanReceiver)
 		unregisterReceiver(stopScanReceiver)
+		unregisterReceiver(scanResultReceiver)
 	}
 
 	override fun onTaskRemoved(rootIntent: Intent?) {
 		super.onTaskRemoved(rootIntent)
-		if (!scannerRunning) stopSelf()
+		if (!running) stopSelf()
 	}
 
 	override fun onBind(intent: Intent?): IBinder = localBinder
@@ -62,33 +65,44 @@ class ScannerService : Service() {
 		}
 	}
 
+	fun toggle() {
+		if (running) {
+			stop()
+		} else {
+			start()
+		}
+	}
+
+	private fun start() {
+		if (running) return
+		running = true
+		sessionDataPoints = 0L
+		WifiScanner.start(this, 10000)
+		stateUpdated()
+	}
+
 	private val stopScanReceiver = object : BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			stop()
 		}
 	}
 
-	private fun start() {
-		if (scannerRunning) return
-		scannerRunning = true
-
-		dummyFunction()
-		stateUpdated()
-	}
-
 	private fun stop() {
-		if (!scannerRunning) return
-		scannerRunning = false
-
-		dummyHandler.removeCallbacks(dummyRunnable)
+		if (!running) return
+		running = false
+		WifiScanner.stop(this)
 		stateUpdated()
 	}
 
-	fun toggle() {
-		if (scannerRunning) {
-			stop()
-		} else {
-			start()
+	private val scanResultReceiver = object : BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			if (!running) return
+			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains("", true) }
+			lifetimeDataPoints += latestResults.size
+			sessionDataPoints += latestResults.size
+			Log.d(LOG_TAG, "Scan complete @ ${System.currentTimeMillis()}")
+			latestResults.forEach { Log.d(LOG_TAG, "- $it") }
+			stateUpdated()
 		}
 	}
 
@@ -105,8 +119,8 @@ class ScannerService : Service() {
 	private val stopScannerIntent by lazy { PendingIntent.getBroadcast(this, 0, Intent().setAction(getString(R.string.intent_stop_scan)), PendingIntent.FLAG_UPDATE_CURRENT) }
 
 	private fun updateNotification() {
-		if (scannerRunning) {
-			val message = "$lifetimeDataPoints data point${if (lifetimeDataPoints == 1L) "" else "s"} so far!"
+		if (running) {
+			val message = "$sessionDataPoints data point${if (sessionDataPoints == 1L) "" else "s"} this session"
 			val nBuilder = NotificationCompat.Builder(this)
 			with(nBuilder) {
 				setContentTitle("PRJ Scanner is running")
@@ -125,16 +139,6 @@ class ScannerService : Service() {
 
 	private fun sendStateUpdatedBroadcast() {
 		sendBroadcast(Intent(getString(R.string.intent_scan_status_updated)))
-	}
-
-	// dummy code
-
-	private val dummyHandler by lazy { Handler(Looper.getMainLooper()) }
-	private val dummyRunnable by lazy { Runnable { dummyFunction() } }
-	private fun dummyFunction() {
-		++lifetimeDataPoints
-		stateUpdated()
-		if (scannerRunning) dummyHandler.postDelayed(dummyRunnable, 1000)
 	}
 
 }

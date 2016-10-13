@@ -21,9 +21,10 @@
 	]]></string>
 
 	<string name="scan_status_unknown">Waiting for scanner service…</string>
-	<string name="scan_status_running">The scanner is running right now, and you\'ve collected %1$,d data point%2$s so far!</string>
-	<string name="scan_status_stopped">The scanner is not running right now, but you\'ve collected %1$,d data point%2$s so far!</string>
-	<string name="scan_status_stopped_none">The scanner is not running right now.</string>
+	<string name="scan_status_running">The scanner is running</string>
+	<string name="scan_status_stopped">The scanner is not running</string>
+	<string name="session_data_points_count">Data points this session: %,d</string>
+	<string name="lifetime_data_points_count">Data points since installing: %,d</string>
 
 	<string name="scan_toggle_start">Start Scanning</string>
 	<string name="scan_toggle_stop">Stop Scanning</string>

@@ -7,13 +7,12 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ListView
-import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_scanner.*
+import kotlinx.android.synthetic.main.list_item_scan_result.*
 import uk.co.markormesher.prjandroid.scannerapp.R
 import uk.co.markormesher.prjandroid.sdk.WifiScanResult
 import uk.co.markormesher.prjandroid.sdk.WifiScanner
@@ -40,30 +39,29 @@ class ScannerActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_scanner)
-		(findViewById(R.id.mac_address_list) as ListView).adapter = macAddressListAdapter
+		mac_address_list.adapter = macAddressListAdapter
 	}
 
 	override fun onResume() {
 		super.onResume()
-		LocalBroadcastManager.getInstance(this).registerReceiver(scanResultReceiver, IntentFilter(WifiScanner.INTENT_SCAN_RESULTS_UPDATED))
+		registerReceiver(scanResultReceiver, IntentFilter(WifiScanner.INTENT_SCAN_RESULTS_UPDATED))
 		WifiScanner.start(this, 10000)
 		updateScanStatus()
 	}
 
 	override fun onPause() {
 		super.onPause()
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(scanResultReceiver)
+		unregisterReceiver(scanResultReceiver)
 		WifiScanner.stop(this)
 		statusUpdateHandler.removeCallbacks(statusUpdateRunnable)
 	}
 
 	fun updateScanStatus() {
-		val scanStatus = findViewById(R.id.scan_status) as TextView
 		if (WifiScanner.lastScan < 0) {
-			scanStatus.text = "Waiting for first scan..."
+			scan_status.text = "Waiting for first scan..."
 		} else {
 			val secsAgo = (System.currentTimeMillis() - WifiScanner.lastScan).toInt() / 1000
-			scanStatus.text = "Last scan: $secsAgo sec${if (secsAgo == 1) "" else "s"} ago"
+			scan_status.text = "Last scan: $secsAgo sec${if (secsAgo == 1) "" else "s"} ago"
 		}
 		if (WifiScanner.running) statusUpdateHandler.postDelayed(statusUpdateRunnable, 200)
 	}
@@ -81,8 +79,8 @@ class ScannerActivity : AppCompatActivity() {
 			if (view == null) view = this@ScannerActivity.layoutInflater.inflate(R.layout.list_item_scan_result, parent, false)
 
 			val result = getItem(position) as WifiScanResult
-			(view?.findViewById(R.id.mac_address) as TextView).text = result.mac
-			(view?.findViewById(R.id.wifi_name) as TextView).text = result.ssid
+			mac_address.text = result.mac
+			wifi_name.text = result.ssid
 			return view
 		}
 

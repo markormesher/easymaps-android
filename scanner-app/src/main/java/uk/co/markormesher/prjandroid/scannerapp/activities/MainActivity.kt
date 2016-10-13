@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.prjandroid.scannerapp.R
 import uk.co.markormesher.prjandroid.scannerapp.services.ScannerService
 import uk.co.markormesher.prjandroid.sdk.makeHtml
+import java.util.*
 
 class MainActivity : AppCompatActivity(), ServiceConnection {
 
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		text3.text = makeHtml(R.string.intro_usage_text)
 		text4.text = makeHtml(R.string.intro_ps_text)
 
-		toggleScanningButton.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
+		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
 	}
 
 	override fun onResume() {
@@ -60,22 +61,24 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 	}
 
 	private fun updateStatusFromService() {
-		toggleScanningButton.isEnabled = scannerService != null
-		toggleScanningButton.text = getString(if (scannerService?.scannerRunning ?: false) R.string.scan_toggle_stop else R.string.scan_toggle_start)
+		toggle_scanning_button.isEnabled = scannerService != null
+		toggle_scanning_button.text = getString(if (scannerService?.running ?: false) R.string.scan_toggle_stop else R.string.scan_toggle_start)
 
 		if (scannerService == null) {
-			statusMessage.text = makeHtml(R.string.scan_status_unknown)
+			status_message.text = makeHtml(R.string.scan_status_unknown)
 		} else {
-			val dataPoints = scannerService!!.lifetimeDataPoints
-			if (scannerService!!.scannerRunning) {
-				statusMessage.text = getString(R.string.scan_status_running, dataPoints, if (dataPoints == 1L) "" else "s")
+			val messages = ArrayList<String>()
+			val lifetimeDataPoints = scannerService!!.lifetimeDataPoints
+			val sessionDataPoints = scannerService!!.sessionDataPoints
+			if (scannerService!!.running) {
+				messages.add(getString(R.string.scan_status_running))
+				messages.add(getString(R.string.session_data_points_count, sessionDataPoints))
 			} else {
-				if (dataPoints == 0L) {
-					statusMessage.text = getString(R.string.scan_status_stopped_none)
-				} else {
-					statusMessage.text = getString(R.string.scan_status_stopped, dataPoints, if (dataPoints == 1L) "" else "s")
-				}
+				messages.add(getString(R.string.scan_status_stopped))
 			}
+			messages.add(getString(R.string.lifetime_data_points_count, lifetimeDataPoints))
+
+			status_message.text = messages.joinToString("\n")
 		}
 	}
 }

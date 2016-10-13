@@ -16,7 +16,7 @@
 			android:paddingRight="@dimen/activity_horizontal_margin">
 
 		<Button
-				android:id="@+id/toggleScanningButton"
+				android:id="@+id/toggle_scanning_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_horizontal"
@@ -33,11 +33,10 @@
 
 
 		<TextView
-				android:id="@+id/statusMessage"
+				android:id="@+id/status_message"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
-				android:gravity="center"
 				android:textStyle="bold"
 				style="@style/TextAppearance.AppCompat"/>
 
