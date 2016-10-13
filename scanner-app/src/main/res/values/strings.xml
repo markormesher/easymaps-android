@@ -17,9 +17,10 @@
 		<strong>How do use the app?</strong> Just use the button at the top to enable scanning whenever you\'re travelling on the London Underground network, and disable it when you finish your journey; the scanner will run in the background, so you don\'t need to keep the app open.
 	]]></string>
 	<string name="intro_ps_text"><![CDATA[
-		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on at any point, above ground or below.
+		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on and off at any point, above ground or below.
 	]]></string>
 
+	<string name="scan_status_title">Scanner status</string>
 	<string name="scan_status_unknown">Waiting for scanner service…</string>
 	<string name="scan_status_running">The scanner is running</string>
 	<string name="scan_status_stopped">The scanner is not running</string>

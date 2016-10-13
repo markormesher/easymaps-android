@@ -31,13 +31,19 @@
 				android:layout_marginBottom="@dimen/space_small"
 				android:background="@color/divider"/>
 
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_nano"
+				android:textStyle="bold"
+				android:text="@string/scan_status_title"
+				style="@style/TextAppearance.AppCompat"/>
 
 		<TextView
 				android:id="@+id/status_message"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
-				android:textStyle="bold"
 				style="@style/TextAppearance.AppCompat"/>
 
 		<View
