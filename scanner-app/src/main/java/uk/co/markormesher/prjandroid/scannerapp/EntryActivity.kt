@@ -36,7 +36,7 @@ class EntryActivity : AppCompatActivity() {
 	}
 
 	fun permissionsGrantedSuccessfully() {
-		startActivity(Intent(this, ScannerActivity::class.java))
+		startActivity(Intent(this, MainActivity::class.java))
 		finish()
 	}
 }
