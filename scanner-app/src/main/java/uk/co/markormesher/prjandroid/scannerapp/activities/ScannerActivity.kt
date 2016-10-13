@@ -1,4 +1,4 @@
-package uk.co.markormesher.prjandroid.scannerapp
+package uk.co.markormesher.prjandroid.scannerapp.activities
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
+import uk.co.markormesher.prjandroid.scannerapp.R
 import uk.co.markormesher.prjandroid.sdk.WifiScanResult
 import uk.co.markormesher.prjandroid.sdk.WifiScanner
 import java.util.*

@@ -1,4 +1,4 @@
-package uk.co.markormesher.prjandroid.scannerapp
+package uk.co.markormesher.prjandroid.scannerapp.activities
 
 import android.Manifest
 import android.content.Intent
