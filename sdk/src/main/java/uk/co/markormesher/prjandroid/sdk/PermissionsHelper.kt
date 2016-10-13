@@ -8,7 +8,7 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 
-private val PERMISSION_REQUEST_CODE = 1
+private val PERMISSION_REQUEST_CODE = 1415
 
 private fun shouldUseRuntimePermissions(): Boolean {
 	return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
@@ -26,18 +26,20 @@ fun Activity.checkPermissionList(permissions: Array<String>): Boolean {
 	return true
 }
 
-// TODO: fix strings
 fun Activity.requestPermissionList(permissions: Array<String>, reRequest: Boolean = false) {
 	val alertBuilder = AlertDialog.Builder(this)
-	if (reRequest) {
-		alertBuilder.setMessage("Looks like that didn't work! Do you want to try again?")
-		alertBuilder.setPositiveButton("Yes") { p0, p1 -> this.doRequestPermissionList(permissions) }
-		alertBuilder.setNegativeButton("No") { p0, p1 -> this.finish() }
-	} else {
-		alertBuilder.setMessage("We're going to request some permissions...")
-		alertBuilder.setPositiveButton("OK") { p0, p1 -> this.doRequestPermissionList(permissions) }
+	with(alertBuilder) {
+		setTitle(R.string.permissions_request_title)
+		if (reRequest) {
+			setMessage(R.string.permissions_request_failure)
+			setPositiveButton(R.string.yes) { p0, p1 -> doRequestPermissionList(permissions) }
+			setNegativeButton(R.string.no) { p0, p1 -> finish() }
+		} else {
+			setMessage(R.string.permissions_request_primer)
+			setPositiveButton(R.string.ok) { p0, p1 -> doRequestPermissionList(permissions) }
+		}
+		create().show()
 	}
-	alertBuilder.create().show()
 }
 
 private fun Activity.doRequestPermissionList(permissions: Array<String>) {

@@ -1,8 +1,8 @@
-package uk.co.markormesher.prjandroidsdk.sdk;
+package uk.co.markormesher.prjandroid.sdk;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.

@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<!-- space, for padding and margins -->
 	<dimen name="space_nano">4dp</dimen>
 	<dimen name="space_micro">8dp</dimen>
 	<dimen name="space_micro_small">12dp</dimen>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+
+	<string name="permissions_request_title">App Permissions</string>
+	<string name="permissions_request_primer">Before you get started, we need to request the permissions needed for this app to work.</string>
+	<string name="permissions_request_failure">Oh no, that didn\'t work! Would you like to try again?</string>
+
+</resources>

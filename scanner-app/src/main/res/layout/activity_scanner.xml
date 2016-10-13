@@ -22,7 +22,7 @@
 			android:paddingBottom="@dimen/space_micro"
 			android:layout_alignParentBottom="true"
 			android:gravity="center"
-			android:background="#10000000"
+			android:background="@color/primary_light"
 			style="@android:style/TextAppearance.Small"/>
 
 </RelativeLayout>
