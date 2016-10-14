@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="intent_toggle_scan">uk.co.markormesher.prjandroid.scannerapp.toggle_scan</string>
-	<string name="intent_stop_scan">uk.co.markormesher.prjandroid.scannerapp.stop_scan</string>
-	<string name="intent_scan_status_updated">uk.co.markormesher.prjandroid.scannerapp.scan_status_updated</string>
+	<string name="intent_toggle_scan">uk.co.markormesher.easymaps.scannerapp.toggle_scan</string>
+	<string name="intent_stop_scan">uk.co.markormesher.easymaps.scannerapp.stop_scan</string>
+	<string name="intent_scan_status_updated">uk.co.markormesher.easymaps.scannerapp.scan_status_updated</string>
 
-	<string name="app_name">PRJ Scanner</string>
+	<string name="app_name">EasyMaps Scanner</string>
 
 	<string name="intro_text"><![CDATA[
 		<strong>Thank you!</strong> By using this app you\'re collecting data that will be used to build an intelligent, totally offline mapper for the London Underground.
@@ -23,7 +23,7 @@
 		Your anonymous ID is <em>%s</em> (tap to copy).
 	]]></string>
 
-	<string name="copy_id_label">PRJ Scanner ID</string>
+	<string name="copy_id_label">EasyMaps Scanner ID</string>
 	<string name="copy_id_done">Copied to clipboard!</string>
 
 	<string name="scan_status_title">Scanner status</string>
@@ -36,8 +36,8 @@
 	<string name="scan_toggle_start">Start Scanning</string>
 	<string name="scan_toggle_stop">Stop Scanning</string>
 
-	<string name="scanning_notification_title">EasyMap Scanner is running</string>
+	<string name="scanning_notification_title">EasyMaps Scanner is running</string>
 	<string name="scanning_notification_message">%1$,d data point%2$s this session</string>
-	<string name="uploading_notification_title">Uploading EasyMap scan logs</string>
+	<string name="uploading_notification_title">Uploading EasyMaps scan logs</string>
 
 </resources>

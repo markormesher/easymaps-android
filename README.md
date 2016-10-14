@@ -1,1 +1,1 @@
-# PRJ Android Apps & SDK
+# EasyMaps Android Apps & SDK

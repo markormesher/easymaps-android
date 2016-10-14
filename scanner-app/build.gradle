@@ -25,7 +25,7 @@ android {
 	buildToolsVersion "24.0.3"
 
 	defaultConfig {
-		applicationId "uk.co.markormesher.prjandroid.scannerapp"
+		applicationId "uk.co.markormesher.easymaps.scannerapp"
 		minSdkVersion 16
 		targetSdkVersion 24
 		versionCode = appProperties['VERSION_CODE']
