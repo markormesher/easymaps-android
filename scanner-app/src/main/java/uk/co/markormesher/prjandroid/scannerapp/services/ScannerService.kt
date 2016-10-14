@@ -10,11 +10,8 @@ import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import uk.co.markormesher.prjandroid.scannerapp.R
-import uk.co.markormesher.prjandroid.scannerapp.SCAN_INTERVAL
+import uk.co.markormesher.prjandroid.scannerapp.*
 import uk.co.markormesher.prjandroid.scannerapp.activities.EntryActivity
-import uk.co.markormesher.prjandroid.scannerapp.closeScanResultsFile
-import uk.co.markormesher.prjandroid.scannerapp.writeScanResultsToFile
 import uk.co.markormesher.prjandroid.sdk.WifiScanner
 import uk.co.markormesher.prjandroid.sdk.getLongPref
 import uk.co.markormesher.prjandroid.sdk.setLongPref
@@ -98,7 +95,7 @@ class ScannerService : Service() {
 	private val scanResultReceiver = object : BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			if (!running) return
-			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains("", true) } // TODO: real filter
+			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains(SSID_FILTER, true) }
 			lifetimeDataPoints += latestResults.size
 			sessionDataPoints += latestResults.size
 			writeScanResultsToFile(latestResults)
