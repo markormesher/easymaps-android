@@ -5,11 +5,12 @@ import android.os.Build
 import android.text.Html
 import android.text.Spanned
 
-fun Context.makeHtml(source: Int): Spanned {
+fun Context.makeHtml(source: Int, vararg formatArgs: Any?): Spanned {
+	val str = getString(source, *formatArgs)
 	if (Build.VERSION.SDK_INT < 24) {
 		@Suppress("DEPRECATION")
-		return Html.fromHtml(getString(source))
+		return Html.fromHtml(str)
 	} else {
-		return Html.fromHtml(getString(source), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
+		return Html.fromHtml(str, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
 	}
 }

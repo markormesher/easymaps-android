@@ -4,10 +4,12 @@ import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.prjandroid.scannerapp.R
 import uk.co.markormesher.prjandroid.scannerapp.services.ScannerService
 import uk.co.markormesher.prjandroid.sdk.makeHtml
+import uk.co.markormesher.prjandroid.sdk.readDeviceID
 import java.util.*
 
 class MainActivity : AppCompatActivity(), ServiceConnection {
@@ -19,10 +21,16 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		setContentView(R.layout.activity_main)
 
 		text1.text = makeHtml(R.string.intro_text)
-		text2.text = makeHtml(R.string.intro_collection_text)
-		text3.text = makeHtml(R.string.intro_usage_text)
+		text2.text = makeHtml(R.string.intro_usage_text)
+		text3.text = makeHtml(R.string.intro_collection_text)
 		text4.text = makeHtml(R.string.intro_ps_text)
+		text5.text = makeHtml(R.string.intro_anon_id, readDeviceID().replace("-", "-\u200b"))
 
+		text5.setOnClickListener {
+			val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+			clipboard.primaryClip = ClipData.newPlainText(getString(R.string.copy_id_label), readDeviceID())
+			Toast.makeText(this, R.string.copy_id_done, Toast.LENGTH_SHORT).show()
+		}
 		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
 	}
 

@@ -10,15 +10,21 @@
 	<string name="intro_text"><![CDATA[
 		<strong>Thank you!</strong> By using this app you\'re collecting data that will be used to build an intelligent, totally offline mapper for the London Underground.
 	]]></string>
+	<string name="intro_usage_text"><![CDATA[
+		<strong>How does it work?</strong> Just use the button at the top to enable scanning whenever you\'re travelling on the London Underground network, and disable it when you finish your journey; the scanner will run in the background, so you don\'t need to keep the app open.
+	]]></string>
 	<string name="intro_collection_text"><![CDATA[
 		<strong>What data is collected?</strong> This app records a unique, anonymous ID for your device, and every 20-30 seconds whilst it\'s enabled it checks which WiFi networks are visible. That\'s it - no personal data, no location data, nothing that can identify you, etc.
-	]]></string>
-	<string name="intro_usage_text"><![CDATA[
-		<strong>How do use the app?</strong> Just use the button at the top to enable scanning whenever you\'re travelling on the London Underground network, and disable it when you finish your journey; the scanner will run in the background, so you don\'t need to keep the app open.
 	]]></string>
 	<string name="intro_ps_text"><![CDATA[
 		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on and off at any point, above ground or below.
 	]]></string>
+	<string name="intro_anon_id"><![CDATA[
+		Your anonymous ID is <em>%s</em> (tap to copy).
+	]]></string>
+
+	<string name="copy_id_label">PRJ Scanner ID</string>
+	<string name="copy_id_done">Copied to clipboard!</string>
 
 	<string name="scan_status_title">Scanner status</string>
 	<string name="scan_status_unknown">Waiting for scanner service…</string>

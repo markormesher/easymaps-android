@@ -79,6 +79,21 @@
 				android:id="@+id/text4"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_small"
+				style="@style/TextAppearance.AppCompat"/>
+
+		<View
+				android:layout_width="match_parent"
+				android:layout_height="1dp"
+				android:layout_marginLeft="@dimen/space_large"
+				android:layout_marginRight="@dimen/space_large"
+				android:layout_marginBottom="@dimen/space_small"
+				android:background="@color/divider"/>
+
+		<TextView
+				android:id="@+id/text5"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
 				style="@style/TextAppearance.AppCompat"/>
 
 	</LinearLayout>
