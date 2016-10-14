@@ -3,27 +3,31 @@ package uk.co.markormesher.prjandroid.scannerapp
 import android.content.Context
 import android.util.Log
 import uk.co.markormesher.prjandroid.sdk.WifiScanResult
+import uk.co.markormesher.prjandroid.sdk.readDeviceID
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.util.*
 
 private var activeFile: File? = null
+private var deviceId: String? = null
 
 fun Context.writeScanResultsToFile(results: List<WifiScanResult>) {
+	if (results.isEmpty()) return
+
 	val sb = StringBuilder()
+	deviceId = deviceId ?: readDeviceID()
 	with(sb) {
 		append("[")
-		append(System.currentTimeMillis())
+		append(deviceId)
+		append(",").append(System.currentTimeMillis())
 		results.forEach { append(",").append(it.mac) }
 		append("]")
 	}
 	appendToActiveFile(sb.toString())
 }
 
-fun Context.closeScanResultsFile() {
-	createNewActiveFile()
-}
+fun Context.closeScanResultsFile() = createNewActiveFile()
 
 fun Context.getClosedScanResultsFiles(): List<File> {
 	val output = ArrayList<File>()
