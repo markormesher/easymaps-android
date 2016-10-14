@@ -36,4 +36,8 @@
 	<string name="scan_toggle_start">Start Scanning</string>
 	<string name="scan_toggle_stop">Stop Scanning</string>
 
+	<string name="scanning_notification_title">EasyMap Scanner is running</string>
+	<string name="scanning_notification_message">%1$,d data point%2$s this session</string>
+	<string name="uploading_notification_title">Uploading EasyMap scan logs</string>
+
 </resources>

@@ -117,10 +117,10 @@ class ScannerService : Service() {
 
 	private fun updateNotification() {
 		if (running) {
-			val message = "$sessionDataPoints data point${if (sessionDataPoints == 1L) "" else "s"} this session"
+			val message = getString(R.string.scanning_notification_message, sessionDataPoints, if (sessionDataPoints == 1L) "" else "s")
 			val nBuilder = NotificationCompat.Builder(this)
 			with(nBuilder) {
-				setContentTitle("PRJ Scanner is running")
+				setContentTitle(getString(R.string.scanning_notification_title))
 				setContentText(message)
 				setStyle(notificationStyle.bigText(message))
 				setSmallIcon(R.mipmap.ic_launcher) // TODO: app icon

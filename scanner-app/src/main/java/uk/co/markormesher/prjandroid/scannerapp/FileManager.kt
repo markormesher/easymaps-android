@@ -43,7 +43,7 @@ private fun Context.getActiveFile(): File {
 }
 
 private fun Context.createNewActiveFile() {
-	activeFile = File(getDir("scanlogs", Context.MODE_PRIVATE), "${System.currentTimeMillis()}.txt")
+	activeFile = File(getDir("scan-logs", Context.MODE_PRIVATE), "${System.currentTimeMillis()}.txt")
 }
 
 private fun Context.checkActiveFileSize() {
