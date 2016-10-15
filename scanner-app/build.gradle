@@ -28,7 +28,7 @@ android {
 		applicationId "uk.co.markormesher.easymaps.scannerapp"
 		minSdkVersion 16
 		targetSdkVersion 24
-		versionCode = appProperties['VERSION_CODE']
+		versionCode = appProperties['VERSION_CODE'].toInteger()
 		versionName = appProperties['VERSION_NAME']
 	}
 

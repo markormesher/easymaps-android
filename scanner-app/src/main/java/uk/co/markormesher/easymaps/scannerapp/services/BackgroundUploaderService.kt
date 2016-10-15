@@ -32,6 +32,9 @@ class BackgroundUploaderService : Service() {
 	override fun onCreate() {
 		super.onCreate()
 
+		// store last check date
+		setLastUploadCheckTime()
+
 		// check whether we're online
 		val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 		val activeNetworkInfo = connManager.activeNetworkInfo
@@ -73,7 +76,10 @@ class BackgroundUploaderService : Service() {
 			override fun onFailure(call: Call?, e: IOException?) = uploadNextFile(index)
 
 			override fun onResponse(call: Call?, response: Response?) {
-				if (response?.isSuccessful ?: false) file.delete()
+				if (response?.isSuccessful ?: false) {
+					file.delete()
+					this@BackgroundUploaderService.setLastUploadTime()
+				}
 				uploadNextFile(index)
 			}
 		})

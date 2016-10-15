@@ -19,12 +19,6 @@
 	<string name="intro_ps_text"><![CDATA[
 		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on and off at any point, above ground or below.
 	]]></string>
-	<string name="intro_anon_id"><![CDATA[
-		Your anonymous ID is <em>%s</em> (tap to copy).
-	]]></string>
-
-	<string name="copy_id_label">EasyMaps Scanner ID</string>
-	<string name="copy_id_done">Copied to clipboard!</string>
 
 	<string name="scan_status_title">Scanner status</string>
 	<string name="scan_status_unknown">Waiting for scanner service…</string>
@@ -39,5 +33,17 @@
 	<string name="scanning_notification_title">EasyMaps Scanner is running</string>
 	<string name="scanning_notification_message">%1$,d data point%2$s this session</string>
 	<string name="uploading_notification_title">Uploading EasyMaps scan logs</string>
+
+	<string name="menu_option_user_id">Display User ID</string>
+	<string name="user_id_title">Your User ID</string>
+	<string name="user_id_copied">Your user ID was also copied to your clipboard</string>
+
+	<string name="menu_option_debug_report">Display Debug Report</string>
+	<string name="debug_report_title">Debug Report</string>
+	<string name="debug_report_copied">The report was also copied to your clipboard</string>
+
+	<string name="menu_option_contact">Contact Mark</string>
+	<string name="contact_chooser_title">Contact Mark</string>
+	<string name="contact_text">Please feel free to send me questions, bug reports, suggestions, general comments, etc.\n\n---\n%s</string>
 
 </resources>

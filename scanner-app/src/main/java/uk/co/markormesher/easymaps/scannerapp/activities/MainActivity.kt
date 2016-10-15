@@ -1,13 +1,19 @@
 package uk.co.markormesher.easymaps.scannerapp.activities
 
 import android.content.*
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import uk.co.markormesher.easymaps.scannerapp.R
+import uk.co.markormesher.easymaps.scannerapp.*
 import uk.co.markormesher.easymaps.scannerapp.services.ScannerService
+import uk.co.markormesher.easymaps.sdk.copyToClipboard
 import uk.co.markormesher.easymaps.sdk.makeHtml
 import uk.co.markormesher.easymaps.sdk.readDeviceID
 import java.util.*
@@ -24,13 +30,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		text2.text = makeHtml(R.string.intro_usage_text)
 		text3.text = makeHtml(R.string.intro_collection_text)
 		text4.text = makeHtml(R.string.intro_ps_text)
-		text5.text = makeHtml(R.string.intro_anon_id, readDeviceID().replace("-", "-\u200b"))
 
-		text5.setOnClickListener {
-			val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-			clipboard.primaryClip = ClipData.newPlainText(getString(R.string.copy_id_label), readDeviceID())
-			Toast.makeText(this, R.string.copy_id_done, Toast.LENGTH_SHORT).show()
-		}
 		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
 	}
 
@@ -42,14 +42,14 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
 		registerReceiver(scanStateUpdatedReceiver, IntentFilter(getString(R.string.intent_scan_status_updated)))
-
-		updateStatusFromService()
 	}
 
 	override fun onPause() {
 		super.onPause()
 		unregisterReceiver(scanStateUpdatedReceiver)
 	}
+
+	/* service binding */
 
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
 		if (binder is ScannerService.LocalBinder) {
@@ -88,5 +88,68 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 
 			status_message.text = messages.joinToString("\n")
 		}
+	}
+
+	/* options menu */
+
+	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+		menuInflater.inflate(R.menu.activity_main, menu)
+		return true
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+		when (item?.itemId) {
+			R.id.user_id -> displayUserId()
+			R.id.debug_report -> createDebugReport()
+			R.id.contact -> startContact()
+		}
+		return super.onOptionsItemSelected(item)
+	}
+
+	private fun displayUserId() {
+		copyToClipboard(getString(R.string.debug_report_title), readDeviceID())
+		Toast.makeText(this, R.string.user_id_copied, Toast.LENGTH_SHORT).show()
+
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.user_id_title)
+			setMessage(readDeviceID())
+			setCancelable(false)
+			setPositiveButton(R.string.ok, null)
+			create().show()
+		}
+	}
+
+	private fun getDebugMessage(): String {
+		return "Android SDK: ${Build.VERSION.SDK_INT}\n" +
+				"App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+				"Debug build: ${BuildConfig.DEBUG_MODE}\n" +
+				"Files to upload: ${getClosedScanResultsFiles().size}\n" +
+				"Last upload: ${getLastUploadTime()}\n" +
+				"Last upload check: ${getLastUploadCheckTime()}"
+	}
+
+	private fun createDebugReport() {
+		val message = getDebugMessage()
+
+		copyToClipboard(getString(R.string.debug_report_title), message)
+		Toast.makeText(this, R.string.debug_report_copied, Toast.LENGTH_SHORT).show()
+
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.debug_report_title)
+			setMessage(message)
+			setCancelable(false)
+			setPositiveButton(R.string.ok, null)
+			create().show()
+		}
+	}
+
+	private fun startContact() {
+		val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", CONTACT_EMAIL, null))
+		emailIntent.putExtra(Intent.EXTRA_EMAIL, CONTACT_EMAIL)
+		emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+		emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.contact_text, getDebugMessage()))
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.contact_chooser_title)))
 	}
 }
