@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
 		registerReceiver(scanStateUpdatedReceiver, IntentFilter(getString(R.string.intent_scan_status_updated)))
+		updateStatusFromService()
 	}
 
 	override fun onPause() {
