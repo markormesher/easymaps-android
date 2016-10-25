@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.scannerapp.*
@@ -32,6 +34,11 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		text4.text = makeHtml(R.string.intro_ps_text)
 
 		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
+
+		text1.setOnLongClickListener {
+			displaySuperUserPrompt()
+			true
+		}
 	}
 
 	override fun onResume() {
@@ -77,14 +84,26 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 			status_message.text = makeHtml(R.string.scan_status_unknown)
 		} else {
 			val messages = ArrayList<String>()
+
+			if (isSuperUser()) {
+				messages.add(getString(R.string.su_enabled))
+				if (isHighFrequencyMode()) {
+					messages.add(getString(R.string.scan_status_high_freq_enabled))
+				} else {
+					messages.add(getString(R.string.scan_status_high_freq_disabled))
+				}
+			}
+
 			val lifetimeDataPoints = scannerService!!.lifetimeDataPoints
 			val sessionDataPoints = scannerService!!.sessionDataPoints
+
 			if (scannerService!!.running) {
 				messages.add(getString(R.string.scan_status_running))
 				messages.add(getString(R.string.session_data_points_count, sessionDataPoints))
 			} else {
 				messages.add(getString(R.string.scan_status_stopped))
 			}
+
 			messages.add(getString(R.string.lifetime_data_points_count, lifetimeDataPoints))
 
 			status_message.text = messages.joinToString("\n")
@@ -93,8 +112,31 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 
 	/* options menu */
 
+	private fun displaySuperUserPrompt() {
+		val input = EditText(this)
+		input.inputType = InputType.TYPE_CLASS_PHONE
+
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.su_prompt_title)
+			setMessage(R.string.su_prompt_body)
+			setView(input)
+			setCancelable(false)
+			setPositiveButton(R.string.ok) { p0, p1 ->
+				setIsSuperUser(input.text.toString() == SUPER_USER_PIN)
+				invalidateOptionsMenu()
+				updateStatusFromService()
+			}
+			create().show()
+		}
+	}
+
 	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-		menuInflater.inflate(R.menu.activity_main, menu)
+		if (isSuperUser()) {
+			menuInflater.inflate(R.menu.activity_main_super_user, menu)
+		} else {
+			menuInflater.inflate(R.menu.activity_main, menu)
+		}
 		return true
 	}
 
@@ -103,6 +145,10 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 			R.id.user_id -> displayUserId()
 			R.id.debug_report -> createDebugReport()
 			R.id.contact -> startContact()
+			R.id.high_freq -> {
+				setIsHighFrequencyMode(!isHighFrequencyMode())
+				updateStatusFromService()
+			}
 		}
 		return super.onOptionsItemSelected(item)
 	}
@@ -125,9 +171,11 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		return "Android SDK: ${Build.VERSION.SDK_INT}\n" +
 				"App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
 				"Debug build: ${BuildConfig.DEBUG_MODE}\n" +
+				"Super user: ${isSuperUser()}\n" +
+				"High-frequency: ${isHighFrequencyMode()}\n" +
 				"Files to upload: ${getClosedScanResultsFiles().size}\n" +
 				"Last upload: ${getLastUploadTime()}\n" +
-				"Last upload check: ${getLastUploadCheckTime()}"
+				"Last check: ${getLastUploadCheckTime()}"
 	}
 
 	private fun createDebugReport() {

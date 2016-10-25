@@ -46,4 +46,11 @@
 	<string name="contact_chooser_title">Contact Mark</string>
 	<string name="contact_text">Please feel free to send me questions, bug reports, suggestions, general comments, etc.\n\n---\n%s</string>
 
+	<string name="su_prompt_title">Super User Mode</string>
+	<string name="su_prompt_body">Enter the PIN below to enable super user mode:</string>
+	<string name="su_enabled">You are in super user mode</string>
+
+	<string name="menu_option_high_freq">Toggle High-Frequency Mode</string>
+	<string name="scan_status_high_freq_enabled">High frequency mode is enabled</string>
+	<string name="scan_status_high_freq_disabled">High frequency mode is disabled</string>
 </resources>
