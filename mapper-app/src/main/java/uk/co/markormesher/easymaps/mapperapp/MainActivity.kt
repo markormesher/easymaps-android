@@ -2,7 +2,7 @@ package uk.co.markormesher.easymaps.mapperapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
+import android.view.Gravity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -11,15 +11,11 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		navigation_drawer.adapter = NavAdapter(this)
-		navigation_drawer.setOnItemClickListener { adapterView, view, position, id ->
-			drawer_layout.closeDrawers()
-			when (view.id) {
-				NAV_HOME -> Toast.makeText(this, "Home!", Toast.LENGTH_SHORT).show()
-				NAV_ABOUT -> Toast.makeText(this, "About!", Toast.LENGTH_SHORT).show()
-				NAV_SETTINGS -> Toast.makeText(this, "Settings!", Toast.LENGTH_SHORT).show()
-			}
-		}
+		setSupportActionBar(toolbar)
+		supportActionBar?.setHomeAsUpIndicator(getDrawable(R.drawable.ic_menu_white_24dp))
+		supportActionBar?.setDisplayHomeAsUpEnabled(true)
+		supportActionBar?.setDisplayShowTitleEnabled(false)
+		toolbar.setNavigationOnClickListener { drawer_layout.openDrawer(Gravity.START) }
 	}
 }
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!-- space, for padding and margins -->
 	<dimen name="space_nano">4dp</dimen>
 	<dimen name="space_micro">8dp</dimen>
 	<dimen name="space_micro_small">12dp</dimen>
@@ -14,5 +13,14 @@
 
 	<dimen name="activity_horizontal_margin">16dp</dimen>
 	<dimen name="activity_vertical_margin">16dp</dimen>
+
+	<dimen name="text_heading_large">32sp</dimen>
+	<dimen name="text_heading">18sp</dimen>
+	<dimen name="text_subheading">14sp</dimen>
+	<dimen name="text_body">16sp</dimen>
+	<dimen name="text_small">12sp</dimen>
+	<dimen name="text_micro">10sp</dimen>
+	<dimen name="text_min_height">@dimen/space_medium</dimen>
+	<dimen name="text_min_height_small">@dimen/space_small</dimen>
 
 </resources>
