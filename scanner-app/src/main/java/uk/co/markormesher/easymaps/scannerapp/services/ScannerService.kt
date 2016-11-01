@@ -123,7 +123,7 @@ class ScannerService : Service() {
 				setContentTitle(getString(R.string.scanning_notification_title))
 				setContentText(message)
 				setStyle(notificationStyle.bigText(message))
-				setSmallIcon(R.mipmap.ic_launcher) // TODO: app icon
+				setSmallIcon(R.mipmap.scanner_launcher) // TODO: app icon
 				setContentIntent(returnToAppIntent)
 				addAction(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.scan_toggle_stop), stopScannerIntent)
 			}
