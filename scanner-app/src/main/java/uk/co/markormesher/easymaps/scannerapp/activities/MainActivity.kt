@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
@@ -15,12 +14,13 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.scannerapp.*
 import uk.co.markormesher.easymaps.scannerapp.services.ScannerService
+import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.copyToClipboard
 import uk.co.markormesher.easymaps.sdk.makeHtml
 import uk.co.markormesher.easymaps.sdk.readDeviceID
 import java.util.*
 
-class MainActivity : AppCompatActivity(), ServiceConnection {
+class MainActivity : BaseActivity(), ServiceConnection {
 
 	private var scannerService: ScannerService? = null
 

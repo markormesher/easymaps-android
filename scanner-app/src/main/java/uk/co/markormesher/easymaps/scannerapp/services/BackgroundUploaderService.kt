@@ -105,7 +105,7 @@ class BackgroundUploaderService : Service() {
 		with(nBuilder) {
 			setContentTitle(getString(R.string.uploading_notification_title))
 			setProgress(filesToUpload?.size ?: 0, filesFinished, false)
-			setSmallIcon(R.mipmap.scanner_launcher) // TODO: app icon
+			setSmallIcon(R.drawable.ic_scanner_app_white)
 		}
 		startForeground(NOTIFICATION_ID, nBuilder.build())
 	}

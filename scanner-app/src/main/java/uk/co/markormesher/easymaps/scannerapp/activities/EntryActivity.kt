@@ -3,13 +3,13 @@ package uk.co.markormesher.easymaps.scannerapp.activities
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import uk.co.markormesher.easymaps.scannerapp.services.setupAlarmForBackgroundUploaderService
+import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.checkPermissionList
 import uk.co.markormesher.easymaps.sdk.checkPermissionRequestResult
 import uk.co.markormesher.easymaps.sdk.requestPermissionList
 
-class EntryActivity : AppCompatActivity() {
+class EntryActivity : BaseActivity() {
 
 	val REQUIRED_PERMISSIONS = arrayOf(
 			Manifest.permission.ACCESS_WIFI_STATE,

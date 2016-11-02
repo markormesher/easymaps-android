@@ -52,5 +52,7 @@ dependencies {
 	compile "com.android.support:support-core-utils:$supportLibraryVersion"
 	compile "com.android.support:appcompat-v7:$supportLibraryVersion"
 
+	compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+
 	testCompile 'junit:junit:4.12'
 }
