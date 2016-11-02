@@ -68,7 +68,7 @@ class BackgroundUploaderService : Service() {
 		val requestBody = MultipartBody.Builder()
 				.setType(MultipartBody.FORM)
 				.addFormDataPart("userId", readDeviceID())
-				.addFormDataPart("network", "london") // TODO: network selection
+				.addFormDataPart("network", getNetwork())
 				.addFormDataPart("file", file.name, RequestBody.create(MediaType.parse("text/plain"), file))
 				.build()
 		val request = Request.Builder().url(UPLOAD_URL).post(requestBody).build()

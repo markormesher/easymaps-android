@@ -7,6 +7,7 @@ private val PREF_LAST_UPLOAD = "pref.last_upload"
 private val PREF_LAST_UPLOAD_CHECK = "pref.last_upload_check"
 private val PREF_HIGH_FREQ_MODE = "pref.high_freq_mode"
 private val PREF_SUPER_USER = "pref.super_user"
+private val PREF_NETWORK = "pref.network"
 
 fun Context.setLastUploadCheckTime() = setStringPref(PREF_LAST_UPLOAD_CHECK, getDateString())
 
@@ -23,3 +24,7 @@ fun Context.isSuperUser() : Boolean = getBooleanPref(PREF_SUPER_USER, false)
 fun Context.setIsHighFrequencyMode(enabled: Boolean) = setBooleanPref(PREF_HIGH_FREQ_MODE, enabled)
 
 fun Context.isHighFrequencyMode() : Boolean = isSuperUser() && getBooleanPref(PREF_HIGH_FREQ_MODE, false)
+
+fun Context.setNetwork(network: String) = setStringPref(PREF_NETWORK, network)
+
+fun Context.getNetwork() : String = getStringPref(PREF_NETWORK, NO_NETWORK)

@@ -53,4 +53,12 @@
 	<string name="menu_option_high_freq">Toggle High-Frequency Mode</string>
 	<string name="scan_status_high_freq_enabled">High frequency mode is enabled</string>
 	<string name="scan_status_high_freq_disabled">High frequency mode is disabled</string>
+
+	<string name="menu_option_change_network">Change Network</string>
+	<string name="change_network_title">Change Network</string>
+	<string name="change_network_error_scanner_running">Please stop the scanner first</string>
+	<string name="change_network_set_to">Network set to \'%s\'</string>
+	<string name="change_network_invalid_input">Sorry, that\'s not a valid network</string>
+	<string name="scan_status_network">Network: \'%s\'</string>
+
 </resources>

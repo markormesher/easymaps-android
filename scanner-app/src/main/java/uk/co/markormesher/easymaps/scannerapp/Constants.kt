@@ -9,3 +9,6 @@ val SSID_FILTER = "virgin media"
 val UPLOAD_URL = "http://easymaps.markormesher.co.uk/scan-logs/upload"
 val CONTACT_EMAIL = "me@markormesher.co.uk"
 val SUPER_USER_PIN = "150995"
+val DEFAULT_NETWORK = "london"
+val VALID_NETWORKS = arrayListOf("london", "london_clean")
+val NO_NETWORK = "---none---"

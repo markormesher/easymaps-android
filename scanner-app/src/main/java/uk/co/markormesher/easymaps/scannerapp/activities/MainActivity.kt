@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 			displaySuperUserPrompt()
 			true
 		}
+
+		checkNetwork()
 	}
 
 	override fun onResume() {
@@ -55,6 +57,13 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 	override fun onPause() {
 		super.onPause()
 		unregisterReceiver(scanStateUpdatedReceiver)
+	}
+
+	private fun checkNetwork() {
+		if (getNetwork() == NO_NETWORK || getNetwork().isBlank()) {
+			setNetwork(DEFAULT_NETWORK)
+			Toast.makeText(this, getString(R.string.change_network_set_to, DEFAULT_NETWORK), Toast.LENGTH_SHORT).show()
+		}
 	}
 
 	/* service binding */
@@ -105,6 +114,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 			}
 
 			messages.add(getString(R.string.lifetime_data_points_count, lifetimeDataPoints))
+			messages.add(getString(R.string.scan_status_network, getNetwork()))
 
 			status_message.text = messages.joinToString("\n")
 		}
@@ -149,6 +159,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 				setIsHighFrequencyMode(!isHighFrequencyMode())
 				updateStatusFromService()
 			}
+			R.id.change_network -> startNetworkChange()
 		}
 		return super.onOptionsItemSelected(item)
 	}
@@ -200,5 +211,37 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
 		emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.contact_text, getDebugMessage()))
 		startActivity(Intent.createChooser(emailIntent, getString(R.string.contact_chooser_title)))
+	}
+
+	private fun startNetworkChange() {
+		if (scannerService?.running ?: false) {
+			Toast.makeText(this, R.string.change_network_error_scanner_running, Toast.LENGTH_SHORT).show()
+			return
+		}
+
+		val input = EditText(this)
+		input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+		input.setText(getNetwork())
+
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.change_network_title)
+			setView(input)
+			setCancelable(false)
+			setPositiveButton(R.string.ok) { p0, p1 ->
+				val inputValue = input.text.toString().trim()
+
+				if (inputValue.isEmpty()) {
+					setNetwork(DEFAULT_NETWORK)
+				} else if (!VALID_NETWORKS.contains(inputValue)) {
+					Toast.makeText(this@MainActivity, R.string.change_network_invalid_input, Toast.LENGTH_SHORT).show()
+				} else {
+					setNetwork(inputValue)
+					Toast.makeText(this@MainActivity, getString(R.string.change_network_set_to, inputValue), Toast.LENGTH_SHORT).show()
+					updateStatusFromService()
+				}
+			}
+			create().show()
+		}
 	}
 }
