@@ -172,7 +172,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		with(alertBuilder) {
 			setTitle(R.string.user_id_title)
 			setMessage(readDeviceID())
-			setCancelable(false)
+			setCancelable(true)
 			setPositiveButton(R.string.ok, null)
 			create().show()
 		}
@@ -182,6 +182,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		return "Android SDK: ${Build.VERSION.SDK_INT}\n" +
 				"App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
 				"Debug build: ${BuildConfig.DEBUG_MODE}\n" +
+				"Network: ${getNetwork()}\n" +
 				"Super user: ${isSuperUser()}\n" +
 				"High-frequency: ${isHighFrequencyMode()}\n" +
 				"Files to upload: ${getClosedScanResultsFiles().size}\n" +
@@ -199,7 +200,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		with(alertBuilder) {
 			setTitle(R.string.debug_report_title)
 			setMessage(message)
-			setCancelable(false)
+			setCancelable(true)
 			setPositiveButton(R.string.ok, null)
 			create().show()
 		}
