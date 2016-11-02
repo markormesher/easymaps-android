@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<style name="Text" parent="TextAppearance.AppCompat">
-		<!-- default font, set in BaseActivity: fonts/Lato-Regular.ttf -->
-	</style>
+	<!--
+	Unless specified, the default font is fonts/Lato-Regular.ttf.
+	It is set in BaseActivity.
+	-->
 
-	<style name="Text.Normal" parent="Text">
+	<style name="Text" parent="TextAppearance.AppCompat"/>
 
+	<style name="Text.SubHeading" parent="Text">
+		<item name="fontPath">fonts/Lato-Bold.ttf</item>
 	</style>
 
 </resources>

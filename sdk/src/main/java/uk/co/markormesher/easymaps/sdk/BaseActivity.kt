@@ -3,6 +3,7 @@ package uk.co.markormesher.easymaps.sdk
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import uk.co.chrisjenx.calligraphy.R
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
