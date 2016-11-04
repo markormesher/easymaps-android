@@ -18,7 +18,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 def secrets = getSecrets()
-def appProperties = getAppProperties()
+def appProperties = getAppProperties(projectDir)
 
 android {
 	compileSdkVersion 24
