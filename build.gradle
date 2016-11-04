@@ -24,7 +24,6 @@ task clean(type: Delete) {
 static
 def getSecrets() {
 	try {
-		// load in default file
 		def Properties secrets = new Properties()
 		secrets.load(new FileInputStream(new File('secrets.properties')))
 
@@ -40,12 +39,10 @@ def getSecrets() {
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 static
-def getAppProperties() {
+def getAppProperties(File projectRoot) {
 	try {
-		// load in default file
 		def Properties properties = new Properties()
-		properties.load(new FileInputStream(new File('app.properties')))
-
+		properties.load(new FileInputStream(new File(projectRoot.absolutePath + '/app.properties')))
 		return properties
 	} catch (Exception ignored) {
 		System.out.println("Warning: app properties file not loaded")
