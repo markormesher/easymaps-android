@@ -39,7 +39,6 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:text="Status Heading"
-					android:layout_marginBottom="@dimen/space_nano"
 					style="@style/Text.SubHeading"
 					android:textColor="@color/white"/>
 
@@ -53,5 +52,16 @@
 		</LinearLayout>
 
 	</LinearLayout>
+
+	<android.support.v7.widget.RecyclerView
+			android:id="@+id/location_grid"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/status_bar_wrapper"
+			android:layout_alignParentBottom="true"
+			android:padding="@dimen/space_nano"
+			android:clipToPadding="false"
+			android:scrollbarStyle="outsideOverlay"
+			android:scrollbars="vertical"/>
 
 </RelativeLayout>

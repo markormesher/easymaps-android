@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="@dimen/space_nano">
+
+	<android.support.percent.PercentRelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/space_nano">
+
+		<!--suppress AndroidDomInspection -->
+		<ImageView
+				android:id="@+id/location_image"
+				app:layout_widthPercent="100%"
+				app:layout_aspectRatio="100%"
+				android:scaleType="centerCrop"
+				android:src="@drawable/ic_photo_camera_white_36dp"/>
+
+	</android.support.percent.PercentRelativeLayout>
+
+	<TextView
+			android:id="@+id/location_name"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			style="@style/Text"/>
+
+</LinearLayout>
