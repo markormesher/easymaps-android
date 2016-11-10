@@ -22,6 +22,7 @@
 			android:background="@color/primary">
 
 		<ImageView
+				android:id="@+id/status_icon"
 				android:layout_width="48dp"
 				android:layout_height="48dp"
 				android:layout_marginRight="@dimen/space_micro"
@@ -36,16 +37,16 @@
 				android:orientation="vertical">
 
 			<TextView
+					android:id="@+id/status_heading"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="Status Heading"
 					style="@style/Text.SubHeading"
 					android:textColor="@color/white"/>
 
 			<TextView
+					android:id="@+id/status_message"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="Status message"
 					style="@style/Text"
 					android:textColor="@color/white"/>
 
