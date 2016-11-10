@@ -26,8 +26,8 @@
 				android:layout_height="48dp"
 				android:layout_marginRight="@dimen/space_micro"
 				android:layout_marginEnd="@dimen/space_micro"
-				android:src="@drawable/ic_location_on_white"
-				android:tint="@color/accent"/>
+				android:src="@drawable/ic_info_outline_white_48dp"
+				android:tint="@color/white"/>
 
 		<LinearLayout
 				android:layout_width="0dp"
