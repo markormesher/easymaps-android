@@ -12,15 +12,17 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.*
 import uk.co.markormesher.easymaps.scannerapp.*
 import uk.co.markormesher.easymaps.scannerapp.services.ScannerService
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.copyToClipboard
 import uk.co.markormesher.easymaps.sdk.makeHtml
 import uk.co.markormesher.easymaps.sdk.readDeviceID
+import java.io.IOException
 import java.util.*
 
-class MainActivity : BaseActivity(), ServiceConnection {
+class MainActivity: BaseActivity(), ServiceConnection {
 
 	private var scannerService: ScannerService? = null
 
@@ -74,7 +76,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		scannerService = null
 	}
 
-	private val scanStateUpdatedReceiver = object : BroadcastReceiver() {
+	private val scanStateUpdatedReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			updateStatusFromService()
 		}
@@ -150,6 +152,7 @@ class MainActivity : BaseActivity(), ServiceConnection {
 			R.id.user_id -> displayUserId()
 			R.id.debug_report -> createDebugReport()
 			R.id.contact -> startContact()
+			R.id.withdraw -> startWithdrawal()
 			R.id.high_freq -> {
 				setIsHighFrequencyMode(!isHighFrequencyMode())
 				updateStatusFromService()
@@ -204,6 +207,34 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
 		emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.contact_text, getDebugMessage()))
 		startActivity(Intent.createChooser(emailIntent, getString(R.string.contact_chooser_title)))
+	}
+
+	private fun startWithdrawal() {
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.withdraw_data_confirm_title)
+			setMessage(makeHtml(R.string.withdraw_data_confirm_body))
+			setCancelable(false)
+			setPositiveButton(R.string.yes) { p0, p1 ->
+				val requestBody = FormBody.Builder().add("userId", readDeviceID()).build()
+				val request = Request.Builder().url(WITHDRAW_URL).post(requestBody).build()
+				OkHttpClient().newCall(request).enqueue(object: Callback {
+					override fun onFailure(call: Call?, e: IOException?) = runOnUiThread {
+						Toast.makeText(this@MainActivity, R.string.withdraw_failure, Toast.LENGTH_SHORT).show()
+					}
+
+					override fun onResponse(call: Call?, response: Response?) = runOnUiThread {
+						if (response?.isSuccessful ?: false) {
+							Toast.makeText(this@MainActivity, R.string.withdraw_success, Toast.LENGTH_SHORT).show()
+						} else {
+							Toast.makeText(this@MainActivity, R.string.withdraw_failure, Toast.LENGTH_SHORT).show()
+						}
+					}
+				})
+			}
+			setNegativeButton(R.string.no) { p0, p1 -> }
+			create().show()
+		}
 	}
 
 	private fun startNetworkChange() {
