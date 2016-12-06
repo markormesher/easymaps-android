@@ -10,7 +10,7 @@
 	<string name="thanks_title">Thank You - You\'re Amazing!</string>
 	<string name="thanks_body"><![CDATA[
 		I really mean that - thank you so much for using this app and volunteering to collect data for my project.
-		Hopefully, you\'ll be part of something that has a real-world impact, but there\'s more to it that that:
+		Hopefully, you\'ll be part of something that has a real-world impact, but there\'s more to it than that:
 		what I\'m trying to build is pretty ambitious, and it will only work if I can collect lots of real-world data.
 		Without you this project would be going nowhere, so I really mean it when I say \'thank you\'!
 	]]></string>
@@ -38,6 +38,12 @@
 		This app also records a unique, anonymous ID for your device, which cannot be traced to your individual identity.
 		That\'s all it collects - no personal data, no location data, nothing that can identify you, etc.
 		You can see your ID by opening the app menu and tapping \'Display User ID\'.
+	]]></string>
+
+	<string name="withdrawal_title">Withdrawal</string>
+	<string name="withdrawal_body"><![CDATA[
+		If you want to withdraw from this project can do so by simply stopping your use of this app (and uninstalling it if you wish).
+		If you also want to withdraw the data that you\'ve generated so far, you can do so anonymously from the app menu.
 	]]></string>
 
 	<string name="contact_title">Contact Details</string>
@@ -74,6 +80,18 @@
 	<string name="menu_option_contact">Contact Mark</string>
 	<string name="contact_chooser_title">Contact Mark</string>
 	<string name="contact_text">Please feel free to send me questions, bug reports, suggestions, general comments, etc.\n\n---\n%s</string>
+
+	<string name="menu_option_withdraw_data">Withdraw Data</string>
+	<string name="withdraw_data_confirm_title">Withdraw Your Data?</string>
+	<string name="withdraw_data_confirm_body"><![CDATA[
+		Remember, your data is <strong>completely anonymous</strong> and cannot be traced back to you.
+		<br /><br />
+		If you tap \'Yes\' below your ID will be sent to the server, triggering the deletion of your data within 48 hours.
+		This <strong>cannot be undone</strong>.
+		Are you sure you want to withdraw your data?
+	]]></string>
+	<string name="withdraw_success">Your data will be deleted within 48 hours.</string>
+	<string name="withdraw_failure">Sorry, that didn\'t work! Make sure you\'re online.</string>
 
 	<string name="su_prompt_title">Super User Mode</string>
 	<string name="su_prompt_body">Enter the PIN below to enable super user mode:</string>

@@ -18,4 +18,9 @@
 		android:title="@string/menu_option_contact"
 		app:showAsAction="never"/>
 
+	<item
+		android:id="@+id/withdraw"
+		android:title="@string/menu_option_withdraw_data"
+		app:showAsAction="never"/>
+
 </menu>
