@@ -21,13 +21,13 @@ def secrets = getSecrets()
 def appProperties = getAppProperties(projectDir)
 
 android {
-	compileSdkVersion 25
-	buildToolsVersion "25.0.1"
+	compileSdkVersion 24
+	buildToolsVersion "24.0.3"
 
 	defaultConfig {
 		applicationId "uk.co.markormesher.easymaps.mapperapp"
 		minSdkVersion 16
-		targetSdkVersion 25
+		targetSdkVersion 24
 		versionCode = appProperties['VERSION_CODE'].toInteger()
 		versionName = appProperties['VERSION_NAME']
 	}
