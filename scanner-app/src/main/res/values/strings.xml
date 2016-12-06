@@ -15,6 +15,13 @@
 		Without you this project would be going nowhere, so I really mean it when I say \'thank you\'!
 	]]></string>
 
+	<string name="prizes_title">Prizes</string>
+	<string name="prizes_body"><![CDATA[
+		Yes, that\'s right - prizes!
+		Three volunteers will be selected at the end of this project (31st March, 2017) to win a £20 Amazon voucher each!
+		Full details: http://easymaps.markormesher.co.uk.
+	]]></string>
+
 	<string name="instructions_title">Instructions</string>
 	<string name="instructions_body_1"><![CDATA[
 		Use the button at the top to enable scanning whenever you\'re travelling on the London Underground and disable it when you finish your journey.
@@ -23,13 +30,6 @@
 	<string name="instructions_body_2"><![CDATA[
 		Don\'t worry if you forget to turn the scanner on before you start travelling!
 		You can turn it on and off at any point, above ground or below.
-	]]></string>
-
-	<string name="prizes_title">Prizes</string>
-	<string name="prizes_body"><![CDATA[
-		Yes, that\'s right - prizes!
-		Three volunteers will be selected at the end of this project (31st March, 2017) to win a £20 Amazon voucher each!
-		Full details: http://easymaps.markormesher.co.uk
 	]]></string>
 
 	<string name="data_collection_title">Data Collection</string>
@@ -66,8 +66,9 @@
 	<string name="user_id_title">Your User ID</string>
 	<string name="user_id_copied">Your user ID was also copied to your clipboard</string>
 
-	<string name="menu_option_debug_report">Display Debug Report</string>
-	<string name="debug_report_title">Debug Report</string>
+	<string name="menu_option_debug_report">Send Debug Report</string>
+	<string name="debug_report_title">EasyMaps Scanner Debug Report</string>
+	<string name="debug_report_chooser_title">Send to Mark</string>
 	<string name="debug_report_copied">The report was also copied to your clipboard</string>
 
 	<string name="menu_option_contact">Contact Mark</string>

@@ -71,6 +71,20 @@
 		<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:text="@string/prizes_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/prizes_body"
+				android:autoLink="web"
+				style="@style/Text"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
 				android:text="@string/instructions_title"
 				style="@style/Text.SubHeading"/>
 
@@ -86,20 +100,6 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
 				android:text="@string/instructions_body_2"
-				style="@style/Text"/>
-
-		<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/prizes_title"
-				style="@style/Text.SubHeading"/>
-
-		<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/space_small"
-				android:text="@string/prizes_body"
-				android:autoLink="web"
 				style="@style/Text"/>
 
 		<TextView
