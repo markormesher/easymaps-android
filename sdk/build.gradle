@@ -20,12 +20,12 @@ apply plugin: 'kotlin-android-extensions'
 def appProperties = getAppProperties(projectDir)
 
 android {
-	compileSdkVersion 24
-	buildToolsVersion "24.0.3"
+	compileSdkVersion 25
+	buildToolsVersion "25.0.1"
 
 	defaultConfig {
 		minSdkVersion 16
-		targetSdkVersion 24
+		targetSdkVersion 25
 		versionCode = appProperties['VERSION_CODE']
 		versionName = appProperties['VERSION_NAME']
 	}

@@ -28,17 +28,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		text1.text = makeHtml(R.string.intro_text)
-		text2.text = makeHtml(R.string.intro_usage_text)
-		text3.text = makeHtml(R.string.intro_collection_text)
-		text4.text = makeHtml(R.string.intro_ps_text)
-
 		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
 
-		text1.setOnLongClickListener {
+		/*text1.setOnLongClickListener {
 			displaySuperUserPrompt()
 			true
-		}
+		}*/
 
 		checkNetwork()
 	}
@@ -196,14 +191,11 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		copyToClipboard(getString(R.string.debug_report_title), message)
 		Toast.makeText(this, R.string.debug_report_copied, Toast.LENGTH_SHORT).show()
 
-		val alertBuilder = AlertDialog.Builder(this)
-		with(alertBuilder) {
-			setTitle(R.string.debug_report_title)
-			setMessage(message)
-			setCancelable(true)
-			setPositiveButton(R.string.ok, null)
-			create().show()
-		}
+		val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", CONTACT_EMAIL, null))
+		emailIntent.putExtra(Intent.EXTRA_EMAIL, CONTACT_EMAIL)
+		emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.debug_report_title))
+		emailIntent.putExtra(Intent.EXTRA_TEXT, message)
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.debug_report_chooser_title)))
 	}
 
 	private fun startContact() {

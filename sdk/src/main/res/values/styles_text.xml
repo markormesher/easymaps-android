@@ -12,4 +12,8 @@
 		<item name="fontPath">fonts/Lato-Bold.ttf</item>
 	</style>
 
+	<style name="Text.Note" parent="Text">
+		<item name="fontPath">fonts/Lato-Light.ttf</item>
+	</style>
+
 </resources>

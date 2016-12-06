@@ -35,7 +35,6 @@
 		<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/space_nano"
 				android:textStyle="bold"
 				android:text="@string/scan_status_title"
 				style="@style/Text.SubHeading"/>
@@ -57,31 +56,91 @@
 				android:background="@color/divider"/>
 
 		<TextView
-				android:id="@+id/text1"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/thanks_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/thanks_body"
 				style="@style/Text"/>
 
 		<TextView
-				android:id="@+id/text2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/prizes_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/prizes_body"
+				android:autoLink="web"
 				style="@style/Text"/>
 
 		<TextView
-				android:id="@+id/text3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/instructions_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_micro"
+				android:text="@string/instructions_body_1"
+				style="@style/Text"/>
+
+		<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/instructions_body_2"
 				style="@style/Text"/>
 
 		<TextView
-				android:id="@+id/text4"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:text="@string/data_collection_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/data_collection_body"
 				style="@style/Text"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/contact_title"
+				style="@style/Text.SubHeading"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_small"
+				android:text="@string/contact_body"
+				style="@style/Text"/>
+
+		<View
+				android:layout_width="match_parent"
+				android:layout_height="1dp"
+				android:layout_marginLeft="@dimen/space_large"
+				android:layout_marginRight="@dimen/space_large"
+				android:layout_marginBottom="@dimen/space_small"
+				android:background="@color/divider"/>
+
+		<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/ethics_ref"
+				style="@style/Text.Note"/>
 
 	</LinearLayout>
 
