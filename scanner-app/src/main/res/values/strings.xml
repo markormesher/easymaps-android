@@ -7,18 +7,46 @@
 
 	<string name="app_name">EasyMaps Scanner</string>
 
-	<string name="intro_text"><![CDATA[
-		<strong>Thank you!</strong> By using this app you\'re collecting data that will be used to build an intelligent, totally offline mapper for the London Underground.
+	<string name="thanks_title">Thank You - You\'re Amazing!</string>
+	<string name="thanks_body"><![CDATA[
+		I really mean that - thank you so much for using this app and volunteering to collect data for my project.
+		Hopefully, you\'ll be part of something that has a real-world impact, but there\'s more to it that that:
+		what I\'m trying to build is pretty ambitious, and it will only work if I can collect lots of real-world data.
+		Without you this project would be going nowhere, so I really mean it when I say \'thank you\'!
 	]]></string>
-	<string name="intro_usage_text"><![CDATA[
-		<strong>How does it work?</strong> Just use the button at the top to enable scanning whenever you\'re travelling on the London Underground network, and disable it when you finish your journey; the scanner will run in the background, so you don\'t need to keep the app open.
+
+	<string name="instructions_title">Instructions</string>
+	<string name="instructions_body_1"><![CDATA[
+		Use the button at the top to enable scanning whenever you\'re travelling on the London Underground and disable it when you finish your journey.
+		The scanner will run in the background, so you don\'t need to keep the app open.
 	]]></string>
-	<string name="intro_collection_text"><![CDATA[
-		<strong>What data is collected?</strong> This app records a unique, anonymous ID for your device, and every 20-30 seconds whilst it\'s enabled it checks which WiFi networks are visible. That\'s it - no personal data, no location data, nothing that can identify you, etc.
+	<string name="instructions_body_2"><![CDATA[
+		Don\'t worry if you forget to turn the scanner on before you start travelling!
+		You can turn it on and off at any point, above ground or below.
 	]]></string>
-	<string name="intro_ps_text"><![CDATA[
-		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on and off at any point, above ground or below.
+
+	<string name="prizes_title">Prizes</string>
+	<string name="prizes_body"><![CDATA[
+		Yes, that\'s right - prizes!
+		Three volunteers will be selected at the end of this project (31st March, 2017) to win a £20 Amazon voucher each!
+		Full details: http://easymaps.markormesher.co.uk
 	]]></string>
+
+	<string name="data_collection_title">Data Collection</string>
+	<string name="data_collection_body"><![CDATA[
+		Every 20-30 seconds whilst it\'s enabled, the app checks which WiFi networks are visible and records their IDs.
+		This app also records a unique, anonymous ID for your device, which cannot be traced to your individual identity.
+		That\'s all it collects - no personal data, no location data, nothing that can identify you, etc.
+		You can see your ID by opening the app menu and tapping \'Display User ID\'.
+	]]></string>
+
+	<string name="contact_title">Contact Details</string>
+	<string name="contact_body"><![CDATA[
+		If you want to contact me for any reason, you can do so from the app menu - just tap \'Contact Mark\'.
+		If anything went wrong, tap \'Send Bug Report\' in the menu.
+	]]></string>
+
+	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924</string>
 
 	<string name="scan_status_title">Scanner status</string>
 	<string name="scan_status_unknown">Waiting for scanner service…</string>

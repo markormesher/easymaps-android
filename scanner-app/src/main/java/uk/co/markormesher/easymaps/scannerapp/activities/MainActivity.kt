@@ -28,17 +28,12 @@ class MainActivity : BaseActivity(), ServiceConnection {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		text1.text = makeHtml(R.string.intro_text)
-		text2.text = makeHtml(R.string.intro_usage_text)
-		text3.text = makeHtml(R.string.intro_collection_text)
-		text4.text = makeHtml(R.string.intro_ps_text)
-
 		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
 
-		text1.setOnLongClickListener {
+		/*text1.setOnLongClickListener {
 			displaySuperUserPrompt()
 			true
-		}
+		}*/
 
 		checkNetwork()
 	}
