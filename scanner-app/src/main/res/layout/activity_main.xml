@@ -177,6 +177,7 @@
 				android:background="@color/divider"/>
 
 		<TextView
+				android:id="@+id/ethics_reference"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/ethics_ref"

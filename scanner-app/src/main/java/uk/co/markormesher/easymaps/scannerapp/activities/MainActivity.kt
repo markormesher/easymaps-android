@@ -35,10 +35,10 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			}
 		}
 
-		/*text1.setOnLongClickListener {
+		ethics_reference.setOnLongClickListener {
 			displaySuperUserPrompt()
 			true
-		}*/
+		}
 
 		checkNetwork()
 	}
