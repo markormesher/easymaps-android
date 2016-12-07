@@ -10,19 +10,59 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-			android:paddingTop="@dimen/activity_vertical_margin"
 			android:paddingBottom="@dimen/activity_vertical_margin"
 			android:paddingLeft="@dimen/activity_horizontal_margin"
 			android:paddingRight="@dimen/activity_horizontal_margin">
 
-		<Button
-				android:id="@+id/toggle_scanning_button"
-				android:layout_width="wrap_content"
+		<LinearLayout
+				android:id="@+id/toggle_scanning_button_wrapper"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="@dimen/activity_vertical_margin"
 				android:layout_marginBottom="@dimen/space_small"
-				android:text="@string/scan_toggle_start"
-				android:theme="@style/Button"/>
+				android:gravity="center">
+
+			<Button
+					android:id="@+id/toggle_scanning_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/scan_toggle_start"
+					android:theme="@style/Button"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+				android:id="@+id/setting_warning_button_wrapper"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/activity_vertical_margin"
+				android:layout_marginBottom="@dimen/space_small"
+				android:orientation="vertical"
+				android:visibility="gone"
+				android:gravity="center">
+
+			<TextView
+					android:id="@+id/setting_warning"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="@dimen/space_micro"
+					style="@style/Text.Error"/>
+
+			<Button
+					android:id="@+id/setting_warning_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/setting_warning_button"
+					android:theme="@style/Button"/>
+
+			<TextView
+					android:id="@+id/setting_warning_note"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_micro"
+					style="@style/Text.Note"/>
+
+		</LinearLayout>
 
 		<View
 				android:layout_width="match_parent"
@@ -137,6 +177,7 @@
 				android:background="@color/divider"/>
 
 		<TextView
+				android:id="@+id/ethics_reference"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/ethics_ref"
