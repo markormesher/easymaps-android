@@ -2,23 +2,22 @@ package uk.co.markormesher.easymaps.scannerapp.activities
 
 import android.content.*
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import uk.co.markormesher.easymaps.scannerapp.*
+import uk.co.markormesher.easymaps.scannerapp.BuildConfig
+import uk.co.markormesher.easymaps.scannerapp.R
 import uk.co.markormesher.easymaps.scannerapp.services.ScannerService
-import uk.co.markormesher.easymaps.sdk.BaseActivity
-import uk.co.markormesher.easymaps.sdk.copyToClipboard
-import uk.co.markormesher.easymaps.sdk.makeHtml
-import uk.co.markormesher.easymaps.sdk.readDeviceID
+import uk.co.markormesher.easymaps.sdk.*
 import java.io.IOException
 import java.util.*
 
@@ -30,7 +29,11 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		toggle_scanning_button.setOnClickListener { sendBroadcast(Intent(getString(R.string.intent_toggle_scan))) }
+		toggle_scanning_button.setOnClickListener {
+			if (checkSettings()) {
+				sendBroadcast(Intent(getString(R.string.intent_toggle_scan)))
+			}
+		}
 
 		/*text1.setOnLongClickListener {
 			displaySuperUserPrompt()
@@ -49,11 +52,14 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 		registerReceiver(scanStateUpdatedReceiver, IntentFilter(getString(R.string.intent_scan_status_updated)))
 		updateStatusFromService()
+
+		checkSettings()
 	}
 
 	override fun onPause() {
 		super.onPause()
 		unregisterReceiver(scanStateUpdatedReceiver)
+		settingCheckHandler.removeCallbacks(settingCheckRunnable)
 	}
 
 	private fun checkNetwork() {
@@ -268,4 +274,43 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			create().show()
 		}
 	}
+
+	/* settings watchers */
+
+	private val settingCheckHandler = Handler(Looper.getMainLooper())
+	private val settingCheckRunnable = Runnable { checkSettings() }
+
+	private fun checkSettings(): Boolean {
+		var result = true
+
+		if (!deviceLocationEnabled()) {
+			setting_warning.text = getString(R.string.setting_warning_location)
+			setting_warning_note.text = getString(R.string.setting_warning_location_note)
+			setting_warning_note.visibility = View.VISIBLE
+			setting_warning_button.setOnClickListener { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
+
+			setting_warning_button_wrapper.visibility = View.VISIBLE
+			toggle_scanning_button_wrapper.visibility = View.GONE
+			result = false
+
+		} else if (!deviceWifiScanningEnabled()) {
+			setting_warning.text = getString(R.string.setting_warning_wifi)
+			setting_warning_note.visibility = View.GONE
+			setting_warning_button.setOnClickListener { startActivity(Intent(Settings.ACTION_WIFI_SETTINGS)) }
+
+			setting_warning_button_wrapper.visibility = View.VISIBLE
+			toggle_scanning_button_wrapper.visibility = View.GONE
+			result = false
+
+		} else {
+			setting_warning_button_wrapper.visibility = View.GONE
+			toggle_scanning_button_wrapper.visibility = View.VISIBLE
+		}
+
+		settingCheckHandler.removeCallbacks(settingCheckRunnable)
+		settingCheckHandler.postDelayed(settingCheckRunnable, 5000)
+
+		return result
+	}
+
 }

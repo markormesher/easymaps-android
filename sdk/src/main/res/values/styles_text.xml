@@ -16,4 +16,9 @@
 		<item name="fontPath">fonts/Lato-Light.ttf</item>
 	</style>
 
+	<style name="Text.Error" parent="Text">
+		<item name="fontPath">fonts/Lato-Bold.ttf</item>
+		<item name="android:textColor">@color/error_text</item>
+	</style>
+
 </resources>

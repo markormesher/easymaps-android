@@ -64,6 +64,11 @@
 	<string name="scan_toggle_start">Start Scanning</string>
 	<string name="scan_toggle_stop">Stop Scanning</string>
 
+	<string name="setting_warning_wifi">Error: your WiFi is disabled!</string>
+	<string name="setting_warning_location">Error: location services are disabled!</string>
+	<string name="setting_warning_location_note">Note: this app never records your location, but location services need to be enabled for it to access low-level WiFi information.</string>
+	<string name="setting_warning_button">Tap to enable</string>
+
 	<string name="scanning_notification_title">EasyMaps Scanner is running</string>
 	<string name="scanning_notification_message">%1$,d data point%2$s this session</string>
 	<string name="uploading_notification_title">Uploading EasyMaps scan logs</string>
