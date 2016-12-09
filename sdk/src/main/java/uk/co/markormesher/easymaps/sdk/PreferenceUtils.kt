@@ -14,3 +14,6 @@ fun Context.setBooleanPref(key: String, value: Boolean) = getPrefsEditor(this).p
 
 fun Context.getLongPref(key: String, default: Long = -1) : Long = getPrefs(this).getLong(key, default)
 fun Context.setLongPref(key: String, value: Long) = getPrefsEditor(this).putLong(key, value).apply()
+
+fun Context.getIntPref(key: String, default: Int = -1) : Int = getPrefs(this).getInt(key, default)
+fun Context.setIntPref(key: String, value: Int) = getPrefsEditor(this).putInt(key, value).apply()
