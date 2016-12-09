@@ -87,7 +87,7 @@
 
 	<string name="menu_option_scan_interval">Change Scan Interval</string>
 	<string name="change_scan_interval_title">Change Scan Interval</string>
-	<string name="change_scan_interval_body">The interval you choose below tell the app approximately how often to read nearby WiFi networks. A lower number means more data points, but slightly higher battery usage.</string>
+	<string name="change_scan_interval_body">The interval you choose below tells the app approximately how often to scan nearby WiFi networks. A lower number means more data points, but slightly higher battery usage.</string>
 
 	<string name="menu_option_withdraw_data">Withdraw Data</string>
 	<string name="withdraw_data_confirm_title">Withdraw Your Data?</string>
