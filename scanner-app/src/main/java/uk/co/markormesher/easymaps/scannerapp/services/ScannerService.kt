@@ -74,7 +74,7 @@ class ScannerService : Service() {
 		if (running) return
 		running = true
 		sessionDataPoints = 0L
-		WifiScanner.start(this, if (isHighFrequencyMode()) HIGH_FREQ_SCAN_INTERVAL else SCAN_INTERVAL)
+		WifiScanner.start(this, SCAN_INTERVALS[getScanIntervalOption()] * 1000L)
 		stateUpdated()
 	}
 

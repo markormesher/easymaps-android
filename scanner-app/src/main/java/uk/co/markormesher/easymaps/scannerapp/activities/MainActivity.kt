@@ -97,20 +97,14 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		} else {
 			val messages = ArrayList<String>()
 
-			if (isSuperUser()) {
-				messages.add(getString(R.string.su_enabled))
-				if (isHighFrequencyMode()) {
-					messages.add(getString(R.string.scan_status_high_freq_enabled))
-				} else {
-					messages.add(getString(R.string.scan_status_high_freq_disabled))
-				}
-			}
+			if (isSuperUser()) messages.add(getString(R.string.su_enabled))
 
 			val lifetimeDataPoints = scannerService!!.lifetimeDataPoints
 			val sessionDataPoints = scannerService!!.sessionDataPoints
 
 			if (scannerService!!.running) {
 				messages.add(getString(R.string.scan_status_running))
+				messages.add(getString(R.string.scan_status_interval, SCAN_INTERVALS[getScanIntervalOption()]))
 				messages.add(getString(R.string.session_data_points_count, sessionDataPoints))
 			} else {
 				messages.add(getString(R.string.scan_status_stopped))
@@ -159,10 +153,10 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			R.id.debug_report -> createDebugReport()
 			R.id.contact -> startContact()
 			R.id.withdraw -> startWithdrawal()
-			R.id.high_freq -> {
-				setIsHighFrequencyMode(!isHighFrequencyMode())
-				updateStatusFromService()
-			}
+//			R.id.high_freq -> {
+//				setIsHighFrequencyMode(!isHighFrequencyMode())
+//				updateStatusFromService()
+//			}
 			R.id.change_network -> startNetworkChange()
 		}
 		return super.onOptionsItemSelected(item)
@@ -187,8 +181,8 @@ class MainActivity: BaseActivity(), ServiceConnection {
 				"App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
 				"Debug build: ${BuildConfig.DEBUG_MODE}\n" +
 				"Network: ${getNetwork()}\n" +
+				"Scan interval: ${SCAN_INTERVALS[getScanIntervalOption()]}\n" +
 				"Super user: ${isSuperUser()}\n" +
-				"High-frequency: ${isHighFrequencyMode()}\n" +
 				"Files to upload: ${getClosedScanResultsFiles().size}\n" +
 				"Last upload: ${getLastUploadTime()}\n" +
 				"Last check: ${getLastUploadCheckTime()}"

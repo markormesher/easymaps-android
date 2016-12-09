@@ -19,11 +19,6 @@
 		app:showAsAction="never"/>
 
 	<item
-		android:id="@+id/high_freq"
-		android:title="@string/menu_option_high_freq"
-		app:showAsAction="never"/>
-
-	<item
 		android:id="@+id/change_network"
 		android:title="@string/menu_option_change_network"
 		app:showAsAction="never"/>

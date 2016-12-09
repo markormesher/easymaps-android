@@ -50,12 +50,13 @@
 		If anything went wrong, tap \'Send Bug Report\' in the menu and I\'ll get it fixed!
 	]]></string>
 
-	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924</string>
+	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924.</string>
 
 	<string name="scan_status_title">Scanner status</string>
 	<string name="scan_status_unknown">Waiting for scanner service…</string>
 	<string name="scan_status_running">The scanner is running</string>
 	<string name="scan_status_stopped">The scanner is not running</string>
+	<string name="scan_status_interval">Scan interval: %ds</string>
 	<string name="session_data_points_count">Data points this session: %,d</string>
 	<string name="lifetime_data_points_count">Data points since installing: %,d</string>
 
@@ -99,10 +100,6 @@
 	<string name="su_prompt_title">Super User Mode</string>
 	<string name="su_prompt_body">Enter the PIN below to enable super user mode:</string>
 	<string name="su_enabled">You are in super user mode</string>
-
-	<string name="menu_option_high_freq">Toggle High-Frequency Mode</string>
-	<string name="scan_status_high_freq_enabled">High frequency mode is enabled</string>
-	<string name="scan_status_high_freq_disabled">High frequency mode is disabled</string>
 
 	<string name="menu_option_change_network">Change Network</string>
 	<string name="change_network_title">Change Network</string>
