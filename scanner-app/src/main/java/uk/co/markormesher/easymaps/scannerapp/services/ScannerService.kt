@@ -16,9 +16,7 @@ import uk.co.markormesher.easymaps.sdk.WifiScanner
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.setLongPref
 
-// TODO: kill service after a long period of scanning
-
-class ScannerService : Service() {
+class ScannerService: Service() {
 
 	private val localBinder by lazy { LocalBinder() }
 
@@ -52,11 +50,11 @@ class ScannerService : Service() {
 
 	override fun onBind(intent: Intent?): IBinder = localBinder
 
-	inner class LocalBinder : Binder() {
+	inner class LocalBinder: Binder() {
 		fun getScannerService(): ScannerService = this@ScannerService
 	}
 
-	private val toggleScanReceiver = object : BroadcastReceiver() {
+	private val toggleScanReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			toggle()
 		}
@@ -74,11 +72,12 @@ class ScannerService : Service() {
 		if (running) return
 		running = true
 		sessionDataPoints = 0L
-		WifiScanner.start(this, getScanInterval() * 1000L)
+		WifiScanner.intervalGetter = { getScanInterval() * 1000L }
+		WifiScanner.start(this)
 		stateUpdated()
 	}
 
-	private val stopScanReceiver = object : BroadcastReceiver() {
+	private val stopScanReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			stop()
 		}
@@ -92,7 +91,7 @@ class ScannerService : Service() {
 		stateUpdated()
 	}
 
-	private val scanResultReceiver = object : BroadcastReceiver() {
+	private val scanResultReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			if (!running) return
 			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains(SSID_FILTER, true) }
