@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.NumberPicker
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
@@ -104,14 +105,14 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 			if (scannerService!!.running) {
 				messages.add(getString(R.string.scan_status_running))
-				messages.add(getString(R.string.scan_status_interval, SCAN_INTERVALS[getScanIntervalOption()]))
 				messages.add(getString(R.string.session_data_points_count, sessionDataPoints))
 			} else {
 				messages.add(getString(R.string.scan_status_stopped))
 			}
 
 			messages.add(getString(R.string.lifetime_data_points_count, lifetimeDataPoints))
-			messages.add(getString(R.string.scan_status_network, getNetwork()))
+			messages.add(getString(R.string.scan_status_interval, getScanInterval()))
+			if (isSuperUser()) messages.add(getString(R.string.scan_status_network, getNetwork()))
 
 			status_message.text = messages.joinToString("\n")
 		}
@@ -152,12 +153,9 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			R.id.user_id -> displayUserId()
 			R.id.debug_report -> createDebugReport()
 			R.id.contact -> startContact()
+			R.id.scan_interval -> changeScanInterval()
 			R.id.withdraw -> startWithdrawal()
-//			R.id.high_freq -> {
-//				setIsHighFrequencyMode(!isHighFrequencyMode())
-//				updateStatusFromService()
-//			}
-			R.id.change_network -> startNetworkChange()
+			R.id.change_network -> changeNetwork()
 		}
 		return super.onOptionsItemSelected(item)
 	}
@@ -181,7 +179,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 				"App version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
 				"Debug build: ${BuildConfig.DEBUG_MODE}\n" +
 				"Network: ${getNetwork()}\n" +
-				"Scan interval: ${SCAN_INTERVALS[getScanIntervalOption()]}\n" +
+				"Scan interval: ${getScanInterval()}\n" +
 				"Super user: ${isSuperUser()}\n" +
 				"Files to upload: ${getClosedScanResultsFiles().size}\n" +
 				"Last upload: ${getLastUploadTime()}\n" +
@@ -207,6 +205,31 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
 		emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.contact_text, getDebugMessage()))
 		startActivity(Intent.createChooser(emailIntent, getString(R.string.contact_chooser_title)))
+	}
+
+	private fun changeScanInterval() {
+		val numberPicker = NumberPicker(this)
+		with(numberPicker) {
+			minValue = MIN_SCAN_INTERVAL
+			maxValue = MAX_SCAN_INTERVAL
+			value = getScanInterval()
+			wrapSelectorWheel = false
+			displayedValues = (MIN_SCAN_INTERVAL..MAX_SCAN_INTERVAL).map({ i -> "$i seconds" }).toTypedArray()
+			descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+		}
+
+		val alertBuilder = AlertDialog.Builder(this)
+		with(alertBuilder) {
+			setTitle(R.string.change_scan_interval_title)
+			setMessage(R.string.change_scan_interval_body)
+			setView(numberPicker)
+			setCancelable(true)
+			setPositiveButton(R.string.ok, { p0, p1 ->
+				setScanInterval(numberPicker.value)
+				updateStatusFromService()
+			})
+			create().show()
+		}
 	}
 
 	private fun startWithdrawal() {
@@ -237,7 +260,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		}
 	}
 
-	private fun startNetworkChange() {
+	private fun changeNetwork() {
 		if (scannerService?.running ?: false) {
 			Toast.makeText(this, R.string.change_network_error_scanner_running, Toast.LENGTH_SHORT).show()
 			return

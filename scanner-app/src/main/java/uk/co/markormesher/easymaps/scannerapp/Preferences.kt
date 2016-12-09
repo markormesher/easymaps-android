@@ -21,9 +21,9 @@ fun Context.setIsSuperUser(enabled: Boolean) = setBooleanPref(PREF_SUPER_USER, e
 
 fun Context.isSuperUser() = getBooleanPref(PREF_SUPER_USER, false)
 
-fun Context.setScanIntervalOption(intervalOption: Int) = setIntPref(PREF_SCAN_INTERVAL, intervalOption)
+fun Context.setScanInterval(interval: Int) = setIntPref(PREF_SCAN_INTERVAL, interval)
 
-fun Context.getScanIntervalOption() = getIntPref(PREF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_OPTION)
+fun Context.getScanInterval() = getIntPref(PREF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
 fun Context.setNetwork(network: String) = setStringPref(PREF_NETWORK, network)
 
