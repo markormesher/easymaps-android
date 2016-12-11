@@ -2,37 +2,31 @@ package uk.co.markormesher.easymaps.scannerapp.services
 
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
-import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import uk.co.markormesher.easymaps.scannerapp.*
+import uk.co.markormesher.easymaps.scannerapp.R
+import uk.co.markormesher.easymaps.scannerapp.SSID_FILTER
 import uk.co.markormesher.easymaps.scannerapp.activities.EntryActivity
-import uk.co.markormesher.easymaps.sdk.WifiScanner
+import uk.co.markormesher.easymaps.scannerapp.getScanInterval
+import uk.co.markormesher.easymaps.scannerapp.writeScanResultsToFile
+import uk.co.markormesher.easymaps.sdk.WifiScanResult
+import uk.co.markormesher.easymaps.sdk.WifiScannerService
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.setLongPref
 
-class ScannerService: Service() {
-
-	private val localBinder by lazy { LocalBinder() }
-
-	var running = false
-	var lifetimeDataPoints = 0L
-	var sessionDataPoints = 0L
-	private val LIFETIME_COUNT_KEY = "lifetime_data_points"
+class ScannerService: WifiScannerService() {
 
 	override fun onCreate() {
 		super.onCreate()
 
-		lifetimeDataPoints = getLongPref(LIFETIME_COUNT_KEY, 0)
+		initResults()
 
 		registerReceiver(toggleScanReceiver, IntentFilter(getString(R.string.intent_toggle_scan)))
 		registerReceiver(stopScanReceiver, IntentFilter(getString(R.string.intent_stop_scan)))
-		registerReceiver(scanResultReceiver, IntentFilter(WifiScanner.INTENT_SCAN_RESULTS_UPDATED))
 	}
 
 	override fun onDestroy() {
@@ -40,18 +34,6 @@ class ScannerService: Service() {
 
 		unregisterReceiver(toggleScanReceiver)
 		unregisterReceiver(stopScanReceiver)
-		unregisterReceiver(scanResultReceiver)
-	}
-
-	override fun onTaskRemoved(rootIntent: Intent?) {
-		super.onTaskRemoved(rootIntent)
-		if (!running) stopSelf()
-	}
-
-	override fun onBind(intent: Intent?): IBinder = localBinder
-
-	inner class LocalBinder: Binder() {
-		fun getScannerService(): ScannerService = this@ScannerService
 	}
 
 	private val toggleScanReceiver = object: BroadcastReceiver() {
@@ -60,53 +42,50 @@ class ScannerService: Service() {
 		}
 	}
 
-	fun toggle() {
-		if (running) {
-			stop()
-		} else {
-			start()
-		}
-	}
-
-	private fun start() {
-		if (running) return
-		running = true
-		sessionDataPoints = 0L
-		WifiScanner.intervalGetter = { getScanInterval() * 1000L }
-		WifiScanner.start(this)
-		stateUpdated()
-	}
-
 	private val stopScanReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			stop()
 		}
 	}
 
-	private fun stop() {
+	private val localBinder by lazy { LocalBinder() }
+
+	inner class LocalBinder: Binder() {
+		fun getScannerService() = this@ScannerService
+	}
+
+	override fun getLocalBinder(): Binder = localBinder
+
+	/* scan results */
+
+	private val LIFETIME_COUNT_KEY = "lifetime_data_points"
+	var lifetimeDataPoints = 0L
+	var sessionDataPoints = 0L
+
+	override val scanInterval: Int
+		get() = getScanInterval()
+
+	fun initResults() {
+		lifetimeDataPoints = getLongPref(LIFETIME_COUNT_KEY, 0)
+	}
+
+	override fun onNewScanResults(results: Set<WifiScanResult>) {
 		if (!running) return
-		running = false
-		WifiScanner.stop(this)
-		closeScanResultsFile()
+
+		val filteredResults = results.filter { it.ssid.contains(SSID_FILTER, true) }
+		lifetimeDataPoints += filteredResults.size
+		sessionDataPoints += filteredResults.size
+		writeScanResultsToFile(filteredResults)
 		stateUpdated()
 	}
 
-	private val scanResultReceiver = object: BroadcastReceiver() {
-		override fun onReceive(context: Context?, intent: Intent?) {
-			if (!running) return
-			val latestResults = WifiScanner.scanResults.filter { it.ssid.contains(SSID_FILTER, true) }
-			lifetimeDataPoints += latestResults.size
-			sessionDataPoints += latestResults.size
-			writeScanResultsToFile(latestResults)
-			stateUpdated()
-		}
-	}
-
-	private fun stateUpdated() {
+	override fun stateUpdated() {
 		setLongPref(LIFETIME_COUNT_KEY, lifetimeDataPoints)
 		updateNotification()
-		sendStateUpdatedBroadcast()
+		sendBroadcast(Intent(getString(R.string.intent_scan_status_updated)))
 	}
+
+	/* notification */
 
 	private val NOTIFICATION_ID = 15995
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
@@ -131,10 +110,6 @@ class ScannerService: Service() {
 			stopForeground(true)
 			notificationManager.cancel(NOTIFICATION_ID)
 		}
-	}
-
-	private fun sendStateUpdatedBroadcast() {
-		sendBroadcast(Intent(getString(R.string.intent_scan_status_updated)))
 	}
 
 }

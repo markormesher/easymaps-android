@@ -27,8 +27,6 @@ fun Context.writeScanResultsToFile(results: List<WifiScanResult>) {
 	appendToActiveFile(sb.toString())
 }
 
-fun Context.closeScanResultsFile() = createNewActiveFile()
-
 fun Context.getClosedScanResultsFiles(): List<File> {
 	val output = ArrayList<File>()
 	getActiveFile().parentFile.listFiles()

@@ -11,7 +11,7 @@ fun Context.makeHtml(source: Int, vararg formatArgs: Any?): Spanned {
 	return makeHtml(getString(source, *formatArgs))
 }
 
-fun Context.makeHtml(html: String): Spanned {
+fun makeHtml(html: String): Spanned {
 	if (Build.VERSION.SDK_INT < 24) {
 		@Suppress("DEPRECATION")
 		return Html.fromHtml(html)
