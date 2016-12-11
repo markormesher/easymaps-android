@@ -50,12 +50,13 @@
 		If anything went wrong, tap \'Send Bug Report\' in the menu and I\'ll get it fixed!
 	]]></string>
 
-	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924</string>
+	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924.</string>
 
 	<string name="scan_status_title_running">Scanner status: running</string>
 	<string name="scan_status_title_not_running">Scanner status: not running</string>
 	<string name="scan_status_title_unknown">Scanner status: unknown</string>
 	<string name="scan_status_title_unknown_comment">Try closing the app and opening it again</string>
+	<string name="scan_status_interval">Scan interval: %d seconds</string>
 	<string name="session_data_points_count">Data points this session: %,d</string>
 	<string name="lifetime_data_points_count">Data points since installing: %,d</string>
 
@@ -84,6 +85,10 @@
 	<string name="contact_chooser_title">Contact Mark</string>
 	<string name="contact_text">Please feel free to send me questions, bug reports, suggestions, general comments, etc.\n\n---\n%s</string>
 
+	<string name="menu_option_scan_interval">Change Scan Interval</string>
+	<string name="change_scan_interval_title">Change Scan Interval</string>
+	<string name="change_scan_interval_body">The interval you choose below tells the app approximately how often to scan nearby WiFi networks. A lower number means more data points, but slightly higher battery usage.</string>
+
 	<string name="menu_option_withdraw_data">Withdraw Data</string>
 	<string name="withdraw_data_confirm_title">Withdraw Your Data?</string>
 	<string name="withdraw_data_confirm_body"><![CDATA[
@@ -99,10 +104,6 @@
 	<string name="su_prompt_title">Super User Mode</string>
 	<string name="su_prompt_body">Enter the PIN below to enable super user mode:</string>
 	<string name="su_enabled">You are in super user mode</string>
-
-	<string name="menu_option_high_freq">Toggle High-Frequency Mode</string>
-	<string name="scan_status_high_freq_enabled">High frequency mode is enabled</string>
-	<string name="scan_status_high_freq_disabled">High frequency mode is disabled</string>
 
 	<string name="menu_option_change_network">Change Network</string>
 	<string name="change_network_title">Change Network</string>
