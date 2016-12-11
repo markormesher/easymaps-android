@@ -44,8 +44,7 @@ abstract class WifiScannerService: Service() {
 		wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
 		registerReceiver(scanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
 
-		scheduleNextScan()
-
+		scheduleNextScan(true)
 		stateUpdated()
 	}
 
@@ -61,7 +60,6 @@ abstract class WifiScannerService: Service() {
 		wifiManager = null
 
 		clearScheduling()
-
 		stateUpdated()
 	}
 
@@ -92,9 +90,15 @@ abstract class WifiScannerService: Service() {
 
 	open val scanInterval = 20
 
-	private fun scheduleNextScan() {
+	private fun scheduleNextScan(immediate: Boolean = false) {
 		clearScheduling()
-		if (running) handler.postDelayed(rescanRunnable, scanInterval * 1000L)
+		if (!running) return
+
+		if (immediate) {
+			handler.post(rescanRunnable)
+		} else {
+			handler.postDelayed(rescanRunnable, scanInterval * 1000L)
+		}
 	}
 
 	private fun clearScheduling() {

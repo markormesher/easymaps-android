@@ -8,9 +8,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
-import uk.co.markormesher.easymaps.scannerapp.*
+import uk.co.markormesher.easymaps.scannerapp.R
+import uk.co.markormesher.easymaps.scannerapp.SSID_FILTER
 import uk.co.markormesher.easymaps.scannerapp.activities.EntryActivity
+import uk.co.markormesher.easymaps.scannerapp.getScanInterval
+import uk.co.markormesher.easymaps.scannerapp.writeScanResultsToFile
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 import uk.co.markormesher.easymaps.sdk.getLongPref
@@ -68,8 +70,6 @@ class ScannerService: WifiScannerService() {
 	}
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
-		Log.d(LOG_TAG, "Got ${results.size} results")
-
 		if (!running) return
 
 		val filteredResults = results.filter { it.ssid.contains(SSID_FILTER, true) }
