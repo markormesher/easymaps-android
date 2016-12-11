@@ -9,7 +9,6 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import okhttp3.*
 import uk.co.markormesher.easymaps.scannerapp.*
 import uk.co.markormesher.easymaps.sdk.readDeviceID
@@ -22,7 +21,7 @@ fun Context.setupAlarmForBackgroundUploaderService() {
 	alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, UPLOAD_INTERVAL, UPLOAD_INTERVAL, pendingIntent)
 }
 
-class BackgroundUploaderService : Service() {
+class BackgroundUploaderService: Service() {
 
 	private var filesToUpload: List<File>? = null
 	private var filesFinished = 0
@@ -39,17 +38,12 @@ class BackgroundUploaderService : Service() {
 		val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 		val activeNetworkInfo = connManager.activeNetworkInfo
 		val connected = activeNetworkInfo?.isConnectedOrConnecting ?: false
-		if (!connected) {
-			Log.d(LOG_TAG, "No connection - aborting file upload")
-			return finishUploadingFiles()
-		} else if (activeNetworkInfo?.type != ConnectivityManager.TYPE_WIFI) {
-			Log.d(LOG_TAG, "Connected, but not WiFi - aborting file upload")
+		if (!connected || activeNetworkInfo?.type != ConnectivityManager.TYPE_WIFI) {
 			return finishUploadingFiles()
 		}
 
 		// check whether there's any work to do
 		filesToUpload = getClosedScanResultsFiles()
-		Log.d(LOG_TAG, "${filesToUpload?.size} file(s) to upload!")
 		if (filesToUpload?.isNotEmpty() ?: false) {
 			startUploadingFiles()
 		} else {
@@ -72,7 +66,7 @@ class BackgroundUploaderService : Service() {
 				.addFormDataPart("file", file.name, RequestBody.create(MediaType.parse("text/plain"), file))
 				.build()
 		val request = Request.Builder().url(UPLOAD_URL).post(requestBody).build()
-		OkHttpClient().newCall(request).enqueue(object : Callback {
+		OkHttpClient().newCall(request).enqueue(object: Callback {
 			override fun onFailure(call: Call?, e: IOException?) = uploadNextFile(index)
 
 			override fun onResponse(call: Call?, response: Response?) {

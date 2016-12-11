@@ -49,8 +49,5 @@ private fun Activity.doRequestPermissionList(permissions: Array<String>) {
 fun checkPermissionRequestResult(requestCode: Int, grantResults: IntArray): Boolean {
 	if (requestCode != PERMISSION_REQUEST_CODE) return false
 	if (grantResults.isEmpty()) return false
-	for (result in grantResults) {
-		if (result != PackageManager.PERMISSION_GRANTED) return false
-	}
-	return true
+	return grantResults.none { it != PackageManager.PERMISSION_GRANTED }
 }
