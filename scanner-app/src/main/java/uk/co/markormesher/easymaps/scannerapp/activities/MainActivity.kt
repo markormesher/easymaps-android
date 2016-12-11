@@ -93,7 +93,8 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		toggle_scanning_button.text = getString(if (scannerService?.running ?: false) R.string.scan_toggle_stop else R.string.scan_toggle_start)
 
 		if (scannerService == null) {
-			status_message.text = makeHtml(R.string.scan_status_unknown)
+			status_title.text = getString(R.string.scan_status_title_unknown)
+			status_message.text = getString(R.string.scan_status_title_unknown_comment)
 		} else {
 			val messages = ArrayList<String>()
 
@@ -110,15 +111,17 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			val sessionDataPoints = scannerService!!.sessionDataPoints
 
 			if (scannerService!!.running) {
-				messages.add(getString(R.string.scan_status_running))
 				messages.add(getString(R.string.session_data_points_count, sessionDataPoints))
-			} else {
-				messages.add(getString(R.string.scan_status_stopped))
 			}
 
 			messages.add(getString(R.string.lifetime_data_points_count, lifetimeDataPoints))
 			messages.add(getString(R.string.scan_status_network, getNetwork()))
 
+			if (scannerService!!.running) {
+				status_title.text = getString(R.string.scan_status_title_running)
+			} else {
+				status_title.text = getString(R.string.scan_status_title_not_running)
+			}
 			status_message.text = messages.joinToString("\n")
 		}
 	}

@@ -73,10 +73,10 @@
 				android:background="@color/divider"/>
 
 		<TextView
+				android:id="@+id/status_title"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:textStyle="bold"
-				android:text="@string/scan_status_title"
 				style="@style/Text.SubHeading"/>
 
 		<TextView
@@ -84,7 +84,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/space_small"
-				android:text="@string/scan_status_unknown"
+				android:text="@string/scan_status_title_unknown"
 				style="@style/Text"/>
 
 		<View

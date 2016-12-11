@@ -52,10 +52,10 @@
 
 	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924</string>
 
-	<string name="scan_status_title">Scanner status</string>
-	<string name="scan_status_unknown">Waiting for scanner service…</string>
-	<string name="scan_status_running">The scanner is running</string>
-	<string name="scan_status_stopped">The scanner is not running</string>
+	<string name="scan_status_title_running">Scanner status: running</string>
+	<string name="scan_status_title_not_running">Scanner status: not running</string>
+	<string name="scan_status_title_unknown">Scanner status: unknown</string>
+	<string name="scan_status_title_unknown_comment">Try closing the app and opening it again</string>
 	<string name="session_data_points_count">Data points this session: %,d</string>
 	<string name="lifetime_data_points_count">Data points since installing: %,d</string>
 
