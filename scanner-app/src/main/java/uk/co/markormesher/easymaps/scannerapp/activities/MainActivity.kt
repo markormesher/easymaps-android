@@ -55,6 +55,8 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		updateStatusFromService()
 
 		checkSettings()
+
+		displayChangelogIfRequired()
 	}
 
 	override fun onPause() {
@@ -331,6 +333,26 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		settingCheckHandler.postDelayed(settingCheckRunnable, 5000)
 
 		return result
+	}
+
+	/* changelog */
+
+	private fun displayChangelogIfRequired() {
+		val lastVersionDisplayed = getLastDisplayedChangelog()
+		val currentVersion = resources.getInteger(R.integer.changelog_version)
+
+		if (lastVersionDisplayed < currentVersion) {
+			setLastDisplayedChangelog(currentVersion)
+
+			val alertBuilder = AlertDialog.Builder(this)
+			with(alertBuilder) {
+				setTitle(R.string.changelog_title)
+				setMessage(makeHtml(R.string.changelog_body))
+				setCancelable(true)
+				setPositiveButton(R.string.ok, null)
+				create().show()
+			}
+		}
 	}
 
 }

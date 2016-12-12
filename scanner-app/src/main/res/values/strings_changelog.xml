@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<integer name="changelog_version">2</integer>
+
+	<string name="changelog_title">Change Log</string>
+	<string name="changelog_body"><![CDATA[
+<strong>v1.2.1</strong><br />
+- Updated fonts.<br />
+
+<br />
+<strong>v1.2.0</strong><br />
+- Added artwork for icons.<br />
+- Switched to release API.<br />
+- Debug report option enabled.<br />
+
+<br />
+<strong>v1.0.0</strong><br />
+- Pre-release version.
+	]]></string>
+
+</resources>
