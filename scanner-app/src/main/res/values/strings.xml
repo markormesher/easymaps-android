@@ -7,28 +7,66 @@
 
 	<string name="app_name">EasyMaps Scanner</string>
 
-	<string name="intro_text"><![CDATA[
-		<strong>Thank you!</strong> By using this app you\'re collecting data that will be used to build an intelligent, totally offline mapper for the London Underground.
-	]]></string>
-	<string name="intro_usage_text"><![CDATA[
-		<strong>How does it work?</strong> Just use the button at the top to enable scanning whenever you\'re travelling on the London Underground network, and disable it when you finish your journey; the scanner will run in the background, so you don\'t need to keep the app open.
-	]]></string>
-	<string name="intro_collection_text"><![CDATA[
-		<strong>What data is collected?</strong> This app records a unique, anonymous ID for your device, and every 20-30 seconds whilst it\'s enabled it checks which WiFi networks are visible. That\'s it - no personal data, no location data, nothing that can identify you, etc.
-	]]></string>
-	<string name="intro_ps_text"><![CDATA[
-		PS. Don\'t worry if you forget to turn the scanner on before you start travelling! You can turn it on and off at any point, above ground or below.
+	<string name="thanks_title">Thank You - You\'re Amazing!</string>
+	<string name="thanks_body"><![CDATA[
+		Seriously, thank you so much for using this app and helping this project.
+		What I\'m building is pretty ambitious, and it will only work if I can collect lots of real-world data.
+		Without you this project would be going nowhere, so I mean it when I say \'thank you\'!
 	]]></string>
 
-	<string name="scan_status_title">Scanner status</string>
-	<string name="scan_status_unknown">Waiting for scanner service…</string>
-	<string name="scan_status_running">The scanner is running</string>
-	<string name="scan_status_stopped">The scanner is not running</string>
+	<string name="prizes_title">Prizes</string>
+	<string name="prizes_body"><![CDATA[
+		Three volunteers will win a £20 Amazon voucher at the end of this project, and the more you scan, the better your odds!
+		Full details: http://easymaps.markormesher.co.uk.
+	]]></string>
+
+	<string name="instructions_title">Instructions</string>
+	<string name="instructions_body_1"><![CDATA[
+		Tap the button at the top to start scanning whenever you\'re travelling on the London Underground; tap again to disable it when you finish your journey.
+		The scanner will run in the background, so you don\'t need to keep the app open.
+	]]></string>
+	<string name="instructions_body_2"><![CDATA[
+		Don\'t worry if you forget to turn the scanner on before you start travelling!
+		You can turn it on and off at any point, above ground or below.
+	]]></string>
+
+	<string name="data_collection_title">Data Collection</string>
+	<string name="data_collection_body"><![CDATA[
+		When scanning is enabled, the app will record the IDs of WiFi networks visible to your device.
+		This app also records an anonymous ID for your device, which cannot be traced back to you.
+		That\'s all it collects - no location data, no personal data, and nothing that can identify you.
+		You can check your ID by tapping \'Display User ID\' in the app menu.
+	]]></string>
+
+	<string name="withdrawal_title">Withdrawal</string>
+	<string name="withdrawal_body"><![CDATA[
+		If you want to stop taking part in this project, all you need to do is stop using the app (you can uninstall it too, if you want to).
+		If you also want to withdraw the data that you\'ve generated so far, you can do so from the app menu.
+	]]></string>
+
+	<string name="contact_title">Contact Details</string>
+	<string name="contact_body"><![CDATA[
+		You can contact me easily so from the app menu - just tap \'Contact Mark\'.
+		If anything went wrong, tap \'Send Bug Report\' in the menu and I\'ll get it fixed!
+	]]></string>
+
+	<string name="ethics_ref">King\'s College London University Research Ethics Committee Reference: LRU–16/17–3924.</string>
+
+	<string name="scan_status_title_running">Scanner status: running</string>
+	<string name="scan_status_title_not_running">Scanner status: not running</string>
+	<string name="scan_status_title_unknown">Scanner status: unknown</string>
+	<string name="scan_status_title_unknown_comment">Try closing the app and opening it again</string>
+	<string name="scan_status_interval">Scan interval: %d seconds</string>
 	<string name="session_data_points_count">Data points this session: %,d</string>
 	<string name="lifetime_data_points_count">Data points since installing: %,d</string>
 
 	<string name="scan_toggle_start">Start Scanning</string>
 	<string name="scan_toggle_stop">Stop Scanning</string>
+
+	<string name="setting_warning_wifi">Error: your WiFi is disabled!</string>
+	<string name="setting_warning_location">Error: location services are disabled!</string>
+	<string name="setting_warning_location_note">Note: location services are required for access to low-level WiFi information; location is never recorded.</string>
+	<string name="setting_warning_button">Tap to enable</string>
 
 	<string name="scanning_notification_title">EasyMaps Scanner is running</string>
 	<string name="scanning_notification_message">%1$,d data point%2$s this session</string>
@@ -36,23 +74,36 @@
 
 	<string name="menu_option_user_id">Display User ID</string>
 	<string name="user_id_title">Your User ID</string>
-	<string name="user_id_copied">Your user ID was also copied to your clipboard</string>
+	<string name="user_id_copied">Your user ID was copied to your clipboard</string>
 
-	<string name="menu_option_debug_report">Display Debug Report</string>
-	<string name="debug_report_title">Debug Report</string>
-	<string name="debug_report_copied">The report was also copied to your clipboard</string>
+	<string name="menu_option_debug_report">Send Debug Report</string>
+	<string name="debug_report_title">EasyMaps Scanner Debug Report</string>
+	<string name="debug_report_chooser_title">Send to Mark</string>
+	<string name="debug_report_copied">The report was copied to your clipboard</string>
 
 	<string name="menu_option_contact">Contact Mark</string>
 	<string name="contact_chooser_title">Contact Mark</string>
 	<string name="contact_text">Please feel free to send me questions, bug reports, suggestions, general comments, etc.\n\n---\n%s</string>
 
+	<string name="menu_option_scan_interval">Change Scan Interval</string>
+	<string name="change_scan_interval_title">Change Scan Interval</string>
+	<string name="change_scan_interval_body">The interval you choose below tells the app approximately how often to scan nearby WiFi networks. A lower number means more data points, but slightly higher battery usage.</string>
+
+	<string name="menu_option_withdraw_data">Withdraw Data</string>
+	<string name="withdraw_data_confirm_title">Withdraw Your Data?</string>
+	<string name="withdraw_data_confirm_body"><![CDATA[
+		Your data is <strong>completely anonymous</strong> and cannot be linked to you.
+		<br /><br />
+		Tap \'Yes\' below to send your ID to the server, triggering deletion of your data within 48 hours.
+		This <strong>cannot be undone</strong>.
+		Are you sure you want to withdraw your data?
+	]]></string>
+	<string name="withdraw_success">Your data will be deleted within 48 hours.</string>
+	<string name="withdraw_failure">Sorry, that didn\'t work! Make sure you\'re online.</string>
+
 	<string name="su_prompt_title">Super User Mode</string>
 	<string name="su_prompt_body">Enter the PIN below to enable super user mode:</string>
 	<string name="su_enabled">You are in super user mode</string>
-
-	<string name="menu_option_high_freq">Toggle High-Frequency Mode</string>
-	<string name="scan_status_high_freq_enabled">High frequency mode is enabled</string>
-	<string name="scan_status_high_freq_disabled">High frequency mode is disabled</string>
 
 	<string name="menu_option_change_network">Change Network</string>
 	<string name="change_network_title">Change Network</string>

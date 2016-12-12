@@ -5,26 +5,25 @@ import uk.co.markormesher.easymaps.sdk.*
 
 private val PREF_LAST_UPLOAD = "pref.last_upload"
 private val PREF_LAST_UPLOAD_CHECK = "pref.last_upload_check"
-private val PREF_HIGH_FREQ_MODE = "pref.high_freq_mode"
+private val PREF_SCAN_INTERVAL = "pref.scan_interval"
 private val PREF_SUPER_USER = "pref.super_user"
 private val PREF_NETWORK = "pref.network"
+private val PREF_LAST_DISPLAYED_CHANGELOG = "pref.last_displayed_changelog"
 
 fun Context.setLastUploadCheckTime() = setStringPref(PREF_LAST_UPLOAD_CHECK, getDateString())
-
-fun Context.getLastUploadCheckTime() : String = getStringPref(PREF_LAST_UPLOAD_CHECK, "never")
+fun Context.getLastUploadCheckTime() = getStringPref(PREF_LAST_UPLOAD_CHECK, "never")
 
 fun Context.setLastUploadTime() = setStringPref(PREF_LAST_UPLOAD, getDateString())
-
-fun Context.getLastUploadTime() : String = getStringPref(PREF_LAST_UPLOAD, "never")
+fun Context.getLastUploadTime() = getStringPref(PREF_LAST_UPLOAD, "never")
 
 fun Context.setIsSuperUser(enabled: Boolean) = setBooleanPref(PREF_SUPER_USER, enabled)
+fun Context.isSuperUser() = getBooleanPref(PREF_SUPER_USER, false)
 
-fun Context.isSuperUser() : Boolean = getBooleanPref(PREF_SUPER_USER, false)
-
-fun Context.setIsHighFrequencyMode(enabled: Boolean) = setBooleanPref(PREF_HIGH_FREQ_MODE, enabled)
-
-fun Context.isHighFrequencyMode() : Boolean = isSuperUser() && getBooleanPref(PREF_HIGH_FREQ_MODE, false)
+fun Context.setScanInterval(interval: Int) = setIntPref(PREF_SCAN_INTERVAL, interval)
+fun Context.getScanInterval() = getIntPref(PREF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
 fun Context.setNetwork(network: String) = setStringPref(PREF_NETWORK, network)
+fun Context.getNetwork() = getStringPref(PREF_NETWORK, NO_NETWORK)
 
-fun Context.getNetwork() : String = getStringPref(PREF_NETWORK, NO_NETWORK)
+fun Context.setLastDisplayedChangelog(version: Int) = setIntPref(PREF_LAST_DISPLAYED_CHANGELOG, version)
+fun Context.getLastDisplayedChangelog() = getIntPref(PREF_LAST_DISPLAYED_CHANGELOG, -1)

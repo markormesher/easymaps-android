@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<integer name="changelog_version">5</integer>
+
+	<string name="changelog_title">Change Log</string>
+	<string name="changelog_body"><![CDATA[
+<strong>v1.3.0</strong><br />
+- <em>NEW:</em> change your scan interval to collect more data!<br />
+- <em>NEW:</em> information about prizes!<br />
+- Added warning when WiFi/location are disabled.<br />
+- Added data withdrawal option.<br />
+- Updated project information.<br />
+- Updated scan status information.<br />
+- Bug fix: background scanning stops on some devices.<br />
+
+<br />
+<strong>v1.2.1</strong><br />
+- Updated fonts.<br />
+
+<br />
+<strong>v1.2.0</strong><br />
+- Added artwork for icons.<br />
+- Switched to release API.<br />
+- Enabled debug report option.<br />
+
+<br />
+<strong>v1.0.0</strong><br />
+- Pre-release.
+	]]></string>
+
+</resources>
