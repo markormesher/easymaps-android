@@ -8,11 +8,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
-import uk.co.markormesher.easymaps.scannerapp.R
-import uk.co.markormesher.easymaps.scannerapp.SSID_FILTER
+import uk.co.markormesher.easymaps.scannerapp.*
 import uk.co.markormesher.easymaps.scannerapp.activities.EntryActivity
-import uk.co.markormesher.easymaps.scannerapp.getScanInterval
-import uk.co.markormesher.easymaps.scannerapp.writeScanResultsToFile
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 import uk.co.markormesher.easymaps.sdk.getLongPref
@@ -34,6 +31,11 @@ class ScannerService: WifiScannerService() {
 
 		unregisterReceiver(toggleScanReceiver)
 		unregisterReceiver(stopScanReceiver)
+	}
+
+	override fun stop() {
+		super.stop()
+		closeScanResultsFile()
 	}
 
 	private val toggleScanReceiver = object: BroadcastReceiver() {
