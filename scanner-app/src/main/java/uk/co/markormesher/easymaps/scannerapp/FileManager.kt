@@ -35,6 +35,8 @@ fun Context.getClosedScanResultsFiles(): List<File> {
 	return output
 }
 
+fun Context.closeScanResultsFile() = createNewActiveFile()
+
 private fun Context.getActiveFile(): File {
 	if (activeFile == null) createNewActiveFile()
 	return activeFile!!
