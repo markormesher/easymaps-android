@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import android.os.*
+import android.support.annotation.CallSuper
 import java.util.*
 
 abstract class WifiScannerService: Service() {
@@ -33,7 +34,8 @@ abstract class WifiScannerService: Service() {
 	var wifiManager: WifiManager? = null
 	var running = false
 
-	protected fun start() {
+	@CallSuper
+	open protected fun start() {
 		if (running) return
 		running = true
 
@@ -48,7 +50,8 @@ abstract class WifiScannerService: Service() {
 		stateUpdated()
 	}
 
-	protected fun stop() {
+	@CallSuper
+	open protected fun stop() {
 		if (!running) return
 		running = false
 

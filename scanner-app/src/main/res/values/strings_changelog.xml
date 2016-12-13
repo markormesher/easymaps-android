@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<integer name="changelog_version">5</integer>
+	<integer name="changelog_version">6</integer>
 
 	<string name="changelog_title">Change Log</string>
 	<string name="changelog_body"><![CDATA[
+<strong>v1.3.1</strong><br />
+- Bug fix: short logs remain open after scanning stops.<br />
+
+<br />
 <strong>v1.3.0</strong><br />
 - <em>NEW:</em> change your scan interval to collect more data!<br />
 - <em>NEW:</em> information about prizes!<br />
