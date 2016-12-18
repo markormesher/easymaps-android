@@ -33,6 +33,12 @@ class ScannerService: WifiScannerService() {
 		unregisterReceiver(stopScanReceiver)
 	}
 
+	override fun start() {
+		super.start()
+		sessionDataPoints = 0L
+		stateUpdated()
+	}
+
 	override fun stop() {
 		super.stop()
 		closeScanResultsFile()
