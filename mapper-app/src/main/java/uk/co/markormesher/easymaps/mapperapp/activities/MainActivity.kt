@@ -1,68 +1,153 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.widget.GridLayoutManager
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import uk.co.markormesher.easymaps.mapperapp.LAST_DATA_PACK_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.LAST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
 import uk.co.markormesher.easymaps.sdk.BaseActivity
+import uk.co.markormesher.easymaps.sdk.getLongPref
+import uk.co.markormesher.easymaps.sdk.makeHtml
 
-class MainActivity : BaseActivity() {
+class MainActivity: BaseActivity() {
+
+	val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
 	val locationListAdapter by lazy { LocationListAdapter(this) }
-	val searchingIconAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.searching_icon) }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		val widthInDp = resources.configuration.screenWidthDp
-		val columns = widthInDp / 110
+		// check for offline data
+		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
+		with(Handler(Looper.getMainLooper())) {
+			postDelayed({
+				if (hasOfflineData()) {
+					loadLocations()
+				} else {
+					prepareForInitialOfflineDataDownload()
+				}
+			}, 1200)
+		}
+
+		// set up location list
+		val screenWidthInDp = resources.configuration.screenWidthDp
+		val columns = screenWidthInDp / 110
 		val gridLayoutManager = GridLayoutManager(this, columns)
-		gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+		gridLayoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int = if (position == 0) columns else 1
 		}
 		location_grid.layoutManager = gridLayoutManager
 		location_grid.adapter = locationListAdapter
 
 		// sample status demo
-		setStatus(Status.LOCATION_OFF, "You have location services disabled!", "Just tap here to turn them on")
+		/*
+		updateStatusBar(StatusBarType.LOCATION_OFF, "You have location services disabled!", "Just tap here to turn them on")
 		with(Handler(Looper.getMainLooper())) {
-			postDelayed({ setStatus(Status.SEARCHING, "Looking for you...", "Hold on a sec!") }, 4000)
-			postDelayed({ setStatus(Status.LOCATION_ON, "You're at Oxford Circus", "Bakerloo, Central and Victoria lines") }, 8000)
+			postDelayed({ updateStatusBar(StatusBarType.SEARCHING, "Looking for you...", "Hold on a sec!") }, 4000)
+			postDelayed({ updateStatusBar(StatusBarType.LOCATION_ON, "You're at Oxford Circus", "Bakerloo, Central and Victoria lines") }, 8000)
 		}
+		*/
 	}
 
-	private fun setStatus(status: Status, heading: String, message: String) {
+	/*
+	private fun updateStatusBar(type: StatusBarType, heading: String, message: String) {
 		status_heading.text = heading
 		status_message.text = message
 
 		// icon
-		status_icon.setImageResource(when (status) {
-			Status.SEARCHING -> R.drawable.ic_location_searching_white_48dp
-			Status.INFO -> R.drawable.ic_info_outline_white_48dp
-			Status.LOCATION_ON -> R.drawable.ic_location_on_white_48dp
-			Status.LOCATION_OFF -> R.drawable.ic_location_off_white_48dp
+		status_icon.setImageResource(when (type) {
+			StatusBarType.SEARCHING -> R.drawable.ic_location_searching_white_48dp
+			StatusBarType.INFO -> R.drawable.ic_info_outline_white_48dp
+			StatusBarType.LOCATION_ON -> R.drawable.ic_location_on_white_48dp
+			StatusBarType.LOCATION_OFF -> R.drawable.ic_location_off_white_48dp
 			else -> R.drawable.ic_info_outline_white_48dp
 		})
 
 		// icon animation
-		if (status == Status.SEARCHING) {
-			status_icon.startAnimation(searchingIconAnimation)
+		if (type == StatusBarType.SEARCHING) {
+			status_icon.startAnimation(iconSpinAnimation)
 		} else {
 			status_icon.clearAnimation()
 		}
 	}
 
-	enum class Status {
+	enum class StatusBarType {
 		SEARCHING,
 		INFO,
 		LOCATION_ON,
 		LOCATION_OFF,
 	}
+	*/
+
+	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
+		when (type) {
+			FullPageStatusType.NONE -> {
+				location_grid.visibility = View.VISIBLE
+				full_page_status_wrapper.visibility = View.GONE
+				full_page_status_icon.clearAnimation()
+				full_page_status_message.text = ""
+			}
+
+			FullPageStatusType.WAITING -> {
+				location_grid.visibility = View.GONE
+				full_page_status_wrapper.visibility = View.VISIBLE
+				full_page_status_icon.setImageResource(R.drawable.ic_hourglass_empty_white_48dp)
+				full_page_status_icon.startAnimation(iconSpinAnimation)
+				full_page_status_message.text = message
+			}
+
+			FullPageStatusType.ERROR -> {
+				location_grid.visibility = View.GONE
+				full_page_status_wrapper.visibility = View.VISIBLE
+				full_page_status_icon.setImageResource(R.drawable.ic_info_outline_white_48dp)
+				full_page_status_icon.clearAnimation()
+				full_page_status_message.text = message
+			}
+		}
+
+	}
+
+	enum class FullPageStatusType {
+		WAITING, ERROR, NONE
+	}
+
+	private fun hasOfflineData(): Boolean {
+		return getLongPref(LAST_LABELLING_VERSION_KEY) > 0 && getLongPref(LAST_DATA_PACK_VERSION_KEY) > 0
+	}
+
+	private fun prepareForInitialOfflineDataDownload() {
+		updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.no_offline_data))
+		full_page_status_message.setOnClickListener {
+			with(AlertDialog.Builder(this)) {
+				setTitle(getString(R.string.initial_download_title))
+				setMessage(makeHtml(getString(R.string.initial_download_body)))
+				setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
+					startInitialOfflineDataDownload()
+				})
+				setNegativeButton(getString(R.string.initial_download_btn_negative), null)
+				create().show()
+			}
+		}
+	}
+
+	private fun startInitialOfflineDataDownload() {
+		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
+	}
+
+
+	private fun loadLocations() {
+
+	}
+
 }
 

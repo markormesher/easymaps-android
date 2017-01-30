@@ -5,4 +5,18 @@
 
 	<string name="select_location">Where are you going %s?</string>
 
+	<string name="checking_for_offline_data">Checking for offline data…</string>
+	<string name="waiting_for_offline_data">Waiting for offline data…</string>
+	<string name="no_offline_data">No offline data! Tap to download.</string>
+
+	<string name="initial_download_title">Offline Data</string>
+	<string name="initial_download_body"><![CDATA[
+		Before using this app for the first time, you need to let it download some data about London.
+		Once this is done, you\'ll be able to use the app offline and underground.
+		<br /><br />
+		Make sure you\'re connected to the Internet, then click \'Proceed\' below.
+	]]></string>
+	<string name="initial_download_btn_positive">Proceed</string>
+	<string name="initial_download_btn_negative">Later</string>
+
 </resources>

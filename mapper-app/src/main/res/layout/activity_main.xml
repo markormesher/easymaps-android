@@ -54,6 +54,36 @@
 
 	</LinearLayout>
 
+	<LinearLayout
+			android:id="@+id/full_page_status_wrapper"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/status_bar_wrapper"
+			android:layout_alignParentBottom="true"
+			android:paddingTop="@dimen/space_micro"
+			android:paddingBottom="@dimen/space_micro"
+			android:paddingLeft="@dimen/space_micro"
+			android:paddingRight="@dimen/space_micro"
+			android:orientation="vertical"
+			android:padding="@dimen/space_nano"
+			android:gravity="center">
+
+		<ImageView
+				android:id="@+id/full_page_status_icon"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:layout_marginBottom="@dimen/space_micro"
+				android:src="@drawable/ic_hourglass_empty_white_48dp"
+				android:tint="@color/primary_dark"/>
+
+		<TextView
+				android:id="@+id/full_page_status_message"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				style="@style/Text"/>
+
+	</LinearLayout>
+
 	<android.support.v7.widget.RecyclerView
 			android:id="@+id/location_grid"
 			android:layout_width="match_parent"
