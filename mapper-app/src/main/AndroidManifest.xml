@@ -30,6 +30,11 @@
 				android:name=".activities.MainActivity"
 				android:launchMode="singleTask"/>
 
+		<service
+				android:name=".services.DataDownloaderService"
+				android:exported="false"
+				android:enabled="true"/>
+
 	</application>
 
 </manifest>

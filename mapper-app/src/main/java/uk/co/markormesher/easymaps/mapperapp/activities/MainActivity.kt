@@ -1,6 +1,10 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +17,7 @@ import uk.co.markormesher.easymaps.mapperapp.LAST_DATA_PACK_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.LAST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
+import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.makeHtml
@@ -48,15 +53,16 @@ class MainActivity: BaseActivity() {
 		}
 		location_grid.layoutManager = gridLayoutManager
 		location_grid.adapter = locationListAdapter
+	}
 
-		// sample status demo
-		/*
-		updateStatusBar(StatusBarType.LOCATION_OFF, "You have location services disabled!", "Just tap here to turn them on")
-		with(Handler(Looper.getMainLooper())) {
-			postDelayed({ updateStatusBar(StatusBarType.SEARCHING, "Looking for you...", "Hold on a sec!") }, 4000)
-			postDelayed({ updateStatusBar(StatusBarType.LOCATION_ON, "You're at Oxford Circus", "Bakerloo, Central and Victoria lines") }, 8000)
-		}
-		*/
+	override fun onResume() {
+		super.onResume()
+		registerReceiver(offlineDataUpdatedReceiver, IntentFilter(getString(R.string.intent_offline_data_updated)))
+	}
+
+	override fun onPause() {
+		super.onPause()
+		unregisterReceiver(offlineDataUpdatedReceiver)
 	}
 
 	/*
@@ -114,7 +120,6 @@ class MainActivity: BaseActivity() {
 				full_page_status_message.text = message
 			}
 		}
-
 	}
 
 	enum class FullPageStatusType {
@@ -142,8 +147,18 @@ class MainActivity: BaseActivity() {
 
 	private fun startInitialOfflineDataDownload() {
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
+		startService(Intent(this, DataDownloaderService::class.java))
 	}
 
+	private val offlineDataUpdatedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			if (hasOfflineData()) {
+				loadLocations()
+			} else {
+				prepareForInitialOfflineDataDownload()
+			}
+		}
+	}
 
 	private fun loadLocations() {
 

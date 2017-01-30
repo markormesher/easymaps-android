@@ -19,4 +19,12 @@
 	<string name="initial_download_btn_positive">Proceed</string>
 	<string name="initial_download_btn_negative">Later</string>
 
+	<string name="data_pack_check_notification_title">Checking for new data pack</string>
+	<string name="labelling_check_notification_title">Checking for new ILS data</string>
+	<string name="data_pack_download_notification_title">Updating data pack</string>
+	<string name="labelling_download_notification_title">Updating ILS data</string>
+	<string name="saving_offline_data_notification_title">Saving downloaded data</string>
+
+	<string name="intent_offline_data_updated">uk.co.markormesher.easymaps.mapperapp.offline_data_updated</string>
+
 </resources>
