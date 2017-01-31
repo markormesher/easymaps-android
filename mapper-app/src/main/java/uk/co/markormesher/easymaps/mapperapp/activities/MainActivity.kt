@@ -15,6 +15,7 @@ import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
+import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.getLongPref
@@ -33,7 +34,7 @@ class MainActivity: BaseActivity() {
 		// check for offline data
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
 		if (hasOfflineData()) {
-			loadLocations()
+			loadAttractions()
 		} else {
 			prepareForInitialOfflineDataDownload()
 		}
@@ -59,7 +60,49 @@ class MainActivity: BaseActivity() {
 		unregisterReceiver(offlineDataUpdatedReceiver)
 	}
 
-	/*
+	private fun hasOfflineData(): Boolean {
+		return getLongPref(LATEST_LABELLING_VERSION_KEY) > 0 && getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
+	}
+
+	private fun prepareForInitialOfflineDataDownload() {
+		updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.no_offline_data))
+		full_page_status_message.setOnClickListener {
+			with(AlertDialog.Builder(this)) {
+				setTitle(getString(R.string.initial_download_title))
+				setMessage(makeHtml(getString(R.string.initial_download_body)))
+				setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
+					startInitialOfflineDataDownload()
+				})
+				setNegativeButton(getString(R.string.initial_download_btn_negative), null)
+				create().show()
+			}
+		}
+	}
+
+	private fun startInitialOfflineDataDownload() {
+		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
+		startService(Intent(this, DataDownloaderService::class.java))
+	}
+
+	private val offlineDataUpdatedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			if (hasOfflineData()) {
+				loadAttractions()
+			} else {
+				prepareForInitialOfflineDataDownload()
+			}
+		}
+	}
+
+	private fun loadAttractions() {
+		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.loading_locations))
+		val attractions = OfflineDatabase(this).getAttractions()
+		locationListAdapter.locations.clear()
+		locationListAdapter.locations.addAll(attractions)
+		locationListAdapter.notifyDataSetChanged()
+		updateFullPageStatus(FullPageStatusType.NONE)
+	}
+
 	private fun updateStatusBar(type: StatusBarType, heading: String, message: String) {
 		status_heading.text = heading
 		status_message.text = message
@@ -87,7 +130,6 @@ class MainActivity: BaseActivity() {
 		LOCATION_ON,
 		LOCATION_OFF,
 	}
-	*/
 
 	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
 		when (type) {
@@ -118,44 +160,6 @@ class MainActivity: BaseActivity() {
 
 	enum class FullPageStatusType {
 		WAITING, ERROR, NONE
-	}
-
-	private fun hasOfflineData(): Boolean {
-		return getLongPref(LATEST_LABELLING_VERSION_KEY) > 0 && getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
-	}
-
-	private fun prepareForInitialOfflineDataDownload() {
-		updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.no_offline_data))
-		full_page_status_message.setOnClickListener {
-			with(AlertDialog.Builder(this)) {
-				setTitle(getString(R.string.initial_download_title))
-				setMessage(makeHtml(getString(R.string.initial_download_body)))
-				setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
-					startInitialOfflineDataDownload()
-				})
-				setNegativeButton(getString(R.string.initial_download_btn_negative), null)
-				create().show()
-			}
-		}
-	}
-
-	private fun startInitialOfflineDataDownload() {
-		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
-		startService(Intent(this, DataDownloaderService::class.java))
-	}
-
-	private val offlineDataUpdatedReceiver = object: BroadcastReceiver() {
-		override fun onReceive(context: Context?, intent: Intent?) {
-			if (hasOfflineData()) {
-				loadLocations()
-			} else {
-				prepareForInitialOfflineDataDownload()
-			}
-		}
-	}
-
-	private fun loadLocations() {
-		updateFullPageStatus(FullPageStatusType.NONE)
 	}
 
 }

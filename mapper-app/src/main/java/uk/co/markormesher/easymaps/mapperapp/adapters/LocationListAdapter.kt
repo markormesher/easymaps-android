@@ -14,14 +14,14 @@ import uk.co.markormesher.easymaps.mapperapp.helpers.CircleCropTransformation
 import uk.co.markormesher.easymaps.mapperapp.helpers.getTintedDrawable
 import java.util.*
 
-class LocationListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	val TYPE_INTRO = 1
 	val TYPE_LOCATION = 2
 
 	val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
-	val locations = emptyList<Location>()
+	val locations = ArrayList<Location>()
 
 	override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
 		when (viewType) {
@@ -51,7 +51,7 @@ class LocationListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 			else -> {
 				val location = locations[position - 1]
 				with(holder as LocationViewHolder) {
-					name.text = location.title
+					title.text = location.title
 					Picasso
 							.with(context)
 							.load(location.image)
@@ -67,12 +67,12 @@ class LocationListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
 	override fun getItemViewType(position: Int): Int = if (position == 0) TYPE_INTRO else TYPE_LOCATION
 
-	class IntroViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+	class IntroViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val title = v.title!!
 	}
 
-	class LocationViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-		val name = v.location_name!!
+	class LocationViewHolder(v: View): RecyclerView.ViewHolder(v) {
+		val title = v.location_title!!
 		val image = v.location_image!!
 	}
 

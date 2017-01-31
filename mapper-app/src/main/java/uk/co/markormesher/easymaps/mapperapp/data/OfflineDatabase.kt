@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.*
 
 val DB_NAME = "OfflineData"
 val DB_VERSION = 1
@@ -36,6 +37,23 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 	fun addLocations(locations: List<Location>) {
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
 		locations.forEach { l -> db.insert(LocationSchema._tableName, null, l.toContentValues()) }
+	}
+
+	fun getAttractions(): List<Location> {
+		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
+		val cursor = db.rawQuery(
+				"SELECT * FROM ${LocationSchema._tableName} WHERE ${LocationSchema.type} = ?",
+				arrayOf(LocationType.ATTRACTION.id.toString())
+		)
+
+		val output = ArrayList<Location>()
+		if (cursor.moveToFirst()) {
+			do {
+				output.add(Location.fromCursor(cursor))
+			} while (cursor.moveToNext())
+		}
+
+		return output
 	}
 
 	fun clearConnections() {
