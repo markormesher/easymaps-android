@@ -124,7 +124,7 @@ class DataDownloaderService: Service() {
 
 	private fun downloadLatestDataPack() {
 		updateNotification(getString(R.string.data_pack_download_notification_title))
-		if (localLabellingVersion >= serverLabellingVersion) {
+		if (localDataPackVersion >= serverDataPackVersion) {
 			nextStep()
 		} else {
 			val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/latest").get().build()
@@ -153,7 +153,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun storeDownloadedDataPack() {
-		if (localLabellingVersion >= serverLabellingVersion || dataPackContent.isNullOrEmpty()) {
+		if (localDataPackVersion >= serverDataPackVersion || dataPackContent.isNullOrEmpty()) {
 			return nextStep()
 		}
 
@@ -178,10 +178,8 @@ class DataDownloaderService: Service() {
 
 		// add to DB if parsing was successful
 		val db = OfflineDatabase(this)
-		db.clearLocations()
-		db.clearConnections()
-		db.addLocations(locations)
-		db.addConnections(connections)
+		db.updateLocations(locations)
+		db.updateConnections(connections)
 
 		// save version
 		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
@@ -199,13 +197,10 @@ class DataDownloaderService: Service() {
 	private val NOTIFICATION_ID = 61193
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
-	private fun updateNotification(message: String) {
-		val nBuilder = NotificationCompat.Builder(this)
-		with(nBuilder) {
-			setContentTitle(message)
-			setProgress(1, 0, true)
-			setSmallIcon(R.drawable.ic_mapper_app_white)
-		}
-		startForeground(NOTIFICATION_ID, nBuilder.build())
+	private fun updateNotification(message: String) = with(NotificationCompat.Builder(this)) {
+		setContentTitle(message)
+		setProgress(1, 0, true)
+		setSmallIcon(R.drawable.ic_mapper_app_white)
+		startForeground(NOTIFICATION_ID, build())
 	}
 }

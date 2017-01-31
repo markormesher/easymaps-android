@@ -15,12 +15,9 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 
 	override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
 		if (oldVersion >= newVersion) return
-
 		when (oldVersion) {
 			0 -> upgradeToV1(db)
 		}
-
-		// keep running upgrades until the current version is reached
 		onUpgrade(db, oldVersion + 1, newVersion)
 	}
 
@@ -29,41 +26,32 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		db?.execSQL(ConnectionSchema.v1._createTable)
 	}
 
-	fun clearLocations() {
+	fun updateLocations(locations: List<Location>) {
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
 		db.delete(LocationSchema._tableName, null, null)
+		locations.forEach { l -> db.insert(LocationSchema._tableName, null, l.toContentValues()) }
 	}
 
-	fun addLocations(locations: List<Location>) {
+	fun updateConnections(connections: List<Connection>) {
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
-		locations.forEach { l -> db.insert(LocationSchema._tableName, null, l.toContentValues()) }
+		db.delete(ConnectionSchema._tableName, null, null)
+		connections.forEach { c -> db.insert(ConnectionSchema._tableName, null, c.toContentValues()) }
 	}
 
 	fun getAttractions(): List<Location> {
 		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
 		val cursor = db.rawQuery(
-				"SELECT * FROM ${LocationSchema._tableName} WHERE ${LocationSchema.type} = ?",
+				"SELECT * FROM ${LocationSchema._tableName} WHERE ${LocationSchema.type} = ?;",
 				arrayOf(LocationType.ATTRACTION.id.toString())
 		)
-
 		val output = ArrayList<Location>()
 		if (cursor.moveToFirst()) {
 			do {
 				output.add(Location.fromCursor(cursor))
 			} while (cursor.moveToNext())
 		}
-
+		cursor.close()
 		return output
-	}
-
-	fun clearConnections() {
-		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
-		db.delete(ConnectionSchema._tableName, null, null)
-	}
-
-	fun addConnections(connections: List<Connection>) {
-		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
-		connections.forEach { c -> db.insert(ConnectionSchema._tableName, null, c.toContentValues()) }
 	}
 
 }

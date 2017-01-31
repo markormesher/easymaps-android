@@ -35,6 +35,9 @@ class MainActivity: BaseActivity() {
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
 		if (hasOfflineData()) {
 			loadAttractions()
+
+			// start background update
+			startService(Intent(this, DataDownloaderService::class.java))
 		} else {
 			prepareForInitialOfflineDataDownload()
 		}
