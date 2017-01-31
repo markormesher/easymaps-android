@@ -21,21 +21,7 @@ class LocationListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
 	val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
-	val locations = arrayOf(
-			Location("Tube Station", "http://www.robwaller.org/blog/uploaded_images/tubenoriver-761093.jpg"),
-			Location("The London Eye", "http://londonairportransfers.com/wp-content/uploads/2016/01/London-Eye-information.jpg"),
-			Location("Big Ben", "https://cdn.getyourguide.com/niwziy2l9cvz/33fpoAXMDSoIYaWYygG4KE/4a121da4da937e3a9f0d4538c8606bac/london-bigben-1500x850.jpg"),
-			Location("The Royal Observatory", "http://cdn.londonandpartners.com/asset/5b30f693aedad7721ae7d10a09ce921f.jpg"),
-			Location("Sky Garden", "http://crazycowevents.com/wp-content/uploads/2015/06/Sky-Garden-Summer.jpg"),
-			Location("Buckingham Palace", "http://cdn.londonandpartners.com/asset/buckingham-palace-tour-summer-opening-2015-ad00c5354eb7aff837932abb96167006.jpg"),
-			Location("Trafalgar Square", "https://www.london.gov.uk/sites/default/files/styles/gla_2_1_large/public/business-t-square-5649.jpg?itok=w2EyyvyJ"),
-			Location("Tower Bridge", "http://cdn.londonandpartners.com/asset/a9e3135930f74120799649654fec1a9f.jpg"),
-			Location("Marble Arch", "https://i.ytimg.com/vi/JNl5JtcwRBA/maxresdefault.jpg"),
-			Location("Hyde Park", "http://www.qualitycrown.com/assets/Uploads/italian-garden-hyde-park-london.jpg"),
-			Location("Admiral's Nose", "http://www.aviewoncities.com/img/london/kveen2456s.jpg"),
-			Location("Parliament Hill", "https://media-cdn.tripadvisor.com/media/photo-s/07/fc/17/f7/parliament-hill-fields.jpg"),
-			Location("Somerset House", "http://cdn.londonandpartners.com/asset/c5441e5d79e0668e4db47cc9966cedc9.jpg")
-	)
+	val locations = emptyList<Location>()
 
 	override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
 		when (viewType) {
@@ -65,7 +51,7 @@ class LocationListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 			else -> {
 				val location = locations[position - 1]
 				with(holder as LocationViewHolder) {
-					name.text = location.name
+					name.text = location.title
 					Picasso
 							.with(context)
 							.load(location.image)

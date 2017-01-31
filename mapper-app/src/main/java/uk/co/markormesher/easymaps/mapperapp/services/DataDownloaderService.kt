@@ -11,16 +11,22 @@ import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
 import uk.co.markormesher.easymaps.mapperapp.*
+import uk.co.markormesher.easymaps.mapperapp.data.Connection
+import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.sdk.getLongPref
+import uk.co.markormesher.easymaps.sdk.setLongPref
 import java.io.IOException
+import java.util.*
 
 class DataDownloaderService: Service() {
+
+	var currentStep = 0
 
 	val httpClient by lazy { OkHttpClient() }
 
 	var localLabellingVersion = -1L
 	var localDataPackVersion = -1L
-
 	var serverLabellingVersion = -1L
 	var serverDataPackVersion = -1L
 
@@ -32,9 +38,9 @@ class DataDownloaderService: Service() {
 	override fun onCreate() {
 		super.onCreate()
 
-		// get initial versions
-		localLabellingVersion = getLongPref(LAST_LABELLING_VERSION_KEY)
-		localDataPackVersion = getLongPref(LAST_DATA_PACK_VERSION_KEY)
+		// get local versions
+		localLabellingVersion = getLongPref(LATEST_LABELLING_VERSION_KEY)
+		localDataPackVersion = getLongPref(LATEST_DATA_PACK_VERSION_KEY)
 
 		// run only if online
 		val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -43,100 +49,144 @@ class DataDownloaderService: Service() {
 		if (!connected) {
 			finish()
 		} else {
-			runStage(1)
+			nextStep()
 		}
 	}
 
-	private fun runStage(stage: Int) {
-		when (stage) {
-			1 -> { // get latest labelling version
-				updateNotification(getString(R.string.labelling_check_notification_title))
-				val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/stats").get().build()
-				httpClient.newCall(request).enqueue(object: Callback {
-					override fun onFailure(call: Call?, e: IOException?) = finish()
-
-					override fun onResponse(call: Call?, response: Response?) {
-						if (response?.isSuccessful ?: false) {
-							try {
-								serverLabellingVersion = JSONObject(response?.body()?.string()).getLong("latestVersion")
-								runStage(2)
-							} catch (e: JSONException) {
-								finish()
-							}
-						}
-					}
-				})
-			}
-
-			2 -> { // get latest data pack version
-				updateNotification(getString(R.string.data_pack_check_notification_title))
-				val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/stats").get().build()
-				httpClient.newCall(request).enqueue(object: Callback {
-					override fun onFailure(call: Call?, e: IOException?) = finish()
-
-					override fun onResponse(call: Call?, response: Response?) {
-						if (response?.isSuccessful ?: false) {
-							try {
-								serverDataPackVersion = JSONObject(response?.body()?.string()).getLong("latestVersion")
-								runStage(3)
-							} catch (e: JSONException) {
-								finish()
-							}
-						}
-					}
-				})
-			}
-
-			3 -> { // get latest labelling, if needed
-				updateNotification(getString(R.string.labelling_download_notification_title))
-				if (localLabellingVersion < serverLabellingVersion) {
-					val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/latest").get().build()
-					httpClient.newCall(request).enqueue(object: Callback {
-						override fun onFailure(call: Call?, e: IOException?) = finish()
-
-						override fun onResponse(call: Call?, response: Response?) {
-							if (response?.isSuccessful ?: false) {
-								labellingContent = response?.body()?.string() ?: return finish()
-								runStage(4)
-							} else {
-								finish()
-							}
-						}
-					})
-				} else {
-					runStage(4)
-				}
-			}
-
-			4 -> { // get latest data pack, if needed
-				updateNotification(getString(R.string.data_pack_download_notification_title))
-				if (localLabellingVersion < serverLabellingVersion) {
-					val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/latest").get().build()
-					httpClient.newCall(request).enqueue(object: Callback {
-						override fun onFailure(call: Call?, e: IOException?) = finish()
-
-						override fun onResponse(call: Call?, response: Response?) {
-							if (response?.isSuccessful ?: false) {
-								dataPackContent = response?.body()?.string() ?: return finish()
-								runStage(5)
-							} else {
-								finish()
-							}
-						}
-					})
-				} else {
-					runStage(5)
-				}
-			}
-
-			5 -> { // save downloaded data
-				updateNotification(getString(R.string.data_pack_download_notification_title))
-				// TODO: write data to store
-				finish()
-			}
-
+	private fun nextStep() {
+		++currentStep
+		when (currentStep) {
+			1 -> getLatestLabellingVersion()
+			2 -> getLatestDataPackVersion()
+			3 -> downloadLatestLabelling()
+			4 -> downloadLatestDataPack()
+			5 -> storeDownloadedLabelling()
+			6 -> storeDownloadedDataPack()
 			else -> finish()
 		}
+	}
+
+	private fun getLatestLabellingVersion() {
+		updateNotification(getString(R.string.labelling_check_notification_title))
+		val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/stats").get().build()
+		httpClient.newCall(request).enqueue(object: Callback {
+			override fun onFailure(call: Call?, e: IOException?) = finish()
+			override fun onResponse(call: Call?, response: Response?) {
+				if (response?.isSuccessful ?: false) {
+					try {
+						serverLabellingVersion = JSONObject(response?.body()?.string()).getLong("latestVersion")
+						nextStep()
+					} catch (e: JSONException) {
+						finish()
+					}
+				}
+			}
+		})
+	}
+
+	private fun getLatestDataPackVersion() {
+		updateNotification(getString(R.string.data_pack_check_notification_title))
+		val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/stats").get().build()
+		httpClient.newCall(request).enqueue(object: Callback {
+			override fun onFailure(call: Call?, e: IOException?) = finish()
+			override fun onResponse(call: Call?, response: Response?) {
+				if (response?.isSuccessful ?: false) {
+					try {
+						serverDataPackVersion = JSONObject(response?.body()?.string()).getLong("latestVersion")
+						nextStep()
+					} catch (e: JSONException) {
+						finish()
+					}
+				}
+			}
+		})
+	}
+
+	private fun downloadLatestLabelling() {
+		updateNotification(getString(R.string.labelling_download_notification_title))
+		if (localLabellingVersion >= serverLabellingVersion) {
+			nextStep()
+		} else {
+			val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/latest").get().build()
+			httpClient.newCall(request).enqueue(object: Callback {
+				override fun onFailure(call: Call?, e: IOException?) = finish()
+				override fun onResponse(call: Call?, response: Response?) {
+					if (response?.isSuccessful ?: false) {
+						labellingContent = response?.body()?.string() ?: return finish()
+						nextStep()
+					} else {
+						finish()
+					}
+				}
+			})
+		}
+	}
+
+	private fun downloadLatestDataPack() {
+		updateNotification(getString(R.string.data_pack_download_notification_title))
+		if (localLabellingVersion >= serverLabellingVersion) {
+			nextStep()
+		} else {
+			val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/latest").get().build()
+			httpClient.newCall(request).enqueue(object: Callback {
+				override fun onFailure(call: Call?, e: IOException?) = finish()
+				override fun onResponse(call: Call?, response: Response?) {
+					if (response?.isSuccessful ?: false) {
+						dataPackContent = response?.body()?.string() ?: return finish()
+						nextStep()
+					} else {
+						finish()
+					}
+				}
+			})
+		}
+	}
+
+	private fun storeDownloadedLabelling() {
+		updateNotification(getString(R.string.saving_offline_data_notification_title))
+
+		// TODO: store labellings
+
+		// pretend for now
+		setLongPref(LATEST_LABELLING_VERSION_KEY, serverLabellingVersion)
+		nextStep()
+	}
+
+	private fun storeDownloadedDataPack() {
+		if (localLabellingVersion >= serverLabellingVersion || dataPackContent.isNullOrEmpty()) {
+			return nextStep()
+		}
+
+		updateNotification(getString(R.string.saving_offline_data_notification_title))
+
+		// try to parse data
+		val locations = ArrayList<Location>()
+		val connections = ArrayList<Connection>()
+		try {
+			val jsonRoot = JSONObject(dataPackContent)
+
+			val jsonLocations = jsonRoot.getJSONObject("locations")
+			jsonLocations.keys().forEach { id -> locations.add(Location.fromJson(id, jsonLocations.getJSONObject(id))) }
+
+			val jsonConnections = jsonRoot.getJSONArray("connections")
+			(0..jsonConnections.length() - 1).mapTo(connections) { c -> Connection.fromJson(jsonConnections.getJSONObject(c)) }
+
+		} catch (e: JSONException) {
+			e.printStackTrace()
+			return finish()
+		}
+
+		// add to DB if parsing was successful
+		val db = OfflineDatabase(this)
+		db.clearLocations()
+		db.clearConnections()
+		db.addLocations(locations)
+		db.addConnections(connections)
+
+		// save version
+		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
+
+		nextStep()
 	}
 
 	private fun finish() {

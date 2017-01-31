@@ -6,15 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import uk.co.markormesher.easymaps.mapperapp.LAST_DATA_PACK_VERSION_KEY
-import uk.co.markormesher.easymaps.mapperapp.LAST_LABELLING_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
@@ -34,14 +32,10 @@ class MainActivity: BaseActivity() {
 
 		// check for offline data
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
-		with(Handler(Looper.getMainLooper())) {
-			postDelayed({
-				if (hasOfflineData()) {
-					loadLocations()
-				} else {
-					prepareForInitialOfflineDataDownload()
-				}
-			}, 1200)
+		if (hasOfflineData()) {
+			loadLocations()
+		} else {
+			prepareForInitialOfflineDataDownload()
 		}
 
 		// set up location list
@@ -127,7 +121,7 @@ class MainActivity: BaseActivity() {
 	}
 
 	private fun hasOfflineData(): Boolean {
-		return getLongPref(LAST_LABELLING_VERSION_KEY) > 0 && getLongPref(LAST_DATA_PACK_VERSION_KEY) > 0
+		return getLongPref(LATEST_LABELLING_VERSION_KEY) > 0 && getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
 	}
 
 	private fun prepareForInitialOfflineDataDownload() {
@@ -161,7 +155,7 @@ class MainActivity: BaseActivity() {
 	}
 
 	private fun loadLocations() {
-
+		updateFullPageStatus(FullPageStatusType.NONE)
 	}
 
 }
