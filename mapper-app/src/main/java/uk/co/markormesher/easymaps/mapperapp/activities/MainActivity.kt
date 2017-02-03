@@ -21,6 +21,10 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.makeHtml
 
+// TODO: new activity - location search
+// TODO: new activity - route planner
+// TODO: new server - location sensing
+
 // TODO: clickable icon for getting data
 // TODO: error status for failed download of initial data
 // TODO: search icon in recycler view
