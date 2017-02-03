@@ -6,6 +6,10 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import java.util.*
 
+// TODO: store location lat/lon
+// TODO: store labellings
+// TODO: report saving progress via callback
+
 val DB_NAME = "OfflineData"
 val DB_VERSION = 1
 

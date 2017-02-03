@@ -19,6 +19,8 @@ import uk.co.markormesher.easymaps.sdk.setLongPref
 import java.io.IOException
 import java.util.*
 
+// TODO: quit if < 24h since last check
+
 class DataDownloaderService: Service() {
 
 	var currentStep = 0

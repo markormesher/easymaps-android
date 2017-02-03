@@ -21,6 +21,11 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.makeHtml
 
+// TODO: clickable icon for getting data
+// TODO: error status for failed download of initial data
+// TODO: search icon in recycler view
+// TODO: footer element in recycler view
+
 class MainActivity: BaseActivity() {
 
 	val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
@@ -36,6 +41,7 @@ class MainActivity: BaseActivity() {
 		if (hasOfflineData()) {
 			loadAttractions()
 
+			// TODO: move to function
 			// start background update
 			startService(Intent(this, DataDownloaderService::class.java))
 		} else {
