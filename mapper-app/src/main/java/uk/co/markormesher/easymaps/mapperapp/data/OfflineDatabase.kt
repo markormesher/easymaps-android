@@ -10,7 +10,7 @@ import java.util.*
 // TODO: store labellings
 
 val DB_NAME = "OfflineData"
-val DB_VERSION = 1
+val DB_VERSION = 2
 
 class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
@@ -24,13 +24,19 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		if (oldVersion >= newVersion) return
 		when (oldVersion) {
 			0 -> upgradeToV1(db)
+			1 -> upgradeToV2(db)
 		}
 		onUpgrade(db, oldVersion + 1, newVersion)
 	}
 
 	private fun upgradeToV1(db: SQLiteDatabase?) {
-		db?.execSQL(LocationSchema.v1._createTable)
-		db?.execSQL(ConnectionSchema.v1._createTable)
+		db?.execSQL(LocationSchema.v1.createTable)
+		db?.execSQL(ConnectionSchema.v1.createTable)
+	}
+
+	private fun upgradeToV2(db: SQLiteDatabase?) {
+		db?.execSQL(LocationSchema.v2.addLat)
+		db?.execSQL(LocationSchema.v2.addLon)
 	}
 
 	fun updateLocations(locations: List<Location>, statusCallback: (qtyDone: Int) -> Unit) {

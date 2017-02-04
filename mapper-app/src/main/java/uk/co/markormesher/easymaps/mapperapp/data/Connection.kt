@@ -46,7 +46,7 @@ object ConnectionSchema {
 	val cost = "cost"
 
 	object v1 {
-		val _createTable = "CREATE TABLE $_tableName (" +
+		val createTable = "CREATE TABLE $_tableName (" +
 				"$from TEXT," +
 				"$to TEXT," +
 				"$mode TEXT," +

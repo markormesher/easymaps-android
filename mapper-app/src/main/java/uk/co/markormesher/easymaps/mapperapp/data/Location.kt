@@ -4,7 +4,13 @@ import android.content.ContentValues
 import android.database.Cursor
 import org.json.JSONObject
 
-data class Location(val id: String, val title: String, val image: String?, val type: LocationType) {
+data class Location(
+		val id: String,
+		val title: String,
+		val image: String?,
+		val type: LocationType,
+		val lat: Double,
+		val lon: Double) {
 
 	fun toContentValues(): ContentValues {
 		val cv = ContentValues()
@@ -21,7 +27,9 @@ data class Location(val id: String, val title: String, val image: String?, val t
 					id = cursor.getString(cursor.getColumnIndexOrThrow(LocationSchema.id)),
 					title = cursor.getString(cursor.getColumnIndexOrThrow(LocationSchema.title)),
 					image = cursor.getString(cursor.getColumnIndexOrThrow(LocationSchema.image)),
-					type = LocationType.fromId(cursor.getInt(cursor.getColumnIndexOrThrow(LocationSchema.type)))
+					type = LocationType.fromId(cursor.getInt(cursor.getColumnIndexOrThrow(LocationSchema.type))),
+					lat = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationSchema.lat)),
+					lon = cursor.getDouble(cursor.getColumnIndexOrThrow(LocationSchema.lon))
 			)
 		}
 
@@ -30,7 +38,9 @@ data class Location(val id: String, val title: String, val image: String?, val t
 					id = id,
 					title = json.getString("title"),
 					image = if (json.has("image")) json.getString("image") else null,
-					type = LocationType.fromString(json.getString("type"))
+					type = LocationType.fromString(json.getString("type")),
+					lat = if (json.has("lat")) json.getDouble("lat") else 0.0,
+					lon = if (json.has("lon")) json.getDouble("lon") else 0.0
 			)
 		}
 	}
@@ -63,13 +73,20 @@ object LocationSchema {
 	val title = "title"
 	val image = "image"
 	val type = "type"
+	val lat = "lat"
+	val lon = "lon"
 
 	object v1 {
-		val _createTable = "CREATE TABLE $_tableName (" +
+		val createTable = "CREATE TABLE $_tableName (" +
 				"$id TEXT PRIMARY KEY," +
 				"$title TEXT," +
 				"$image TEXT," +
 				"$type INTEGER" +
 				");"
+	}
+
+	object v2 {
+		val addLat = "ALTER TABLE $_tableName ADD COLUMN lat REAL DEFAULT 0;"
+		val addLon = "ALTER TABLE $_tableName ADD COLUMN lon REAL DEFAULT 0;"
 	}
 }
