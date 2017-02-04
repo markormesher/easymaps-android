@@ -21,9 +21,10 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 import uk.co.markormesher.easymaps.sdk.getLongPref
 import uk.co.markormesher.easymaps.sdk.makeHtml
 
-// TODO: new activity - location search
 // TODO: new activity - route planner
 // TODO: new server - location sensing
+
+// TODO: click listener on recycler view
 
 class MainActivity: BaseActivity() {
 
