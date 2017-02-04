@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
-import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
+import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
 import uk.co.markormesher.easymaps.sdk.BaseActivity
@@ -42,7 +42,7 @@ class MainActivity: BaseActivity() {
 		}
 	}
 
-	val locationListAdapter by lazy { LocationListAdapter(this) }
+	val attractionListAdapter by lazy { AttractionListAdapter(this) }
 
 	var triedInitialOfflineDataDownload = false
 
@@ -59,15 +59,19 @@ class MainActivity: BaseActivity() {
 			promptInitialOfflineDataDownload()
 		}
 
-		// set up location list
+		// set up attraction list
 		val screenWidthInDp = resources.configuration.screenWidthDp
 		val columns = screenWidthInDp / 110
 		val gridLayoutManager = GridLayoutManager(this, columns)
 		gridLayoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int = if (position == 0) columns else 1
 		}
-		location_grid.layoutManager = gridLayoutManager
-		location_grid.adapter = locationListAdapter
+		attraction_grid.layoutManager = gridLayoutManager
+		attraction_grid.adapter = attractionListAdapter
+
+		status_icon.setOnClickListener {
+			startActivity(Intent(this, LocationSearchActivity::class.java))
+		}
 	}
 
 	override fun onResume() {
@@ -116,25 +120,25 @@ class MainActivity: BaseActivity() {
 	}
 
 	private fun loadAttractions() {
-		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.loading_locations))
+		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.loading_attractions))
 		val attractions = OfflineDatabase(this).getAttractions()
-		locationListAdapter.locations.clear()
-		locationListAdapter.locations.addAll(attractions)
-		locationListAdapter.notifyDataSetChanged()
+		attractionListAdapter.attractions.clear()
+		attractionListAdapter.attractions.addAll(attractions)
+		attractionListAdapter.notifyDataSetChanged()
 		updateFullPageStatus(FullPageStatusType.NONE)
 	}
 
 	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
 		when (type) {
 			FullPageStatusType.NONE -> {
-				location_grid.visibility = View.VISIBLE
+				attraction_grid.visibility = View.VISIBLE
 				full_page_status_wrapper.visibility = View.GONE
 				full_page_status_icon.clearAnimation()
 				full_page_status_message.text = ""
 			}
 
 			FullPageStatusType.WAITING -> {
-				location_grid.visibility = View.GONE
+				attraction_grid.visibility = View.GONE
 				full_page_status_wrapper.visibility = View.VISIBLE
 				full_page_status_icon.setImageResource(R.drawable.ic_hourglass_empty_white_48dp)
 				full_page_status_icon.startAnimation(iconSpinAnimation)
@@ -142,7 +146,7 @@ class MainActivity: BaseActivity() {
 			}
 
 			FullPageStatusType.ERROR -> {
-				location_grid.visibility = View.GONE
+				attraction_grid.visibility = View.GONE
 				full_page_status_wrapper.visibility = View.VISIBLE
 				full_page_status_icon.setImageResource(R.drawable.ic_info_outline_white_48dp)
 				full_page_status_icon.clearAnimation()

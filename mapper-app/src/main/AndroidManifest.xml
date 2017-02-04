@@ -30,6 +30,11 @@
 				android:name=".activities.MainActivity"
 				android:launchMode="singleTask"/>
 
+		<activity
+				android:name=".activities.LocationSearchActivity"
+				android:theme="@style/Theme.AppCompat.Light.Dialog"
+				android:excludeFromRecents="true"/>
+
 		<service
 				android:name=".services.DataDownloaderService"
 				android:exported="false"
