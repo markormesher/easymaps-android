@@ -8,6 +8,7 @@
 
 	<string name="checking_for_offline_data">Checking for offline data…</string>
 	<string name="waiting_for_offline_data">Waiting for offline data…</string>
+	<string name="offline_data_download_failed">Failed to download offline data! Tap to retry.</string>
 	<string name="no_offline_data">No offline data! Tap to download.</string>
 
 	<string name="initial_download_title">Offline Data</string>

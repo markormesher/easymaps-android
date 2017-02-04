@@ -25,8 +25,6 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new activity - route planner
 // TODO: new server - location sensing
 
-// TODO: clickable icon for getting data
-// TODO: error status for failed download of initial data
 // TODO: search icon in recycler view
 // TODO: footer element in recycler view
 
@@ -34,7 +32,22 @@ class MainActivity: BaseActivity() {
 
 	val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
+	val initialOfflineDataDownloadConfirmation: AlertDialog by lazy {
+		with(AlertDialog.Builder(this)) {
+			setTitle(getString(R.string.initial_download_title))
+			setMessage(makeHtml(getString(R.string.initial_download_body)))
+			setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
+				triedInitialOfflineDataDownload = true
+				startOfflineDataDownload(blockUi = true, force = true)
+			})
+			setNegativeButton(getString(R.string.initial_download_btn_negative), null)
+			create()
+		}
+	}
+
 	val locationListAdapter by lazy { LocationListAdapter(this) }
+
+	var triedInitialOfflineDataDownload = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -44,12 +57,9 @@ class MainActivity: BaseActivity() {
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
 		if (hasOfflineData()) {
 			loadAttractions()
-
-			// TODO: move to function
-			// start background update
-			startService(Intent(this, DataDownloaderService::class.java))
+			startOfflineDataDownload(blockUi = false, force = false)
 		} else {
-			prepareForInitialOfflineDataDownload()
+			promptInitialOfflineDataDownload()
 		}
 
 		// set up location list
@@ -77,24 +87,25 @@ class MainActivity: BaseActivity() {
 		return getLongPref(LATEST_LABELLING_VERSION_KEY) > 0 && getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
 	}
 
-	private fun prepareForInitialOfflineDataDownload() {
-		updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.no_offline_data))
-		full_page_status_message.setOnClickListener {
-			with(AlertDialog.Builder(this)) {
-				setTitle(getString(R.string.initial_download_title))
-				setMessage(makeHtml(getString(R.string.initial_download_body)))
-				setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
-					startInitialOfflineDataDownload()
-				})
-				setNegativeButton(getString(R.string.initial_download_btn_negative), null)
-				create().show()
-			}
+	private fun promptInitialOfflineDataDownload() {
+		if (triedInitialOfflineDataDownload) {
+			updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.offline_data_download_failed))
+		} else {
+			updateFullPageStatus(FullPageStatusType.ERROR, getString(R.string.no_offline_data))
 		}
+		full_page_status_message.setOnClickListener { initialOfflineDataDownloadConfirmation.show() }
+		full_page_status_icon.setOnClickListener { initialOfflineDataDownloadConfirmation.show() }
 	}
 
-	private fun startInitialOfflineDataDownload() {
-		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
-		startService(Intent(this, DataDownloaderService::class.java))
+	private fun startOfflineDataDownload(blockUi: Boolean, force: Boolean) {
+		if (blockUi) {
+			updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
+		}
+		val intent = Intent(this, DataDownloaderService::class.java)
+		if (force) {
+			intent.putExtra(DataDownloaderService.FORCE, true)
+		}
+		startService(intent)
 	}
 
 	private val offlineDataUpdatedReceiver = object: BroadcastReceiver() {
@@ -102,7 +113,7 @@ class MainActivity: BaseActivity() {
 			if (hasOfflineData()) {
 				loadAttractions()
 			} else {
-				prepareForInitialOfflineDataDownload()
+				promptInitialOfflineDataDownload()
 			}
 		}
 	}
@@ -114,6 +125,37 @@ class MainActivity: BaseActivity() {
 		locationListAdapter.locations.addAll(attractions)
 		locationListAdapter.notifyDataSetChanged()
 		updateFullPageStatus(FullPageStatusType.NONE)
+	}
+
+	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
+		when (type) {
+			FullPageStatusType.NONE -> {
+				location_grid.visibility = View.VISIBLE
+				full_page_status_wrapper.visibility = View.GONE
+				full_page_status_icon.clearAnimation()
+				full_page_status_message.text = ""
+			}
+
+			FullPageStatusType.WAITING -> {
+				location_grid.visibility = View.GONE
+				full_page_status_wrapper.visibility = View.VISIBLE
+				full_page_status_icon.setImageResource(R.drawable.ic_hourglass_empty_white_48dp)
+				full_page_status_icon.startAnimation(iconSpinAnimation)
+				full_page_status_message.text = message
+			}
+
+			FullPageStatusType.ERROR -> {
+				location_grid.visibility = View.GONE
+				full_page_status_wrapper.visibility = View.VISIBLE
+				full_page_status_icon.setImageResource(R.drawable.ic_info_outline_white_48dp)
+				full_page_status_icon.clearAnimation()
+				full_page_status_message.text = message
+			}
+		}
+
+		full_page_status_wrapper.setOnClickListener(null)
+		full_page_status_message.setOnClickListener(null)
+		full_page_status_icon.setOnClickListener(null)
 	}
 
 	private fun updateStatusBar(type: StatusBarType, heading: String, message: String) {
@@ -142,33 +184,6 @@ class MainActivity: BaseActivity() {
 		INFO,
 		LOCATION_ON,
 		LOCATION_OFF,
-	}
-
-	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
-		when (type) {
-			FullPageStatusType.NONE -> {
-				location_grid.visibility = View.VISIBLE
-				full_page_status_wrapper.visibility = View.GONE
-				full_page_status_icon.clearAnimation()
-				full_page_status_message.text = ""
-			}
-
-			FullPageStatusType.WAITING -> {
-				location_grid.visibility = View.GONE
-				full_page_status_wrapper.visibility = View.VISIBLE
-				full_page_status_icon.setImageResource(R.drawable.ic_hourglass_empty_white_48dp)
-				full_page_status_icon.startAnimation(iconSpinAnimation)
-				full_page_status_message.text = message
-			}
-
-			FullPageStatusType.ERROR -> {
-				location_grid.visibility = View.GONE
-				full_page_status_wrapper.visibility = View.VISIBLE
-				full_page_status_icon.setImageResource(R.drawable.ic_info_outline_white_48dp)
-				full_page_status_icon.clearAnimation()
-				full_page_status_message.text = message
-			}
-		}
 	}
 
 	enum class FullPageStatusType {

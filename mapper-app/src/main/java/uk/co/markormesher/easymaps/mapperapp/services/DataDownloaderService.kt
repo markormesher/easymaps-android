@@ -35,7 +35,19 @@ class DataDownloaderService: Service() {
 	var labellingContent = ""
 	var dataPackContent = ""
 
+	// TODO: use this
+	var force = false
+
+	companion object {
+		val FORCE = "data_downloader_service_force"
+	}
+
 	override fun onBind(intent: Intent?): IBinder? = null
+
+	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+		force = intent?.getBooleanExtra(FORCE, false) ?: false
+		return super.onStartCommand(intent, flags, startId)
+	}
 
 	override fun onCreate() {
 		super.onCreate()
