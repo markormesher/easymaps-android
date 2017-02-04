@@ -5,6 +5,11 @@
 
 	<string name="loading_locations">Loading locations…</string>
 	<string name="select_location">Where are you going %s?</string>
+	<string name="select_location_suffix_morning">this morning</string>
+	<string name="select_location_suffix_afternoon">this afternoon</string>
+	<string name="select_location_suffix_evening">this evening</string>
+	<string name="select_location_suffix_night">tonight</string>
+	<string name="location_list_search">Search…</string>
 
 	<string name="checking_for_offline_data">Checking for offline data…</string>
 	<string name="waiting_for_offline_data">Waiting for offline data…</string>

@@ -16,10 +16,15 @@ import java.util.*
 
 class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-	val TYPE_INTRO = 1
-	val TYPE_LOCATION = 2
+	companion object {
+		private val SEARCH_BG = "https://raw.githubusercontent.com/markormesher/easymaps-data-packs/master/london-images/search-bg.png"
 
-	val layoutInflater by lazy { LayoutInflater.from(context)!! }
+		private val TYPE_INTRO = 1
+		private val TYPE_SEARCH = 2
+		private val TYPE_LOCATION = 3
+	}
+
+	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
 	val locations = ArrayList<Location>()
 
@@ -36,22 +41,35 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 				with(holder as IntroViewHolder) {
 					val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 					val softTime = if (hour >= 20) {
-						"tonight"
+						context.getString(R.string.select_location_suffix_night)
 					} else if (hour >= 17) {
-						"this evening"
+						context.getString(R.string.select_location_suffix_evening)
 					} else if (hour >= 12) {
-						"this afternoon"
+						context.getString(R.string.select_location_suffix_afternoon)
 					} else {
-						"this morning"
+						context.getString(R.string.select_location_suffix_morning)
 					}
 					title.text = context.getString(R.string.select_location, softTime)
 				}
 			}
 
+			TYPE_SEARCH -> {
+				with(holder as LocationViewHolder) {
+					title.text = context.getString(R.string.location_list_search)
+					icon.setImageResource(R.drawable.ic_search_white_48dp)
+					Picasso
+							.with(context)
+							.load(SEARCH_BG)
+							.transform(CircleCropTransformation())
+							.into(image)
+				}
+			}
+
 			else -> {
-				val location = locations[position - 1]
+				val location = locations[position - 2]
 				with(holder as LocationViewHolder) {
 					title.text = location.title
+					icon.setImageDrawable(null)
 					Picasso
 							.with(context)
 							.load(location.image)
@@ -63,9 +81,14 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 		}
 	}
 
-	override fun getItemCount(): Int = locations.size + 1
+	// size, plus one for intro, plus one for search
+	override fun getItemCount(): Int = locations.size + 2
 
-	override fun getItemViewType(position: Int): Int = if (position == 0) TYPE_INTRO else TYPE_LOCATION
+	override fun getItemViewType(position: Int): Int = when (position) {
+		0 -> TYPE_INTRO
+		1 -> TYPE_SEARCH
+		else -> TYPE_LOCATION
+	}
 
 	class IntroViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val title = v.title!!
@@ -74,6 +97,7 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 	class LocationViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val title = v.location_title!!
 		val image = v.location_image!!
+		val icon = v.icon!!
 	}
 
 }

@@ -25,9 +25,6 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new activity - route planner
 // TODO: new server - location sensing
 
-// TODO: search icon in recycler view
-// TODO: footer element in recycler view
-
 class MainActivity: BaseActivity() {
 
 	val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
