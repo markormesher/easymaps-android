@@ -25,6 +25,4 @@
 	<string name="saving_offline_data_notification_title">Saving downloaded data (%1$d of %2$d)</string>
 	<string name="saving_offline_data_notification_title_no_number">Saving downloaded data</string>
 
-	<string name="intent_offline_data_updated">uk.co.markormesher.easymaps.mapperapp.offline_data_updated</string>
-
 </resources>

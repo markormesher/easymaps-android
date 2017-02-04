@@ -38,7 +38,7 @@ class MainActivity: BaseActivity() {
 			setMessage(makeHtml(getString(R.string.initial_download_body)))
 			setPositiveButton(getString(R.string.initial_download_btn_positive), { dialogInterface, i ->
 				triedInitialOfflineDataDownload = true
-				startOfflineDataDownload(blockUi = true, force = true)
+				startOfflineDataUpdate(blockUi = true, force = true)
 			})
 			setNegativeButton(getString(R.string.initial_download_btn_negative), null)
 			create()
@@ -57,7 +57,7 @@ class MainActivity: BaseActivity() {
 		updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.checking_for_offline_data))
 		if (hasOfflineData()) {
 			loadAttractions()
-			startOfflineDataDownload(blockUi = false, force = false)
+			startOfflineDataUpdate()
 		} else {
 			promptInitialOfflineDataDownload()
 		}
@@ -75,7 +75,7 @@ class MainActivity: BaseActivity() {
 
 	override fun onResume() {
 		super.onResume()
-		registerReceiver(offlineDataUpdatedReceiver, IntentFilter(getString(R.string.intent_offline_data_updated)))
+		registerReceiver(offlineDataUpdatedReceiver, IntentFilter(OfflineDatabase.STATE_UPDATED))
 	}
 
 	override fun onPause() {
@@ -97,7 +97,7 @@ class MainActivity: BaseActivity() {
 		full_page_status_icon.setOnClickListener { initialOfflineDataDownloadConfirmation.show() }
 	}
 
-	private fun startOfflineDataDownload(blockUi: Boolean, force: Boolean) {
+	private fun startOfflineDataUpdate(blockUi: Boolean = false, force: Boolean = false) {
 		if (blockUi) {
 			updateFullPageStatus(FullPageStatusType.WAITING, getString(R.string.waiting_for_offline_data))
 		}

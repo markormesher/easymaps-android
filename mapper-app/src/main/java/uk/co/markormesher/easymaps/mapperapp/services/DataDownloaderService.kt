@@ -21,34 +21,36 @@ import java.util.*
 
 class DataDownloaderService: Service() {
 
-	var currentStep = 0
+	private var currentStep = 0
 
-	val httpClient by lazy { OkHttpClient() }
+	private val httpClient by lazy { OkHttpClient() }
 
-	var localLabellingVersion = -1L
-	var localDataPackVersion = -1L
-	var serverLabellingVersion = -1L
-	var serverDataPackVersion = -1L
+	private var localLabellingVersion = -1L
+	private var localDataPackVersion = -1L
+	private var serverLabellingVersion = -1L
+	private var serverDataPackVersion = -1L
 
-	var labellingContent = ""
-	var dataPackContent = ""
+	private var labellingContent = ""
+	private var dataPackContent = ""
 
-	var force = false
+	private var force = false
 
 	companion object {
-		val FORCE = "data_downloader_service:force"
-		val LAST_SUCCESS = "data_downloader_service:last_success"
+		val FORCE = "services.DataDownloaderService:FORCE"
+		val LAST_SUCCESS = "services.DataDownloaderService:LAST_SUCCESS"
 
-		val MAX_DL_PART = 4
-		val DL_PART_LABELLING_VERSION = 1
-		val DL_PART_DATA_PACK_VERSION = 2
-		val DL_PART_LABELLING_CONTENT = 3
-		val DL_PART_DATA_PACK_CONTENT = 4
+		private val MAX_DL_PART = 4
+		private val DL_PART_LABELLING_VERSION = 1
+		private val DL_PART_DATA_PACK_VERSION = 2
+		private val DL_PART_LABELLING_CONTENT = 3
+		private val DL_PART_DATA_PACK_CONTENT = 4
 
-		val MAX_SAVE_PART = 3
-		val SAVE_PART_LABELLING = 1
-		val SAVE_PART_LOCATIONS = 2
-		val SAVE_PART_CONNECTIONS = 3
+		private val MAX_SAVE_PART = 3
+		private val SAVE_PART_LABELLING = 1
+		private val SAVE_PART_LOCATIONS = 2
+		private val SAVE_PART_CONNECTIONS = 3
+
+		private val NOTIFICATION_ID = 12345678
 	}
 
 	override fun onBind(intent: Intent?): IBinder? = null
@@ -63,14 +65,10 @@ class DataDownloaderService: Service() {
 
 		// run only if >24h since last successful check (or forced)
 		val msSinceLastRun = System.currentTimeMillis() - getLongPref(LAST_SUCCESS, 0L)
-		val msIn24Hours = 10// 24 * 60 * 60 * 1000L
+		val msIn24Hours = 24 * 60 * 60 * 1000L
 		if (!force && msSinceLastRun < msIn24Hours) {
 			return finish()
 		}
-
-		// get local versions
-		localLabellingVersion = getLongPref(LATEST_LABELLING_VERSION_KEY)
-		localDataPackVersion = getLongPref(LATEST_DATA_PACK_VERSION_KEY)
 
 		// run only if online
 		val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -81,6 +79,10 @@ class DataDownloaderService: Service() {
 		} else {
 			nextStep()
 		}
+
+		// get local versions
+		localLabellingVersion = getLongPref(LATEST_LABELLING_VERSION_KEY)
+		localDataPackVersion = getLongPref(LATEST_DATA_PACK_VERSION_KEY)
 	}
 
 	private fun nextStep() {
@@ -234,19 +236,24 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun finish() {
-		sendBroadcast(Intent(getString(R.string.intent_offline_data_updated)))
+		sendBroadcast(Intent(OfflineDatabase.STATE_UPDATED))
 		stopForeground(true)
-		notificationManager.cancel(NOTIFICATION_ID)
+		clearNotification()
 		stopSelf()
 	}
 
-	private val NOTIFICATION_ID = 61193
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
-	private fun updateNotification(message: String, done: Int = 0, max: Int = 1) = with(NotificationCompat.Builder(this)) {
-		setContentTitle(message)
-		setProgress(max, done, done == 0)
-		setSmallIcon(R.drawable.ic_mapper_app_white)
-		startForeground(NOTIFICATION_ID, build())
+	private fun updateNotification(message: String, done: Int = 0, max: Int = 1) {
+		with(NotificationCompat.Builder(this)) {
+			setContentTitle(message)
+			setProgress(max, done, done == 0)
+			setSmallIcon(R.drawable.ic_mapper_app_white)
+			startForeground(NOTIFICATION_ID, build())
+		}
+	}
+
+	private fun clearNotification() {
+		notificationManager.cancel(NOTIFICATION_ID)
 	}
 }

@@ -14,6 +14,10 @@ val DB_VERSION = 1
 
 class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
+	companion object {
+		val STATE_UPDATED = "data.OfflineDatabase:STATE_UPDATED"
+	}
+
 	override fun onCreate(db: SQLiteDatabase?) = onUpgrade(db, 0, DB_VERSION)
 
 	override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
