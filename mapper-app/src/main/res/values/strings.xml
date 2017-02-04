@@ -21,12 +21,9 @@
 	<string name="initial_download_btn_positive">Proceed</string>
 	<string name="initial_download_btn_negative">Later</string>
 
-	<string name="labelling_check_notification_title">Checking for new ILS data</string>
-	<string name="data_pack_check_notification_title">Checking for new London data</string>
-	<string name="labelling_download_notification_title">Downloading new ILS data</string>
-	<string name="data_pack_download_notification_title">Downloading new London data</string>
-	<string name="saving_offline_data_notification_title">Saving downloaded data</string>
-	<string name="saving_offline_data_notification_title_with_number">Saving downloaded data (%1$d of %2$d)</string>
+	<string name="downloading_offline_data_notification_title">Downloading offline data (%1$d of %2$d)</string>
+	<string name="saving_offline_data_notification_title">Saving downloaded data (%1$d of %2$d)</string>
+	<string name="saving_offline_data_notification_title_no_number">Saving downloaded data</string>
 
 	<string name="intent_offline_data_updated">uk.co.markormesher.easymaps.mapperapp.offline_data_updated</string>
 

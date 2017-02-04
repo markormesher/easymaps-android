@@ -38,6 +38,17 @@ class DataDownloaderService: Service() {
 	companion object {
 		val FORCE = "data_downloader_service:force"
 		val LAST_SUCCESS = "data_downloader_service:last_success"
+
+		val MAX_DL_PART = 4
+		val DL_PART_LABELLING_VERSION = 1
+		val DL_PART_DATA_PACK_VERSION = 2
+		val DL_PART_LABELLING_CONTENT = 3
+		val DL_PART_DATA_PACK_CONTENT = 4
+
+		val MAX_SAVE_PART = 3
+		val SAVE_PART_LABELLING = 1
+		val SAVE_PART_LOCATIONS = 2
+		val SAVE_PART_CONNECTIONS = 3
 	}
 
 	override fun onBind(intent: Intent?): IBinder? = null
@@ -87,7 +98,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun getLatestLabellingVersion() {
-		updateNotification(getString(R.string.labelling_check_notification_title))
+		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_LABELLING_VERSION, MAX_DL_PART))
 		val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/stats").get().build()
 		httpClient.newCall(request).enqueue(object: Callback {
 			override fun onFailure(call: Call?, e: IOException?) = finish()
@@ -105,7 +116,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun getLatestDataPackVersion() {
-		updateNotification(getString(R.string.data_pack_check_notification_title))
+		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_DATA_PACK_VERSION, MAX_DL_PART))
 		val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/stats").get().build()
 		httpClient.newCall(request).enqueue(object: Callback {
 			override fun onFailure(call: Call?, e: IOException?) = finish()
@@ -123,7 +134,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun downloadLatestLabelling() {
-		updateNotification(getString(R.string.labelling_download_notification_title))
+		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_LABELLING_CONTENT, MAX_DL_PART))
 		if (localLabellingVersion >= serverLabellingVersion) {
 			nextStep()
 		} else {
@@ -143,7 +154,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun downloadLatestDataPack() {
-		updateNotification(getString(R.string.data_pack_download_notification_title))
+		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_DATA_PACK_CONTENT, MAX_DL_PART))
 		if (localDataPackVersion >= serverDataPackVersion) {
 			nextStep()
 		} else {
@@ -163,7 +174,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun storeDownloadedLabelling() {
-		updateNotification(getString(R.string.saving_offline_data_notification_title))
+		updateNotification(getString(R.string.saving_offline_data_notification_title, SAVE_PART_LABELLING, MAX_SAVE_PART))
 
 		// TODO: store labellings
 
@@ -177,7 +188,7 @@ class DataDownloaderService: Service() {
 			return nextStep()
 		}
 
-		updateNotification(getString(R.string.saving_offline_data_notification_title))
+		updateNotification(getString(R.string.saving_offline_data_notification_title_no_number))
 
 		// try to parse data
 		val locations = ArrayList<Location>()
@@ -199,10 +210,16 @@ class DataDownloaderService: Service() {
 		// add to DB if parsing was successful
 		val db = OfflineDatabase(this)
 		db.updateLocations(locations, { done ->
-			updateNotification(getString(R.string.saving_offline_data_notification_title_with_number, 1, 2), done, locations.size)
+			updateNotification(
+					getString(R.string.saving_offline_data_notification_title, SAVE_PART_LOCATIONS, MAX_SAVE_PART),
+					done, locations.size
+			)
 		})
 		db.updateConnections(connections, { done ->
-			updateNotification(getString(R.string.saving_offline_data_notification_title_with_number, 2, 2), done, connections.size)
+			updateNotification(
+					getString(R.string.saving_offline_data_notification_title, SAVE_PART_CONNECTIONS, MAX_SAVE_PART),
+					done, connections.size
+			)
 		})
 
 		// save version
