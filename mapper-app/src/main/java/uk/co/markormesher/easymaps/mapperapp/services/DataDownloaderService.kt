@@ -19,8 +19,6 @@ import uk.co.markormesher.easymaps.sdk.setLongPref
 import java.io.IOException
 import java.util.*
 
-// TODO: quit if < 24h since last check
-
 class DataDownloaderService: Service() {
 
 	var currentStep = 0
@@ -35,11 +33,11 @@ class DataDownloaderService: Service() {
 	var labellingContent = ""
 	var dataPackContent = ""
 
-	// TODO: use this
 	var force = false
 
 	companion object {
-		val FORCE = "data_downloader_service_force"
+		val FORCE = "data_downloader_service:force"
+		val LAST_SUCCESS = "data_downloader_service:last_success"
 	}
 
 	override fun onBind(intent: Intent?): IBinder? = null
@@ -52,6 +50,13 @@ class DataDownloaderService: Service() {
 	override fun onCreate() {
 		super.onCreate()
 
+		// run only if >24h since last successful check (or forced)
+		val msSinceLastRun = System.currentTimeMillis() - getLongPref(LAST_SUCCESS, 0L)
+		val msIn24Hours = 10// 24 * 60 * 60 * 1000L
+		if (!force && msSinceLastRun < msIn24Hours) {
+			return finish()
+		}
+
 		// get local versions
 		localLabellingVersion = getLongPref(LATEST_LABELLING_VERSION_KEY)
 		localDataPackVersion = getLongPref(LATEST_DATA_PACK_VERSION_KEY)
@@ -61,7 +66,7 @@ class DataDownloaderService: Service() {
 		val activeNetworkInfo = connManager.activeNetworkInfo
 		val connected = activeNetworkInfo?.isConnectedOrConnecting ?: false
 		if (!connected) {
-			finish()
+			return finish()
 		} else {
 			nextStep()
 		}
@@ -76,6 +81,7 @@ class DataDownloaderService: Service() {
 			4 -> downloadLatestDataPack()
 			5 -> storeDownloadedLabelling()
 			6 -> storeDownloadedDataPack()
+			7 -> onSuccess()
 			else -> finish()
 		}
 	}
@@ -167,7 +173,7 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun storeDownloadedDataPack() {
-		if (localDataPackVersion >= serverDataPackVersion || dataPackContent.isNullOrEmpty()) {
+		if (localDataPackVersion >= serverDataPackVersion) {
 			return nextStep()
 		}
 
@@ -202,6 +208,11 @@ class DataDownloaderService: Service() {
 		// save version
 		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
 
+		nextStep()
+	}
+
+	private fun onSuccess() {
+		setLongPref(LAST_SUCCESS, System.currentTimeMillis())
 		nextStep()
 	}
 
