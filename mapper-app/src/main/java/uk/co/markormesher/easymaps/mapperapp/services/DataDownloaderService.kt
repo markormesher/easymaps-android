@@ -180,8 +180,12 @@ class DataDownloaderService: Service() {
 
 		// add to DB if parsing was successful
 		val db = OfflineDatabase(this)
-		db.updateLocations(locations)
-		db.updateConnections(connections)
+		db.updateLocations(locations, { done ->
+			updateNotification(getString(R.string.saving_offline_data_notification_title_with_number, 1, 2), done, locations.size)
+		})
+		db.updateConnections(connections, { done ->
+			updateNotification(getString(R.string.saving_offline_data_notification_title_with_number, 2, 2), done, connections.size)
+		})
 
 		// save version
 		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
@@ -199,9 +203,9 @@ class DataDownloaderService: Service() {
 	private val NOTIFICATION_ID = 61193
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
-	private fun updateNotification(message: String) = with(NotificationCompat.Builder(this)) {
+	private fun updateNotification(message: String, done: Int = 0, max: Int = 1) = with(NotificationCompat.Builder(this)) {
 		setContentTitle(message)
-		setProgress(1, 0, true)
+		setProgress(max, done, done == 0)
 		setSmallIcon(R.drawable.ic_mapper_app_white)
 		startForeground(NOTIFICATION_ID, build())
 	}

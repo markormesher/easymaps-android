@@ -8,7 +8,6 @@ import java.util.*
 
 // TODO: store location lat/lon
 // TODO: store labellings
-// TODO: report saving progress via callback
 
 val DB_NAME = "OfflineData"
 val DB_VERSION = 1
@@ -30,16 +29,22 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		db?.execSQL(ConnectionSchema.v1._createTable)
 	}
 
-	fun updateLocations(locations: List<Location>) {
+	fun updateLocations(locations: List<Location>, statusCallback: (qtyDone: Int) -> Unit) {
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
 		db.delete(LocationSchema._tableName, null, null)
-		locations.forEach { l -> db.insert(LocationSchema._tableName, null, l.toContentValues()) }
+		locations.forEachIndexed { i, l ->
+			db.insert(LocationSchema._tableName, null, l.toContentValues())
+			statusCallback(i + 1)
+		}
 	}
 
-	fun updateConnections(connections: List<Connection>) {
+	fun updateConnections(connections: List<Connection>, statusCallback: (qtyDone: Int) -> Unit) {
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
 		db.delete(ConnectionSchema._tableName, null, null)
-		connections.forEach { c -> db.insert(ConnectionSchema._tableName, null, c.toContentValues()) }
+		connections.forEachIndexed { i, c ->
+			db.insert(ConnectionSchema._tableName, null, c.toContentValues())
+			statusCallback(i + 1)
+		}
 	}
 
 	fun getAttractions(): List<Location> {
