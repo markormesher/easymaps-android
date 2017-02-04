@@ -6,11 +6,8 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import java.util.*
 
-// TODO: store location lat/lon
-// TODO: store labellings
-
 val DB_NAME = "OfflineData"
-val DB_VERSION = 2
+val DB_VERSION = 3
 
 class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
@@ -25,6 +22,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		when (oldVersion) {
 			0 -> upgradeToV1(db)
 			1 -> upgradeToV2(db)
+			2 -> upgradeToV3(db)
 		}
 		onUpgrade(db, oldVersion + 1, newVersion)
 	}
@@ -37,6 +35,19 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 	private fun upgradeToV2(db: SQLiteDatabase?) {
 		db?.execSQL(LocationSchema.v2.addLat)
 		db?.execSQL(LocationSchema.v2.addLon)
+	}
+
+	private fun upgradeToV3(db: SQLiteDatabase?) {
+		db?.execSQL(LabelSchema.v3.createTable)
+	}
+
+	fun updateLabels(labels: List<Label>, statusCallback: (qtyDone: Int) -> Unit) {
+		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
+		db.delete(LabelSchema._tableName, null, null)
+		labels.forEachIndexed { i, l ->
+			db.insert(LabelSchema._tableName, null, l.toContentValues())
+			statusCallback(i + 1)
+		}
 	}
 
 	fun updateLocations(locations: List<Location>, statusCallback: (qtyDone: Int) -> Unit) {

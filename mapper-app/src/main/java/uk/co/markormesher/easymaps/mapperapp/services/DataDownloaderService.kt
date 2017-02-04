@@ -12,6 +12,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import uk.co.markormesher.easymaps.mapperapp.*
 import uk.co.markormesher.easymaps.mapperapp.data.Connection
+import uk.co.markormesher.easymaps.mapperapp.data.Label
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.sdk.getLongPref
@@ -176,11 +177,30 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun storeDownloadedLabelling() {
-		updateNotification(getString(R.string.saving_offline_data_notification_title, SAVE_PART_LABELLING, MAX_SAVE_PART))
+		if (localLabellingVersion >= serverLabellingVersion) {
+			return nextStep()
+		}
 
-		// TODO: store labellings
+		updateNotification(getString(R.string.saving_offline_data_notification_title_no_number))
 
-		// pretend for now
+		val lines = labellingContent.split("\n")
+		val labels = ArrayList<Label>()
+		lines.forEach { line ->
+			val label = Label.fromLine(line)
+			if (label != null) {
+				labels.add(label)
+			}
+		}
+
+		val db = OfflineDatabase(this)
+		db.updateLabels(labels, { done ->
+			updateNotification(
+					getString(R.string.saving_offline_data_notification_title, SAVE_PART_LABELLING, MAX_SAVE_PART),
+					done, labels.size
+			)
+		})
+		db.close()
+
 		setLongPref(LATEST_LABELLING_VERSION_KEY, serverLabellingVersion)
 		nextStep()
 	}
@@ -223,10 +243,9 @@ class DataDownloaderService: Service() {
 					done, connections.size
 			)
 		})
+		db.close()
 
-		// save version
 		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
-
 		nextStep()
 	}
 
