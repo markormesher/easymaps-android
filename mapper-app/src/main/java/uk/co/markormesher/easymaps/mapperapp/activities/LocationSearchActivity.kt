@@ -27,6 +27,7 @@ class LocationSearchActivity: BaseActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+		setFinishOnTouchOutside(false)
 		setContentView(R.layout.activity_location_search)
 		loading_icon.startAnimation(iconSpinAnimation)
 
