@@ -32,7 +32,7 @@ class LocationSearchActivity: BaseActivity() {
 
 		search_input.addTextChangedListener(object: AbstractTextWatcher() {
 			override fun afterTextChanged(str: Editable?) {
-				locationListAdapter.filter.filter(str)
+				locationListAdapter.filter.filter(str?.trim() ?: "")
 			}
 		})
 

@@ -1,12 +1,11 @@
 package uk.co.markormesher.easymaps.mapperapp.adapters
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +15,6 @@ import kotlinx.android.synthetic.main.list_item_attraction.view.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import java.util.*
-
-// TODO: fix double result on "tower " as search
 
 class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
@@ -56,39 +53,46 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 		val title = v.location_title!!
 	}
 
-	override fun getFilter(): Filter {
-		return object: Filter() {
+	private val locationFilter by lazy {
+		object: Filter() {
 
-			val emptyFilter by lazy { FilterResults() }
-
-			override fun performFiltering(constraint: CharSequence?): FilterResults {
+			override fun performFiltering(constraint: CharSequence?): Filter.FilterResults? {
 				activeFilter = constraint?.toString() ?: ""
 
-				filteredLocations.clear()
 				if (constraint?.isBlank() ?: true) {
-					filteredLocations.addAll(locations)
-				} else {
-					filteredLocations.addAll(locations.filter { l ->
-						l.getDisplayTitle(context).contains(constraint!!, true)
-					})
+					return null
 				}
 
-				return emptyFilter
+				val filterResults = FilterResults()
+				filterResults.values = locations.filter { l ->
+					l.getDisplayTitle(context).contains(constraint!!, true)
+				}
+
+				return filterResults
 			}
 
 			@Suppress("UNCHECKED_CAST")
-			override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+			override fun publishResults(constraint: CharSequence?, results: Filter.FilterResults?) {
+				filteredLocations.clear()
+				if (results == null) {
+					filteredLocations.addAll(locations)
+				} else {
+					filteredLocations.addAll(results.values as Collection<Location>)
+				}
 				notifyDataSetChanged()
 			}
 		}
 	}
 
+	override fun getFilter(): Filter = locationFilter
+
 	private fun highlightByFilter(raw: String): SpannableString {
 		val output = SpannableString(raw)
 		if (!activeFilter.isBlank()) {
-			val pos = raw.toLowerCase().indexOf(activeFilter.toLowerCase())
-			if (pos >= 0) {
-				output.setSpan(ForegroundColorSpan(Color.RED), pos, pos + activeFilter.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+			var pos = raw.indexOf(activeFilter, 0, true)
+			while (pos >= 0) {
+				output.setSpan(StyleSpan(Typeface.BOLD), pos, pos + activeFilter.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+				pos = raw.indexOf(activeFilter, pos + 1, true)
 			}
 		}
 		return output

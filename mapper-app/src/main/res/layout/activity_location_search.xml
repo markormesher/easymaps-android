@@ -21,6 +21,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
 			android:hint="@string/select_location_search"
+			android:inputType="textNoSuggestions"
 			android:visibility="gone"/>
 
 	<android.support.v7.widget.RecyclerView
