@@ -8,7 +8,7 @@ import uk.co.markormesher.easymaps.sdk.checkPermissionList
 import uk.co.markormesher.easymaps.sdk.checkPermissionRequestResult
 import uk.co.markormesher.easymaps.sdk.requestPermissionList
 
-class EntryActivity : BaseActivity() {
+class EntryActivity: BaseActivity() {
 
 	val REQUIRED_PERMISSIONS = arrayOf(
 			Manifest.permission.ACCESS_WIFI_STATE,
