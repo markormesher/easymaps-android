@@ -3,6 +3,9 @@
 
 	<string name="app_name">EasyMaps</string>
 
+	<string name="location_attraction_display_template">%s</string>
+	<string name="location_station_display_template">%s Station</string>
+
 	<string name="checking_for_offline_data">Checking for offline data…</string>
 	<string name="waiting_for_offline_data">Waiting for offline data…</string>
 	<string name="offline_data_download_failed">Failed to download offline data! Tap to retry.</string>
@@ -31,7 +34,5 @@
 	<string name="attraction_list_search">Search…</string>
 
 	<string name="select_location_search">Search…</string>
-	<string name="select_location_attraction_template">%s</string>
-	<string name="select_location_station_template">%s Station</string>
 
 </resources>

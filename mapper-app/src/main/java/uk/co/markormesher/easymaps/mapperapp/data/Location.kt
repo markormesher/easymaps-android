@@ -1,8 +1,10 @@
 package uk.co.markormesher.easymaps.mapperapp.data
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import org.json.JSONObject
+import uk.co.markormesher.easymaps.mapperapp.R
 
 data class Location(
 		val id: String,
@@ -11,6 +13,11 @@ data class Location(
 		val type: LocationType,
 		val lat: Double,
 		val lon: Double) {
+
+	fun getDisplayTitle(context: Context): String = when (type) {
+		LocationType.ATTRACTION -> context.getString(R.string.location_attraction_display_template, title)
+		LocationType.STATION -> context.getString(R.string.location_station_display_template, title)
+	}
 
 	fun toContentValues(): ContentValues {
 		val cv = ContentValues()
@@ -58,7 +65,7 @@ enum class LocationType(val id: Int) {
 			else -> throw IllegalArgumentException()
 		}
 
-		fun fromString(str: String): LocationType = when(str) {
+		fun fromString(str: String): LocationType = when (str) {
 			"attraction" -> ATTRACTION
 			"station" -> STATION
 			else -> STATION

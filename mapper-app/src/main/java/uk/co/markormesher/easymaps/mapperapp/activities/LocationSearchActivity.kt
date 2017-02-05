@@ -2,16 +2,17 @@ package uk.co.markormesher.easymaps.mapperapp.activities
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
 import android.view.Window
 import kotlinx.android.synthetic.main.activity_location_search.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import uk.co.markormesher.easymaps.sdk.AbstractTextWatcher
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
 // TODO: display loading icon until results are ready
-// TODO: implement filtering by search term
 // TODO: pass result to activity
 
 class LocationSearchActivity: BaseActivity() {
@@ -25,6 +26,12 @@ class LocationSearchActivity: BaseActivity() {
 		location_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 		location_list.adapter = locationListAdapter
 		loadLocations()
+
+		search_input.addTextChangedListener(object: AbstractTextWatcher() {
+			override fun afterTextChanged(str: Editable?) {
+				locationListAdapter.filter.filter(str)
+			}
+		})
 	}
 
 	private fun loadLocations() {
@@ -32,7 +39,7 @@ class LocationSearchActivity: BaseActivity() {
 		val locations = db.getLocations().sortedBy(Location::title)
 		locationListAdapter.locations.clear()
 		locationListAdapter.locations.addAll(locations)
-		locationListAdapter.notifyDataSetChanged()
+		locationListAdapter.filter.filter("")
 	}
 
 }
