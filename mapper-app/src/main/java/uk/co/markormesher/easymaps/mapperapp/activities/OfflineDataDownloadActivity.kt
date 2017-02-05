@@ -16,6 +16,8 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 
 // TODO: handle back-press during update
 
+// TODO: move service logic into here
+
 class OfflineDataDownloadActivity: BaseActivity() {
 
 	private val iconSpinAnimation by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }

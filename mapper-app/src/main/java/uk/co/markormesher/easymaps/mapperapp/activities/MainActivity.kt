@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
@@ -15,12 +14,12 @@ import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-// TODO: new activity - route planner
 // TODO: new server - location sensing
 
 class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 
 	private val attractionListAdapter by lazy { AttractionListAdapter(this, this) }
+	private var attractionsLoaded = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -55,7 +54,12 @@ class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 	}
 
 	private fun loadAttractions() {
+		if (attractionsLoaded) {
+			return
+		}
+
 		val attractions = OfflineDatabase(this).getAttractions()
+		attractionListAdapter.attractions.clear()
 		attractionListAdapter.attractions.addAll(attractions)
 		attractionListAdapter.notifyDataSetChanged()
 
@@ -63,6 +67,8 @@ class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 		loading_icon.visibility = View.GONE
 		status_bar.visibility = View.VISIBLE
 		attraction_grid.visibility = View.VISIBLE
+
+		attractionsLoaded = true
 	}
 
 	override fun onAttractionClick(type: Int, location: Location?) {
@@ -85,7 +91,9 @@ class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 	}
 
 	private fun onDestinationSelected(locationId: String) {
-		Toast.makeText(this, "We're going to $locationId!", Toast.LENGTH_SHORT).show()
+		val intent = Intent(this, RoutePlanningActivity::class.java)
+		intent.putExtra("DESTINATION", locationId)
+		startActivity(intent)
 	}
 
 }
