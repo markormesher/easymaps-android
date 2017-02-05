@@ -14,14 +14,14 @@ import uk.co.markormesher.easymaps.mapperapp.helpers.CircleCropTransformation
 import uk.co.markormesher.easymaps.mapperapp.helpers.getTintedDrawable
 import java.util.*
 
-class AttractionListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AttractionListAdapter(val context: Context, val clickListener: ClickListener? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	companion object {
 		private val SEARCH_BG = "https://raw.githubusercontent.com/markormesher/easymaps-data-packs/master/london-images/search-bg.png"
 
-		private val TYPE_INTRO = 1
-		private val TYPE_SEARCH = 2
-		private val TYPE_ATTRACTION = 3
+		val TYPE_INTRO = 1
+		val TYPE_SEARCH = 2
+		val TYPE_ATTRACTION = 3
 	}
 
 	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
@@ -37,51 +37,48 @@ class AttractionListAdapter(val context: Context): RecyclerView.Adapter<Recycler
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		when (getItemViewType(position)) {
-			TYPE_INTRO -> {
-				with(holder as IntroViewHolder) {
-					val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-					val softTime = if (hour >= 20) {
-						context.getString(R.string.select_attraction_suffix_night)
-					} else if (hour >= 17) {
-						context.getString(R.string.select_attraction_suffix_evening)
-					} else if (hour >= 12) {
-						context.getString(R.string.select_attraction_suffix_afternoon)
-					} else {
-						context.getString(R.string.select_attraction_suffix_morning)
-					}
-					title.text = context.getString(R.string.select_attraction, softTime)
+			TYPE_INTRO -> with(holder as IntroViewHolder) {
+				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_INTRO) }
+				val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+				val softTime = if (hour >= 20) {
+					context.getString(R.string.select_attraction_suffix_night)
+				} else if (hour >= 17) {
+					context.getString(R.string.select_attraction_suffix_evening)
+				} else if (hour >= 12) {
+					context.getString(R.string.select_attraction_suffix_afternoon)
+				} else {
+					context.getString(R.string.select_attraction_suffix_morning)
 				}
+				title.text = context.getString(R.string.select_attraction, softTime)
 			}
 
-			TYPE_SEARCH -> {
-				with(holder as AttractionViewHolder) {
-					title.text = context.getString(R.string.attraction_list_search)
-					icon.setImageResource(R.drawable.ic_search_white_48dp)
-					Picasso
-							.with(context)
-							.load(SEARCH_BG)
-							.transform(CircleCropTransformation())
-							.into(image)
-				}
+			TYPE_SEARCH -> with(holder as AttractionViewHolder) {
+				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_SEARCH) }
+				title.text = context.getString(R.string.attraction_list_search)
+				icon.setImageResource(R.drawable.ic_search_white_48dp)
+				Picasso
+						.with(context)
+						.load(SEARCH_BG)
+						.transform(CircleCropTransformation())
+						.into(image)
 			}
 
-			else -> {
+			TYPE_ATTRACTION -> with(holder as AttractionViewHolder) {
 				val attraction = attractions[position - 2]
-				with(holder as AttractionViewHolder) {
-					title.text = attraction.title
-					icon.setImageDrawable(null)
-					Picasso
-							.with(context)
-							.load(attraction.image)
-							.transform(CircleCropTransformation())
-							.placeholder(context.getTintedDrawable(R.drawable.ic_photo_camera_white_36dp, R.color.light_grey))
-							.into(image)
-				}
+				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_ATTRACTION, attraction) }
+				title.text = attraction.title
+				icon.setImageDrawable(null)
+				Picasso
+						.with(context)
+						.load(attraction.image)
+						.transform(CircleCropTransformation())
+						.placeholder(context.getTintedDrawable(R.drawable.ic_photo_camera_white_36dp, R.color.light_grey))
+						.into(image)
 			}
 		}
 	}
 
-	// size, plus one for intro, plus one for search
+	// plus one for intro, plus one for search
 	override fun getItemCount(): Int = attractions.size + 2
 
 	override fun getItemViewType(position: Int): Int = when (position) {
@@ -91,13 +88,19 @@ class AttractionListAdapter(val context: Context): RecyclerView.Adapter<Recycler
 	}
 
 	class IntroViewHolder(v: View): RecyclerView.ViewHolder(v) {
+		val rootView = v
 		val title = v.title!!
 	}
 
 	class AttractionViewHolder(v: View): RecyclerView.ViewHolder(v) {
+		val rootView = v
 		val title = v.location_title!!
 		val image = v.location_image!!
 		val icon = v.icon!!
+	}
+
+	interface ClickListener {
+		fun onAttractionClick(type: Int, location: Location? = null)
 	}
 
 }

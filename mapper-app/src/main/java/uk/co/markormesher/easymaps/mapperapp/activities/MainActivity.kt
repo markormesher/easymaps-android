@@ -10,11 +10,13 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
+import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
 import uk.co.markormesher.easymaps.sdk.BaseActivity
@@ -24,13 +26,11 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new activity - route planner
 // TODO: new server - location sensing
 
-// TODO: click listener on recycler view
-
-class MainActivity: BaseActivity() {
+class MainActivity: BaseActivity(), AttractionListAdapter.ClickListener {
 
 	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
-	private val attractionListAdapter by lazy { AttractionListAdapter(this) }
+	private val attractionListAdapter by lazy { AttractionListAdapter(this, this) }
 
 	private val initialOfflineDataDownloadConfirmation: AlertDialog by lazy {
 		with(AlertDialog.Builder(this)) {
@@ -68,10 +68,6 @@ class MainActivity: BaseActivity() {
 		}
 		attraction_grid.layoutManager = gridLayoutManager
 		attraction_grid.adapter = attractionListAdapter
-
-		status_icon.setOnClickListener {
-			startActivity(Intent(this, LocationSearchActivity::class.java))
-		}
 	}
 
 	override fun onResume() {
@@ -128,6 +124,13 @@ class MainActivity: BaseActivity() {
 		updateFullPageStatus(FullPageStatusType.NONE)
 	}
 
+	override fun onAttractionClick(type: Int, location: Location?) {
+		when (type) {
+			AttractionListAdapter.TYPE_SEARCH -> startActivity(Intent(this, LocationSearchActivity::class.java))
+			AttractionListAdapter.TYPE_ATTRACTION -> Toast.makeText(this, location?.getDisplayTitle(this), Toast.LENGTH_SHORT).show()
+		}
+	}
+
 	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {
 		when (type) {
 			FullPageStatusType.NONE -> {
@@ -159,6 +162,10 @@ class MainActivity: BaseActivity() {
 		full_page_status_icon.setOnClickListener(null)
 	}
 
+	enum class FullPageStatusType {
+		WAITING, ERROR, NONE
+	}
+
 	private fun updateStatusBar(type: StatusBarType, heading: String, message: String) {
 		status_heading.text = heading
 		status_message.text = message
@@ -185,10 +192,6 @@ class MainActivity: BaseActivity() {
 		INFO,
 		LOCATION_ON,
 		LOCATION_OFF,
-	}
-
-	enum class FullPageStatusType {
-		WAITING, ERROR, NONE
 	}
 
 }
