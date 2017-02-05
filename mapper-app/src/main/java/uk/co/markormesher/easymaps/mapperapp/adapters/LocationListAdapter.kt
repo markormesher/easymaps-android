@@ -16,7 +16,7 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import java.util.*
 
-class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+class LocationListAdapter(val context: Context, val selectListener: OnSelectListener? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
 	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
@@ -33,10 +33,12 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 			if (filteredLocations.isEmpty()) {
 				title.text = context.getString(R.string.select_location_no_locations, activeFilter)
 				title.setTypeface(null, Typeface.ITALIC)
+				rootView.setOnClickListener { }
 			} else {
 				val location = filteredLocations[position]
 				title.text = highlightByFilter(location.getDisplayTitle(context))
 				title.setTypeface(null, Typeface.NORMAL)
+				rootView.setOnClickListener { selectListener?.onLocationSelected(location.id) }
 			}
 		}
 	}
@@ -50,6 +52,7 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 	}
 
 	class LocationViewHolder(v: View): RecyclerView.ViewHolder(v) {
+		val rootView = v
 		val title = v.location_title!!
 	}
 
@@ -96,6 +99,10 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 			}
 		}
 		return output
+	}
+
+	interface OnSelectListener {
+		fun onLocationSelected(locationId: String)
 	}
 
 }

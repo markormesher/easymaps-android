@@ -1,5 +1,7 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
@@ -18,11 +20,16 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 
 // TODO: pass result to activity
 
-class LocationSearchActivity: BaseActivity() {
+class LocationSearchActivity: BaseActivity(), LocationListAdapter.OnSelectListener {
+
+	companion object {
+		val REQUEST_CODE = 35157
+		val LOCATION_ID_KEY = "activities.LocationSearchActivity:LOCATION_ID_KEY"
+	}
 
 	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
-	private val locationListAdapter by lazy { LocationListAdapter(this) }
+	private val locationListAdapter by lazy { LocationListAdapter(this, this) }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -57,4 +64,10 @@ class LocationSearchActivity: BaseActivity() {
 		location_list.visibility = VISIBLE
 	}
 
+	override fun onLocationSelected(locationId: String) {
+		val data = Intent()
+		data.putExtra(LOCATION_ID_KEY, locationId)
+		setResult(Activity.RESULT_OK, data)
+		finish()
+	}
 }

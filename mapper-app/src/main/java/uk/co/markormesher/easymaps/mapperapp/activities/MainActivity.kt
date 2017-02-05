@@ -1,5 +1,6 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -26,7 +27,7 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new activity - route planner
 // TODO: new server - location sensing
 
-class MainActivity: BaseActivity(), AttractionListAdapter.ClickListener {
+class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 
 	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
@@ -126,9 +127,25 @@ class MainActivity: BaseActivity(), AttractionListAdapter.ClickListener {
 
 	override fun onAttractionClick(type: Int, location: Location?) {
 		when (type) {
-			AttractionListAdapter.TYPE_SEARCH -> startActivity(Intent(this, LocationSearchActivity::class.java))
-			AttractionListAdapter.TYPE_ATTRACTION -> Toast.makeText(this, location?.getDisplayTitle(this), Toast.LENGTH_SHORT).show()
+			AttractionListAdapter.TYPE_SEARCH -> startActivityForResult(
+					Intent(this, LocationSearchActivity::class.java),
+					LocationSearchActivity.REQUEST_CODE
+			)
+
+			AttractionListAdapter.TYPE_ATTRACTION -> if (location != null) {
+				onDestinationSelected(location.id)
+			}
 		}
+	}
+
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		if (requestCode == LocationSearchActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			onDestinationSelected(data?.getStringExtra(LocationSearchActivity.LOCATION_ID_KEY)!!)
+		}
+	}
+
+	private fun onDestinationSelected(locationId: String) {
+		Toast.makeText(this, "We're going to $locationId!", Toast.LENGTH_SHORT).show()
 	}
 
 	private fun updateFullPageStatus(type: FullPageStatusType, message: String = "") {

@@ -14,7 +14,7 @@ import uk.co.markormesher.easymaps.mapperapp.helpers.CircleCropTransformation
 import uk.co.markormesher.easymaps.mapperapp.helpers.getTintedDrawable
 import java.util.*
 
-class AttractionListAdapter(val context: Context, val clickListener: ClickListener? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AttractionListAdapter(val context: Context, val clickListener: OnClickListener? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	companion object {
 		private val SEARCH_BG = "https://raw.githubusercontent.com/markormesher/easymaps-data-packs/master/london-images/search-bg.png"
@@ -99,7 +99,7 @@ class AttractionListAdapter(val context: Context, val clickListener: ClickListen
 		val icon = v.icon!!
 	}
 
-	interface ClickListener {
+	interface OnClickListener {
 		fun onAttractionClick(type: Int, location: Location? = null)
 	}
 
