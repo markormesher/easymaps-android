@@ -33,7 +33,8 @@
 		<activity
 				android:name=".activities.LocationSearchActivity"
 				android:theme="@style/Theme.AppCompat.Light.Dialog"
-				android:excludeFromRecents="true"/>
+				android:excludeFromRecents="true"
+				android:windowSoftInputMode="adjustResize"/>
 
 		<service
 				android:name=".services.DataDownloaderService"
