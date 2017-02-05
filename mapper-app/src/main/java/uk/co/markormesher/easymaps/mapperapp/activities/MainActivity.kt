@@ -25,13 +25,14 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new server - location sensing
 
 // TODO: click listener on recycler view
-// TODO: make things private where possible
 
 class MainActivity: BaseActivity() {
 
-	val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
+	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
-	val initialOfflineDataDownloadConfirmation: AlertDialog by lazy {
+	private val attractionListAdapter by lazy { AttractionListAdapter(this) }
+
+	private val initialOfflineDataDownloadConfirmation: AlertDialog by lazy {
 		with(AlertDialog.Builder(this)) {
 			setTitle(getString(R.string.initial_download_title))
 			setMessage(makeHtml(getString(R.string.initial_download_body)))
@@ -43,10 +44,7 @@ class MainActivity: BaseActivity() {
 			create()
 		}
 	}
-
-	val attractionListAdapter by lazy { AttractionListAdapter(this) }
-
-	var triedInitialOfflineDataDownload = false
+	private var triedInitialOfflineDataDownload = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
