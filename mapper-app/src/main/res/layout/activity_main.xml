@@ -7,92 +7,32 @@
 		android:layout_height="match_parent"
 		tools:context=".activities.MainActivity">
 
-	<LinearLayout
-			android:id="@+id/status_bar_wrapper"
+	<ImageView
+			android:id="@+id/loading_icon"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_centerInParent="true"
+			android:src="@drawable/ic_hourglass_empty_white_48dp"
+			android:tint="@color/primary_dark"
+			android:contentDescription="@string/waiting_for_offline_data"/>
+
+	<uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
+			android:id="@+id/status_bar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
-			android:paddingTop="@dimen/space_micro"
-			android:paddingBottom="@dimen/space_micro"
-			android:paddingLeft="@dimen/space_micro"
-			android:paddingRight="@dimen/space_micro"
-			android:orientation="horizontal"
-			android:gravity="center_vertical"
-			android:weightSum="1"
-			android:background="@color/primary">
-
-		<ImageView
-				android:id="@+id/status_icon"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
-				android:layout_marginRight="@dimen/space_micro"
-				android:layout_marginEnd="@dimen/space_micro"
-				android:src="@drawable/ic_info_outline_white_48dp"
-				android:tint="@color/white"/>
-
-		<LinearLayout
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:orientation="vertical">
-
-			<TextView
-					android:id="@+id/status_heading"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					style="@style/Text.SubHeading"
-					android:textColor="@color/white"/>
-
-			<TextView
-					android:id="@+id/status_message"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					style="@style/Text"
-					android:textColor="@color/white"/>
-
-		</LinearLayout>
-
-	</LinearLayout>
-
-	<LinearLayout
-			android:id="@+id/full_page_status_wrapper"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_below="@id/status_bar_wrapper"
-			android:layout_alignParentBottom="true"
-			android:paddingTop="@dimen/space_micro"
-			android:paddingBottom="@dimen/space_micro"
-			android:paddingLeft="@dimen/space_micro"
-			android:paddingRight="@dimen/space_micro"
-			android:orientation="vertical"
-			android:padding="@dimen/space_nano"
-			android:gravity="center">
-
-		<ImageView
-				android:id="@+id/full_page_status_icon"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
-				android:layout_marginBottom="@dimen/space_micro"
-				android:src="@drawable/ic_hourglass_empty_white_48dp"
-				android:tint="@color/primary_dark"/>
-
-		<TextView
-				android:id="@+id/full_page_status_message"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				style="@style/Text"/>
-
-	</LinearLayout>
+			android:visibility="gone"/>
 
 	<android.support.v7.widget.RecyclerView
 			android:id="@+id/attraction_grid"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_below="@id/status_bar_wrapper"
+			android:layout_below="@id/status_bar"
 			android:layout_alignParentBottom="true"
 			android:padding="@dimen/space_nano"
 			android:clipToPadding="false"
 			android:scrollbarStyle="outsideOverlay"
-			android:scrollbars="vertical"/>
+			android:scrollbars="vertical"
+			android:visibility="gone"/>
 
 </RelativeLayout>

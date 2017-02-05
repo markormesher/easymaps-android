@@ -1,9 +1,14 @@
 package uk.co.markormesher.easymaps.mapperapp.data
 
 import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
+import uk.co.markormesher.easymaps.sdk.getLongPref
 import java.util.*
 
 val DB_NAME = "OfflineData"
@@ -13,6 +18,17 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 
 	companion object {
 		val STATE_UPDATED = "data.OfflineDatabase:STATE_UPDATED"
+
+		fun isPopulated(context: Context): Boolean {
+			return context.getLongPref(LATEST_LABELLING_VERSION_KEY) > 0
+					&& context.getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
+		}
+
+		fun startBackgroundUpdate(context: Context, force: Boolean = false) {
+			val intent = Intent(context, DataDownloaderService::class.java)
+			intent.putExtra(DataDownloaderService.FORCE, force)
+			context.startService(intent)
+		}
 	}
 
 	override fun onCreate(db: SQLiteDatabase?) = onUpgrade(db, 0, DB_VERSION)
@@ -48,6 +64,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 			db.insert(LabelSchema._tableName, null, l.toContentValues())
 			statusCallback(i + 1)
 		}
+		db.close()
 	}
 
 	fun updateLocations(locations: List<Location>, statusCallback: (qtyDone: Int) -> Unit) {
@@ -57,6 +74,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 			db.insert(LocationSchema._tableName, null, l.toContentValues())
 			statusCallback(i + 1)
 		}
+		db.close()
 	}
 
 	fun updateConnections(connections: List<Connection>, statusCallback: (qtyDone: Int) -> Unit) {
@@ -66,6 +84,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 			db.insert(ConnectionSchema._tableName, null, c.toContentValues())
 			statusCallback(i + 1)
 		}
+		db.close()
 	}
 
 	fun getAttractions(): List<Location> {
@@ -81,6 +100,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 			} while (cursor.moveToNext())
 		}
 		cursor.close()
+		db.close()
 		return output
 	}
 
@@ -94,6 +114,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 			} while (cursor.moveToNext())
 		}
 		cursor.close()
+		db.close()
 		return output
 	}
 

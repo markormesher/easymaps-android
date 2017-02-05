@@ -36,6 +36,10 @@
 				android:excludeFromRecents="true"
 				android:windowSoftInputMode="adjustResize"/>
 
+		<activity
+				android:name=".activities.OfflineDataDownloadActivity"
+				android:launchMode="singleTask"/>
+
 		<service
 				android:name=".services.DataDownloaderService"
 				android:exported="false"

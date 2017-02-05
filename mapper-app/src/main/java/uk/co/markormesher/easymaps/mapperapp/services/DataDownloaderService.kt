@@ -218,7 +218,7 @@ class DataDownloaderService: Service() {
 		try {
 			val jsonRoot = JSONObject(dataPackContent)
 
-			val jsonLocations = jsonRoot.getJSONObject("attractions")
+			val jsonLocations = jsonRoot.getJSONObject("locations")
 			jsonLocations.keys().forEach { id -> locations.add(Location.fromJson(id, jsonLocations.getJSONObject(id))) }
 
 			val jsonConnections = jsonRoot.getJSONArray("connections")
