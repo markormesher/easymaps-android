@@ -7,12 +7,21 @@
 		android:layout_height="match_parent"
 		tools:context=".activities.LocationSearchActivity">
 
+	<ImageView
+			android:id="@+id/loading_icon"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_centerInParent="true"
+			android:src="@drawable/ic_hourglass_empty_white_48dp"
+			android:tint="@color/primary_dark"/>
+
 	<EditText
 			android:id="@+id/search_input"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
-			android:hint="@string/select_location_search"/>
+			android:hint="@string/select_location_search"
+			android:visibility="gone"/>
 
 	<android.support.v7.widget.RecyclerView
 			android:id="@+id/location_list"

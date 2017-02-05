@@ -25,6 +25,7 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 // TODO: new server - location sensing
 
 // TODO: click listener on recycler view
+// TODO: make things private where possible
 
 class MainActivity: BaseActivity() {
 

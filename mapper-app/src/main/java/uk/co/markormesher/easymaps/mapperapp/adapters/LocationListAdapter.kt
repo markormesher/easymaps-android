@@ -16,6 +16,8 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import java.util.*
 
+// TODO: display message when no results match
+
 class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
 	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
