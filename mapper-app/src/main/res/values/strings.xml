@@ -31,5 +31,7 @@
 	<string name="attraction_list_search">Search…</string>
 
 	<string name="select_location_search">Search…</string>
+	<string name="select_location_attraction_template">%s</string>
+	<string name="select_location_station_template">%s Station</string>
 
 </resources>

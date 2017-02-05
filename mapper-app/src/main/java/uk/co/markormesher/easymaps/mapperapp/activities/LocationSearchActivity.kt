@@ -13,7 +13,6 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 // TODO: display loading icon until results are ready
 // TODO: implement filtering by search term
 // TODO: pass result to activity
-// TODO: add "(station)" to stations
 
 class LocationSearchActivity: BaseActivity() {
 

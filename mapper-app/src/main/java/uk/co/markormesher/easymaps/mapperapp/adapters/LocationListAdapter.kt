@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.list_item_attraction.view.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.data.LocationType
+import uk.co.markormesher.easymaps.sdk.makeHtml
 import java.util.*
 
 class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -23,7 +25,11 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		val location = locations[position]
 		with(holder as LocationViewHolder) {
-			title.text = location.title
+			when (location.type) {
+				LocationType.ATTRACTION -> title.text = context.getString(R.string.select_location_attraction_template, location.title)
+				LocationType.STATION -> title.text = context.getString(R.string.select_location_station_template, location.title)
+				else -> title.text = location.title
+			}
 		}
 	}
 
