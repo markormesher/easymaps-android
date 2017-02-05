@@ -2,6 +2,7 @@ package uk.co.markormesher.easymaps.mapperapp.adapters
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableString
@@ -16,7 +17,7 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import java.util.*
 
-// TODO: display message when no results match
+// TODO: fix double result on "tower " as search
 
 class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
@@ -31,13 +32,25 @@ class LocationListAdapter(val context: Context): RecyclerView.Adapter<RecyclerVi
 	}
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-		val location = filteredLocations[position]
 		with(holder as LocationViewHolder) {
-			title.text = highlightByFilter(location.getDisplayTitle(context))
+			if (filteredLocations.isEmpty()) {
+				title.text = context.getString(R.string.select_location_no_locations, activeFilter)
+				title.setTypeface(null, Typeface.ITALIC)
+			} else {
+				val location = filteredLocations[position]
+				title.text = highlightByFilter(location.getDisplayTitle(context))
+				title.setTypeface(null, Typeface.NORMAL)
+			}
 		}
 	}
 
-	override fun getItemCount(): Int = filteredLocations.size
+	override fun getItemCount(): Int {
+		if (filteredLocations.isEmpty()) {
+			return 1
+		} else {
+			return filteredLocations.size
+		}
+	}
 
 	class LocationViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val title = v.location_title!!
