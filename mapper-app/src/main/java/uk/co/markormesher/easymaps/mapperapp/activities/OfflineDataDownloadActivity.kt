@@ -21,6 +21,7 @@ import uk.co.markormesher.easymaps.sdk.makeHtml
 class OfflineDataDownloadActivity: BaseActivity() {
 
 	private val iconSpinAnimation by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
+	private var iconIsAnimated = false
 
 	private var triedInitialOfflineDataDownload = false
 
@@ -55,11 +56,17 @@ class OfflineDataDownloadActivity: BaseActivity() {
 		})
 
 		if (state == UiState.WAITING) {
-			status_icon.startAnimation(iconSpinAnimation)
+			if (!iconIsAnimated) {
+				status_icon.startAnimation(iconSpinAnimation)
+				iconIsAnimated = true
+			}
 			status_progress.visibility = View.VISIBLE
 			status_progress.isIndeterminate = true
 		} else {
-			status_icon.clearAnimation()
+			if (iconIsAnimated) {
+				status_icon.clearAnimation()
+				iconIsAnimated = false
+			}
 			status_progress.visibility = View.GONE
 		}
 
