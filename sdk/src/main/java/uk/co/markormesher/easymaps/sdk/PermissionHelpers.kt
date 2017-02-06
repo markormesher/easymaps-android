@@ -20,10 +20,7 @@ private fun hasPermission(context: Context, permission: String): Boolean {
 
 fun Activity.checkPermissionList(permissions: Array<String>): Boolean {
 	if (!shouldUseRuntimePermissions()) return true
-	for (perm in permissions) {
-		if (!hasPermission(this, perm)) return false
-	}
-	return true
+	return permissions.all { p -> hasPermission(this, p) }
 }
 
 fun Activity.requestPermissionList(permissions: Array<String>, reRequest: Boolean = false) {
@@ -37,6 +34,7 @@ fun Activity.requestPermissionList(permissions: Array<String>, reRequest: Boolea
 		} else {
 			setMessage(R.string.permissions_request_primer)
 			setPositiveButton(R.string.ok) { p0, p1 -> doRequestPermissionList(permissions) }
+			setOnCancelListener { finish() }
 		}
 		create().show()
 	}
