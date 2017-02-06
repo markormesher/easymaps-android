@@ -10,13 +10,14 @@ import android.support.v4.app.NotificationCompat
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
-import uk.co.markormesher.easymaps.mapperapp.*
+import uk.co.markormesher.easymaps.mapperapp.API_ROOT
+import uk.co.markormesher.easymaps.mapperapp.NETWORK
+import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.Connection
 import uk.co.markormesher.easymaps.mapperapp.data.Label
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.sdk.getLongPref
-import uk.co.markormesher.easymaps.sdk.setLongPref
+import uk.co.markormesher.easymaps.mapperapp.helpers.*
 import java.io.IOException
 import java.util.*
 
@@ -43,7 +44,6 @@ class DataDownloaderService: Service() {
 
 	companion object {
 		val FORCE = "services.DataDownloaderService:FORCE"
-		val LAST_SUCCESS = "services.DataDownloaderService:LAST_SUCCESS"
 		val FINISHED = "services.DataDownloaderService:FINISHED"
 		val PROGRESS_UPDATED = "services.DataDownloaderService:PROGRESS_UPDATED"
 		val PROGRESS_MESSAGE = "services.DataDownloaderService:PROGRESS_MESSAGE"
@@ -75,7 +75,7 @@ class DataDownloaderService: Service() {
 		super.onCreate()
 
 		// run only if >24h since last successful check (or forced)
-		val msSinceLastRun = System.currentTimeMillis() - getLongPref(LAST_SUCCESS, 0L)
+		val msSinceLastRun = System.currentTimeMillis() - getLastDownloadSuccess()
 		val msIn24Hours = 24 * 60 * 60 * 1000L
 		if (!force && msSinceLastRun < msIn24Hours) {
 			return finish()
@@ -92,15 +92,15 @@ class DataDownloaderService: Service() {
 		}
 
 		// get local versions
-		localLabellingVersion = getLongPref(LATEST_LABELLING_VERSION_KEY)
-		localDataPackVersion = getLongPref(LATEST_DATA_PACK_VERSION_KEY)
+		localLabellingVersion = getLatestLabellingVersion()
+		localDataPackVersion = getLatestDataPackVersion()
 	}
 
 	private fun nextStep() {
 		++currentStep
 		when (currentStep) {
-			1 -> getLatestLabellingVersion()
-			2 -> getLatestDataPackVersion()
+			1 -> downloadLatestLabellingVersion()
+			2 -> downloadLatestDataPackVersion()
 			3 -> downloadLatestLabelling()
 			4 -> downloadLatestDataPack()
 			5 -> storeDownloadedLabelling()
@@ -110,7 +110,7 @@ class DataDownloaderService: Service() {
 		}
 	}
 
-	private fun getLatestLabellingVersion() {
+	private fun downloadLatestLabellingVersion() {
 		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_LABELLING_VERSION, MAX_DL_PART))
 		val request = Request.Builder().url("$API_ROOT/labellings/$NETWORK/stats").get().build()
 		httpClient.newCall(request).enqueue(object: Callback {
@@ -128,7 +128,7 @@ class DataDownloaderService: Service() {
 		})
 	}
 
-	private fun getLatestDataPackVersion() {
+	private fun downloadLatestDataPackVersion() {
 		updateNotification(getString(R.string.downloading_offline_data_notification_title, DL_PART_DATA_PACK_VERSION, MAX_DL_PART))
 		val request = Request.Builder().url("$API_ROOT/data-packs/$NETWORK/stats").get().build()
 		httpClient.newCall(request).enqueue(object: Callback {
@@ -211,7 +211,7 @@ class DataDownloaderService: Service() {
 		})
 		db.close()
 
-		setLongPref(LATEST_LABELLING_VERSION_KEY, serverLabellingVersion)
+		setLatestLabellingVersion(serverLabellingVersion)
 		nextStep()
 	}
 
@@ -255,12 +255,12 @@ class DataDownloaderService: Service() {
 		})
 		db.close()
 
-		setLongPref(LATEST_DATA_PACK_VERSION_KEY, serverDataPackVersion)
+		setLatestDataPackVersion(serverDataPackVersion)
 		nextStep()
 	}
 
 	private fun onSuccess() {
-		setLongPref(LAST_SUCCESS, System.currentTimeMillis())
+		setLastDownloadSuccess()
 		nextStep()
 	}
 

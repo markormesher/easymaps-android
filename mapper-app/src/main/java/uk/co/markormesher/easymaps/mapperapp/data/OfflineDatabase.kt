@@ -5,10 +5,9 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import uk.co.markormesher.easymaps.mapperapp.LATEST_DATA_PACK_VERSION_KEY
-import uk.co.markormesher.easymaps.mapperapp.LATEST_LABELLING_VERSION_KEY
+import uk.co.markormesher.easymaps.mapperapp.helpers.getLatestDataPackVersion
+import uk.co.markormesher.easymaps.mapperapp.helpers.getLatestLabellingVersion
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
-import uk.co.markormesher.easymaps.sdk.getLongPref
 import java.util.*
 
 val DB_NAME = "OfflineData"
@@ -18,8 +17,7 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 
 	companion object {
 		fun isPopulated(context: Context): Boolean {
-			return context.getLongPref(LATEST_LABELLING_VERSION_KEY) > 0
-					&& context.getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0
+			return context.getLatestLabellingVersion() > 0 && context.getLatestDataPackVersion() > 0
 		}
 
 		fun startBackgroundUpdate(context: Context, force: Boolean = false) {
