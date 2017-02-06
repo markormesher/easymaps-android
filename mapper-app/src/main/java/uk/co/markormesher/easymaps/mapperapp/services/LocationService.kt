@@ -10,13 +10,12 @@ import android.os.Binder
 import android.support.v4.app.NotificationCompat
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
-import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 
 // TODO: check for wifi/location services
 
-class LocationDetectionService: WifiScannerService() {
+class LocationService: WifiScannerService() {
 
 	companion object {
 		val STATE_UPDATED = "services.LocationDetectionService:STATE_UPDATED"
@@ -26,6 +25,7 @@ class LocationDetectionService: WifiScannerService() {
 	override fun onCreate() {
 		super.onCreate()
 		registerReceiver(stopServiceReceiver, IntentFilter(STOP_SERVICE))
+		initState()
 		start()
 	}
 
@@ -41,26 +41,33 @@ class LocationDetectionService: WifiScannerService() {
 	private val localBinder by lazy { LocalBinder() }
 
 	inner class LocalBinder: Binder() {
-		fun getLocationDetectionService() = this@LocationDetectionService
+		fun getLocationDetectionService() = this@LocationService
 	}
 
 	override fun getLocalBinder(): Binder = localBinder
 
 	/* scan results */
 
-	var locationState = LocationState.NONE
-	var currentLocation: Location? = null
-	var locationDetail = ""
+	var locationState = State.NONE
+	var locationStateHeader = ""
+	var locationStateMessage = ""
 
 	override val scanInterval = 10
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
 		// TODO: actually determine location
 
-		locationState = LocationState.SEARCHING
-		locationDetail = "${results.size} MACs found"
+		locationState = State.SEARCHING
+		locationStateHeader = getString(R.string.location_status_searching_header)
+		//locationStateMessage = getString(R.string.location_status_searching_message)
+		locationStateMessage = "${results.size} MACs found"
 
 		stateUpdated()
+	}
+
+	private fun initState() {
+		locationStateHeader = getString(R.string.location_status_waiting_header)
+		locationStateMessage = getString(R.string.location_status_waiting_message)
 	}
 
 	override fun stateUpdated() {
@@ -68,33 +75,33 @@ class LocationDetectionService: WifiScannerService() {
 		sendBroadcast(Intent(STATE_UPDATED))
 	}
 
-	enum class LocationState {
+	enum class State {
 		NONE, SEARCHING, FOUND, NO_WIFI_OR_LOCATION
 	}
 
 	/* notification */
 
-	// TODO: replace with real text
-
 	private val NOTIFICATION_ID = 15995
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 	private val notificationStyle = NotificationCompat.BigTextStyle()
-	private val returnToAppIntent by lazy { PendingIntent.getActivity(this, 0, Intent(this, EntryActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT) }
-	private val stopScannerIntent by lazy { PendingIntent.getBroadcast(this, 0, Intent().setAction(STOP_SERVICE), PendingIntent.FLAG_UPDATE_CURRENT) }
+	private val returnToAppIntent by lazy {
+		PendingIntent.getActivity(this, 0, Intent(this, EntryActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+	}
+	private val stopScannerIntent by lazy {
+		PendingIntent.getBroadcast(this, 0, Intent().setAction(STOP_SERVICE), PendingIntent.FLAG_UPDATE_CURRENT)
+	}
 
 	private fun updateNotification() {
 		if (running) {
-			val message = "Determining location..."
-			val nBuilder = NotificationCompat.Builder(this)
-			with(nBuilder) {
-				setContentTitle("EasyMaps")
-				setContentText(message)
-				setStyle(notificationStyle.bigText(message))
+			with(NotificationCompat.Builder(this)) {
+				setContentTitle(locationStateHeader)
+				setContentText(locationStateMessage)
+				setStyle(notificationStyle.bigText(locationStateMessage))
 				setSmallIcon(R.drawable.ic_mapper_app_white)
 				setContentIntent(returnToAppIntent)
 				addAction(android.R.drawable.ic_menu_close_clear_cancel, "Quit", stopScannerIntent)
+				startForeground(NOTIFICATION_ID, build())
 			}
-			startForeground(NOTIFICATION_ID, nBuilder.build())
 		} else {
 			stopForeground(true)
 			notificationManager.cancel(NOTIFICATION_ID)

@@ -51,7 +51,7 @@
 				android:enabled="true"/>
 
 		<service
-				android:name=".services.LocationDetectionService"
+				android:name=".services.LocationService"
 				android:exported="false"
 				android:enabled="true"/>
 

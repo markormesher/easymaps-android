@@ -12,7 +12,7 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.services.LocationDetectionService
+import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
@@ -21,7 +21,7 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	private val attractionListAdapter by lazy { AttractionListAdapter(this, this) }
 	private var attractionsLoaded = false
 
-	private var locationService: LocationDetectionService? = null
+	private var locationService: LocationService? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -49,11 +49,11 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 			startActivity(Intent(this, OfflineDataDownloadActivity::class.java))
 		}
 
-		val serviceIntent = Intent(baseContext, LocationDetectionService::class.java)
+		val serviceIntent = Intent(baseContext, LocationService::class.java)
 		baseContext.startService(serviceIntent)
 		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
-		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationDetectionService.STATE_UPDATED))
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
 		updateLocationStatusFromService()
 	}
 
@@ -66,7 +66,7 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	/* service binding */
 
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-		if (binder is LocationDetectionService.LocalBinder) {
+		if (binder is LocationService.LocalBinder) {
 			locationService = binder.getLocationDetectionService()
 			updateLocationStatusFromService()
 		}
@@ -83,38 +83,15 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	}
 
 	private fun updateLocationStatusFromService() {
-		when (locationService?.locationState ?: LocationDetectionService.LocationState.SEARCHING) {
-			LocationDetectionService.LocationState.NONE -> {
-				status_bar.setStatus(LocationStatusBar.Status.WAITING)
-				status_bar.setHeading(getString(R.string.location_status_waiting_header))
-				status_bar.setMessage(getString(R.string.location_status_waiting_message))
-			}
-
-			LocationDetectionService.LocationState.SEARCHING -> {
-				status_bar.setStatus(LocationStatusBar.Status.SEARCHING)
-				status_bar.setHeading(getString(R.string.location_status_searching_header))
-				//status_bar.setMessage(getString(R.string.location_status_searching_message))
-				status_bar.setMessage(locationService?.locationDetail ?: "???")
-			}
-
-			LocationDetectionService.LocationState.NO_WIFI_OR_LOCATION -> {
-				status_bar.setStatus(LocationStatusBar.Status.LOCATION_OFF)
-				status_bar.setHeading(getString(R.string.location_status_no_wifi_header))
-				status_bar.setMessage(getString(R.string.location_status_no_wifi_message))
-			}
-
-			LocationDetectionService.LocationState.FOUND -> {
-				status_bar.setStatus(LocationStatusBar.Status.LOCATION_ON)
-				status_bar.setHeading(getString(
-						R.string.location_status_found_header,
-						locationService?.currentLocation?.getDisplayTitle(this)
-				))
-				status_bar.setMessage(getString(
-						R.string.location_status_found_message,
-						locationService?.currentLocation?.getDisplayTitle(this)
-				))
-			}
-		}
+		val status = locationService?.locationState ?: LocationService.State.SEARCHING
+		status_bar.setStatus(when (status) {
+			LocationService.State.NONE -> LocationStatusBar.Status.WAITING
+			LocationService.State.SEARCHING -> LocationStatusBar.Status.SEARCHING
+			LocationService.State.NO_WIFI_OR_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
+			LocationService.State.FOUND -> LocationStatusBar.Status.LOCATION_ON
+		})
+		status_bar.setHeading(locationService?.locationStateHeader ?: "")
+		status_bar.setMessage(locationService?.locationStateMessage ?: "")
 	}
 
 	/* attraction list */
