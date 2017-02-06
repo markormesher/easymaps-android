@@ -13,6 +13,8 @@ import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 
+// TODO: decide what quit button should do
+
 class LocationService: WifiScannerService() {
 
 	companion object {
