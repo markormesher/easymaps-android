@@ -32,15 +32,23 @@
 				android:id="@+id/status_heading"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				style="@style/Text.SubHeading"
-				android:textColor="@color/white"/>
+				android:maxLines="1"
+				android:ellipsize="marquee"
+				android:fadingEdge="horizontal"
+				android:marqueeRepeatLimit="marquee_forever"
+				android:textColor="@color/white"
+				style="@style/Text.SubHeading"/>
 
 		<TextView
 				android:id="@+id/status_message"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				style="@style/Text"
-				android:textColor="@color/white"/>
+				android:maxLines="2"
+				android:ellipsize="marquee"
+				android:fadingEdge="horizontal"
+				android:marqueeRepeatLimit="marquee_forever"
+				android:textColor="@color/white"
+				style="@style/Text"/>
 
 	</LinearLayout>
 

@@ -11,6 +11,7 @@ import uk.co.markormesher.easymaps.mapperapp.R
 class LocationStatusBar: LinearLayout {
 
 	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(context, R.anim.icon_spin) }
+	private var iconIsAnimated = false
 
 	constructor(context: Context): super(context) {
 		init()
@@ -39,9 +40,15 @@ class LocationStatusBar: LinearLayout {
 		})
 
 		if (status == Status.SEARCHING || status == Status.WAITING) {
-			status_icon.startAnimation(iconSpinAnimation)
+			if (!iconIsAnimated) {
+				status_icon.startAnimation(iconSpinAnimation)
+				iconIsAnimated = true
+			}
 		} else {
-			status_icon.clearAnimation()
+			if (iconIsAnimated) {
+				status_icon.clearAnimation()
+				iconIsAnimated = false
+			}
 		}
 	}
 

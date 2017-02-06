@@ -16,7 +16,8 @@ class EntryActivity: BaseActivity() {
 			Manifest.permission.ACCESS_COARSE_LOCATION,
 			Manifest.permission.ACCESS_FINE_LOCATION,
 			Manifest.permission.ACCESS_NETWORK_STATE,
-			Manifest.permission.INTERNET
+			Manifest.permission.INTERNET,
+			Manifest.permission.WAKE_LOCK
 	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {

@@ -52,7 +52,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
 		registerReceiver(scanStateUpdatedReceiver, IntentFilter(getString(R.string.intent_scan_status_updated)))
-		updateStatusFromService()
+		updateScanStatusFromService()
 
 		checkSettings()
 
@@ -77,7 +77,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
 		if (binder is ScannerService.LocalBinder) {
 			scannerService = binder.getScannerService()
-			updateStatusFromService()
+			updateScanStatusFromService()
 		}
 	}
 
@@ -87,11 +87,11 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	private val scanStateUpdatedReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
-			updateStatusFromService()
+			updateScanStatusFromService()
 		}
 	}
 
-	private fun updateStatusFromService() {
+	private fun updateScanStatusFromService() {
 		toggle_scanning_button.isEnabled = scannerService != null
 		toggle_scanning_button.text = getString(if (scannerService?.running ?: false) R.string.scan_toggle_stop else R.string.scan_toggle_start)
 
@@ -138,7 +138,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			setPositiveButton(R.string.ok) { p0, p1 ->
 				setIsSuperUser(input.text.toString() == SUPER_USER_PIN)
 				invalidateOptionsMenu()
-				updateStatusFromService()
+				updateScanStatusFromService()
 			}
 			create().show()
 		}
@@ -231,7 +231,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			setCancelable(true)
 			setPositiveButton(R.string.ok, { p0, p1 ->
 				setScanInterval(numberPicker.value)
-				updateStatusFromService()
+				updateScanStatusFromService()
 			})
 			create().show()
 		}
@@ -290,7 +290,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 				} else {
 					setNetwork(inputValue)
 					Toast.makeText(this@MainActivity, getString(R.string.change_network_set_to, inputValue), Toast.LENGTH_SHORT).show()
-					updateStatusFromService()
+					updateScanStatusFromService()
 				}
 			}
 			create().show()

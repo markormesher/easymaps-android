@@ -36,4 +36,17 @@
 	<string name="select_location_search">Search…</string>
 	<string name="select_location_no_locations">Sorry, no locations match \'%s\'.</string>
 
+	<string name="location_status_waiting_header">Waiting for location service</string>
+	<string name="location_status_waiting_message">Just a moment…</string>
+
+	<string name="location_status_searching_header">Searching for location</string>
+	<string name="location_status_searching_message">Just a moment…</string>
+
+	<string name="location_status_found_header">%s</string>
+	<string name="location_status_found_message">Info: %s</string>
+
+	<string name="location_status_no_wifi_header">WiFi/Location disabled!</string>
+	<string name="location_status_no_wifi_message">Tap here to enable</string>
+
+
 </resources>

@@ -1,8 +1,9 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
 import android.app.Activity
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -11,15 +12,16 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import uk.co.markormesher.easymaps.mapperapp.services.LocationDetectionService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-// TODO: new server - location sensing
-
-class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
+class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnClickListener {
 
 	private val attractionListAdapter by lazy { AttractionListAdapter(this, this) }
 	private var attractionsLoaded = false
+
+	private var locationService: LocationDetectionService? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -35,11 +37,6 @@ class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 		}
 		attraction_grid.layoutManager = gridLayoutManager
 		attraction_grid.adapter = attractionListAdapter
-
-		// set up status bar
-		status_bar.setStatus(LocationStatusBar.Status.WAITING)
-		status_bar.setHeading("Waiting for location")
-		status_bar.setMessage("Mark, hurry up and code this bit")
 	}
 
 	override fun onResume() {
@@ -51,7 +48,76 @@ class MainActivity: BaseActivity(), AttractionListAdapter.OnClickListener {
 		} else {
 			startActivity(Intent(this, OfflineDataDownloadActivity::class.java))
 		}
+
+		val serviceIntent = Intent(baseContext, LocationDetectionService::class.java)
+		baseContext.startService(serviceIntent)
+		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
+
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationDetectionService.STATE_UPDATED))
+		updateLocationStatusFromService()
 	}
+
+	override fun onPause() {
+		super.onPause()
+
+		unregisterReceiver(locationStateUpdatedReceiver)
+	}
+
+	/* service binding */
+
+	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+		if (binder is LocationDetectionService.LocalBinder) {
+			locationService = binder.getLocationDetectionService()
+			updateLocationStatusFromService()
+		}
+	}
+
+	override fun onServiceDisconnected(name: ComponentName?) {
+		locationService = null
+	}
+
+	private val locationStateUpdatedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			updateLocationStatusFromService()
+		}
+	}
+
+	private fun updateLocationStatusFromService() {
+		when (locationService?.locationState ?: LocationDetectionService.LocationState.SEARCHING) {
+			LocationDetectionService.LocationState.NONE -> {
+				status_bar.setStatus(LocationStatusBar.Status.WAITING)
+				status_bar.setHeading(getString(R.string.location_status_waiting_header))
+				status_bar.setMessage(getString(R.string.location_status_waiting_message))
+			}
+
+			LocationDetectionService.LocationState.SEARCHING -> {
+				status_bar.setStatus(LocationStatusBar.Status.SEARCHING)
+				status_bar.setHeading(getString(R.string.location_status_searching_header))
+				//status_bar.setMessage(getString(R.string.location_status_searching_message))
+				status_bar.setMessage(locationService?.locationDetail ?: "???")
+			}
+
+			LocationDetectionService.LocationState.NO_WIFI_OR_LOCATION -> {
+				status_bar.setStatus(LocationStatusBar.Status.LOCATION_OFF)
+				status_bar.setHeading(getString(R.string.location_status_no_wifi_header))
+				status_bar.setMessage(getString(R.string.location_status_no_wifi_message))
+			}
+
+			LocationDetectionService.LocationState.FOUND -> {
+				status_bar.setStatus(LocationStatusBar.Status.LOCATION_ON)
+				status_bar.setHeading(getString(
+						R.string.location_status_found_header,
+						locationService?.currentLocation?.getDisplayTitle(this)
+				))
+				status_bar.setMessage(getString(
+						R.string.location_status_found_message,
+						locationService?.currentLocation?.getDisplayTitle(this)
+				))
+			}
+		}
+	}
+
+	/* attraction list */
 
 	private fun loadAttractions() {
 		if (attractionsLoaded) {
