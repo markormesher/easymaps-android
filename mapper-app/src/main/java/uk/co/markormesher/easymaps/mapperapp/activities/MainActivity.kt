@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -83,6 +84,9 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	}
 
 	private fun updateLocationStatusFromService() {
+		status_bar.setHeading(locationService?.locationStateHeader ?: "")
+		status_bar.setMessage(locationService?.locationStateMessage ?: "")
+
 		val status = locationService?.locationState ?: LocationService.LocationState.SEARCHING
 		status_bar.setStatus(when (status) {
 			LocationService.LocationState.NONE -> LocationStatusBar.Status.WAITING
@@ -91,8 +95,13 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
 			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
 		})
-		status_bar.setHeading(locationService?.locationStateHeader ?: "")
-		status_bar.setMessage(locationService?.locationStateMessage ?: "")
+		if (status == LocationService.LocationState.NO_LOCATION) {
+			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
+		} else if (status == LocationService.LocationState.NO_WIFI) {
+			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_WIFI_SETTINGS)) }
+		} else {
+			status_bar.setOnClickListener { }
+		}
 	}
 
 	/* attraction list */
