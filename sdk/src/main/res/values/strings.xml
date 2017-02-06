@@ -5,6 +5,7 @@
 	<string name="no">No</string>
 	<string name="ok">OK</string>
 	<string name="cancel">Cancel</string>
+	<string name="quit">Quit</string>
 
 	<string name="permissions_request_title">App Permissions</string>
 	<string name="permissions_request_primer">Before you get started, we need to request the permissions needed for this app to work.</string>

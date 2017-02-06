@@ -45,8 +45,11 @@
 	<string name="location_status_found_header">%s</string>
 	<string name="location_status_found_message">Info: %s</string>
 
-	<string name="location_status_no_wifi_header">WiFi/Location disabled!</string>
+	<string name="location_status_no_wifi_header">WiFi disabled!</string>
 	<string name="location_status_no_wifi_message">Tap here to enable</string>
+
+	<string name="location_status_no_location_header">Location disabled!</string>
+	<string name="location_status_no_location_message">Tap here to enable</string>
 
 
 </resources>

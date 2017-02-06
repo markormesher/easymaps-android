@@ -78,13 +78,21 @@ class ScannerService: WifiScannerService() {
 	}
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
-		if (!running) return
+		if (!running) {
+			return
+		}
 
 		val filteredResults = results.filter { it.ssid.contains(SSID_FILTER, true) }
 		lifetimeDataPoints += filteredResults.size
 		sessionDataPoints += filteredResults.size
 		writeScanResultsToFile(filteredResults)
 		stateUpdated()
+	}
+
+	override fun onStatusChange(newStatus: ScannerStatus) {
+		if (newStatus != ScannerStatus.OKAY) {
+			stop()
+		}
 	}
 
 	override fun stateUpdated() {

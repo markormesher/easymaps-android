@@ -83,12 +83,13 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	}
 
 	private fun updateLocationStatusFromService() {
-		val status = locationService?.locationState ?: LocationService.State.SEARCHING
+		val status = locationService?.locationState ?: LocationService.LocationState.SEARCHING
 		status_bar.setStatus(when (status) {
-			LocationService.State.NONE -> LocationStatusBar.Status.WAITING
-			LocationService.State.SEARCHING -> LocationStatusBar.Status.SEARCHING
-			LocationService.State.NO_WIFI_OR_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
-			LocationService.State.FOUND -> LocationStatusBar.Status.LOCATION_ON
+			LocationService.LocationState.NONE -> LocationStatusBar.Status.WAITING
+			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
+			LocationService.LocationState.NO_WIFI -> LocationStatusBar.Status.WIFI_OFF
+			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
+			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
 		})
 		status_bar.setHeading(locationService?.locationStateHeader ?: "")
 		status_bar.setMessage(locationService?.locationStateMessage ?: "")

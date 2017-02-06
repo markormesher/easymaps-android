@@ -12,6 +12,8 @@ import java.util.*
 
 abstract class WifiScannerService: Service() {
 
+	private val handler by lazy { Handler(Looper.getMainLooper()) }
+
 	/* service bindings */
 
 	override fun onTaskRemoved(rootIntent: Intent?) {
@@ -47,6 +49,7 @@ abstract class WifiScannerService: Service() {
 		registerReceiver(scanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
 
 		scheduleNextScan(true)
+		scheduleNextStatusCheck(true)
 		stateUpdated()
 	}
 
@@ -62,7 +65,8 @@ abstract class WifiScannerService: Service() {
 		unregisterReceiver(scanReceiver)
 		wifiManager = null
 
-		clearScheduling()
+		clearScanScheduling()
+		clearStatusCheckScheduling()
 		stateUpdated()
 	}
 
@@ -86,15 +90,13 @@ abstract class WifiScannerService: Service() {
 
 	abstract fun onNewScanResults(results: Set<WifiScanResult>)
 
-	/* scheduling */
-
-	val handler by lazy { Handler(Looper.getMainLooper()) }
-	val rescanRunnable by lazy { Runnable { wifiManager?.startScan() } }
+	/* scan scheduling */
 
 	open val scanInterval = 20
+	val rescanRunnable = Runnable { wifiManager?.startScan() }
 
 	private fun scheduleNextScan(immediate: Boolean = false) {
-		clearScheduling()
+		clearScanScheduling()
 		if (!running) return
 
 		if (immediate) {
@@ -104,10 +106,56 @@ abstract class WifiScannerService: Service() {
 		}
 	}
 
-	private fun clearScheduling() {
+	private fun clearScanScheduling() {
 		handler.removeCallbacks(rescanRunnable)
 	}
 
+	/* status monitoring */
+
+	enum class ScannerStatus {
+		OKAY, NO_WIFI, NO_LOCATION
+	}
+
+	private var status = ScannerStatus.OKAY
+	private var newStatus = ScannerStatus.OKAY
+
+	abstract fun onStatusChange(newStatus: ScannerStatus)
+
+	open val statusCheckInterval = 5
+	val statusCheckRunnable = Runnable {
+		if (!deviceLocationEnabled()) {
+			newStatus = ScannerStatus.NO_LOCATION
+		} else if (!deviceWifiScanningEnabled()) {
+			newStatus = ScannerStatus.NO_WIFI
+		} else {
+			newStatus = ScannerStatus.OKAY
+		}
+
+		if (status != newStatus) {
+			onStatusChange(newStatus)
+			if (newStatus == ScannerStatus.OKAY) {
+				// resume scanning
+				scheduleNextScan(true)
+			}
+		}
+		status = newStatus
+		scheduleNextStatusCheck()
+	}
+
+	private fun scheduleNextStatusCheck(immediate: Boolean = false) {
+		clearStatusCheckScheduling()
+		if (!running) return
+
+		if (immediate) {
+			handler.post(statusCheckRunnable)
+		} else {
+			handler.postDelayed(statusCheckRunnable, statusCheckInterval * 1000L)
+		}
+	}
+
+	private fun clearStatusCheckScheduling() {
+		handler.removeCallbacks(statusCheckRunnable)
+	}
 }
 
 data class WifiScanResult(val ssid: String, val mac: String)

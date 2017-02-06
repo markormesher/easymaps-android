@@ -36,6 +36,7 @@ class LocationStatusBar: LinearLayout {
 			Status.INFO -> R.drawable.ic_info_outline_white_48dp
 			Status.LOCATION_ON -> R.drawable.ic_location_on_white_48dp
 			Status.LOCATION_OFF -> R.drawable.ic_location_off_white_48dp
+			Status.WIFI_OFF -> R.drawable.ic_signal_wifi_off_white_48dp
 			else -> R.drawable.ic_info_outline_white_48dp
 		})
 
@@ -66,6 +67,7 @@ class LocationStatusBar: LinearLayout {
 		INFO,
 		LOCATION_ON,
 		LOCATION_OFF,
+		WIFI_OFF
 	}
 
 }
