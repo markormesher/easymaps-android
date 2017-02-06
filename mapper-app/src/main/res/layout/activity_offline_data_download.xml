@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- UseCompoundDrawables is ignored because animations are selectively applied to status_icon -->
 <LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:tools="http://schemas.android.com/tools"
@@ -19,6 +18,16 @@
 			android:src="@drawable/ic_hourglass_empty_white_48dp"
 			android:tint="@color/primary_dark"
 			tools:ignore="ContentDescription"/>
+
+	<ProgressBar
+			android:id="@+id/status_progress"
+			android:layout_width="match_parent"
+			android:layout_height="2dp"
+			android:layout_marginBottom="@dimen/space_micro"
+			android:layout_marginLeft="@dimen/space_medium"
+			android:layout_marginRight="@dimen/space_medium"
+			android:visibility="gone"
+			style="?android:attr/progressBarStyleHorizontal"/>
 
 	<TextView
 			android:id="@+id/status_message"

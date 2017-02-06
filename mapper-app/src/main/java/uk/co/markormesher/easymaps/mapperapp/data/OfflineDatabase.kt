@@ -17,8 +17,6 @@ val DB_VERSION = 3
 class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
 	companion object {
-		val STATE_UPDATED = "data.OfflineDatabase:STATE_UPDATED"
-
 		fun isPopulated(context: Context): Boolean {
 			return context.getLongPref(LATEST_LABELLING_VERSION_KEY) > 0
 					&& context.getLongPref(LATEST_DATA_PACK_VERSION_KEY) > 0

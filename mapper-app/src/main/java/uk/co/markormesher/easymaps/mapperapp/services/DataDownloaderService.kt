@@ -23,8 +23,15 @@ import java.util.*
 class DataDownloaderService: Service() {
 
 	private var currentStep = 0
+	private var force = false
 
-	private val httpClient by lazy { OkHttpClient() }
+	private val httpClient by lazy {
+		OkHttpClient()
+	}
+
+	private val notificationManager by lazy {
+		getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+	}
 
 	private var localLabellingVersion = -1L
 	private var localDataPackVersion = -1L
@@ -34,11 +41,14 @@ class DataDownloaderService: Service() {
 	private var labellingContent = ""
 	private var dataPackContent = ""
 
-	private var force = false
-
 	companion object {
 		val FORCE = "services.DataDownloaderService:FORCE"
 		val LAST_SUCCESS = "services.DataDownloaderService:LAST_SUCCESS"
+		val FINISHED = "services.DataDownloaderService:FINISHED"
+		val PROGRESS_UPDATED = "services.DataDownloaderService:PROGRESS_UPDATED"
+		val PROGRESS_MESSAGE = "services.DataDownloaderService:PROGRESS_MESSAGE"
+		val PROGRESS_DONE = "services.DataDownloaderService:PROGRESS_DONE"
+		val PROGRESS_MAX = "services.DataDownloaderService:PROGRESS_MAX"
 
 		private val MAX_DL_PART = 4
 		private val DL_PART_LABELLING_VERSION = 1
@@ -255,21 +265,25 @@ class DataDownloaderService: Service() {
 	}
 
 	private fun finish() {
-		sendBroadcast(Intent(OfflineDatabase.STATE_UPDATED))
+		sendBroadcast(Intent(FINISHED))
 		stopForeground(true)
 		clearNotification()
 		stopSelf()
 	}
 
-	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
-
-	private fun updateNotification(message: String, done: Int = 0, max: Int = 1) {
+	private fun updateNotification(message: String, done: Int = 0, max: Int = 0) {
 		with(NotificationCompat.Builder(this)) {
 			setContentTitle(message)
 			setProgress(max, done, done == 0)
 			setSmallIcon(R.drawable.ic_mapper_app_white)
 			startForeground(NOTIFICATION_ID, build())
 		}
+
+		val updateIntent = Intent(PROGRESS_UPDATED)
+		updateIntent.putExtra(PROGRESS_MESSAGE, message)
+		updateIntent.putExtra(PROGRESS_DONE, done)
+		updateIntent.putExtra(PROGRESS_MAX, max)
+		sendBroadcast(updateIntent)
 	}
 
 	private fun clearNotification() {
