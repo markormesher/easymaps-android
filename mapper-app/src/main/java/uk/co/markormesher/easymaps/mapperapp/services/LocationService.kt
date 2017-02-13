@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
+import android.util.Log
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
@@ -19,23 +20,43 @@ class LocationService: WifiScannerService() {
 
 	companion object {
 		val STATE_UPDATED = "services.LocationDetectionService:STATE_UPDATED"
+		val START_SERVICE = "services.LocationDetectionService:START_SERVICE"
 		val STOP_SERVICE = "services.LocationDetectionService:STOP_SERVICE"
+		val SERVICE_STOPPED = "services.LocationDetectionService:SERVICE_STOPPED"
 	}
 
 	override fun onCreate() {
 		super.onCreate()
+		registerReceiver(startServiceReceiver, IntentFilter(START_SERVICE))
 		registerReceiver(stopServiceReceiver, IntentFilter(STOP_SERVICE))
 		initState()
-		start()
 	}
 
 	override fun onDestroy() {
 		super.onDestroy()
+		unregisterReceiver(startServiceReceiver)
 		unregisterReceiver(stopServiceReceiver)
+	}
+
+	private val startServiceReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) = start()
 	}
 
 	private val stopServiceReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) = stop()
+	}
+
+	override fun start() {
+		Log.d("LOC_SERVICE", "start()")
+		super.start()
+		initState()
+	}
+
+	override fun stop() {
+		Log.d("LOC_SERVICE", "stop()")
+		super.stop()
+		initState()
+		sendBroadcast(Intent(SERVICE_STOPPED))
 	}
 
 	private val localBinder by lazy { LocalBinder() }

@@ -50,25 +50,40 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 			startActivity(Intent(this, OfflineDataDownloadActivity::class.java))
 		}
 
-		val serviceIntent = Intent(baseContext, LocationService::class.java)
-		baseContext.startService(serviceIntent)
-		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
-
-		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+		startService()
 		updateLocationStatusFromService()
 	}
 
 	override fun onPause() {
 		super.onPause()
 
-		unregisterReceiver(locationStateUpdatedReceiver)
+		// TODO: check if navigation is in progress
+		stopService()
 	}
 
 	/* service binding */
 
+	private fun startService() {
+		// create service and bind, or auto-bind if it already exists
+		val serviceIntent = Intent(baseContext, LocationService::class.java)
+		baseContext.startService(serviceIntent)
+		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
+
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
+	}
+
+	private fun stopService() {
+		sendBroadcast(Intent(LocationService.STOP_SERVICE))
+
+		unregisterReceiver(locationStateUpdatedReceiver)
+		unregisterReceiver(locationServiceStoppedReceiver)
+	}
+
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
 		if (binder is LocationService.LocalBinder) {
 			locationService = binder.getLocationDetectionService()
+			sendBroadcast(Intent(LocationService.START_SERVICE))
 			updateLocationStatusFromService()
 		}
 	}
@@ -80,6 +95,12 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 	private val locationStateUpdatedReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			updateLocationStatusFromService()
+		}
+	}
+
+	private val locationServiceStoppedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			finish()
 		}
 	}
 
