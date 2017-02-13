@@ -21,7 +21,7 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 class LocationSearchActivity: BaseActivity(), LocationSearchListAdapter.OnSelectListener {
 
 	companion object {
-		val REQUEST_CODE = 35157
+		val REQUEST_CODE = "LocationSearchActivity".hashCode().and(0xffff)
 		val LOCATION_ID_KEY = "activities.LocationSearchActivity:LOCATION_ID_KEY"
 	}
 

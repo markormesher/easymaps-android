@@ -19,7 +19,7 @@ import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 
 // TODO: better handling of init on new instance vs. re-visit
 
-class DestinationChooserFragment : Fragment(), LocationListAdapter.OnClickListener {
+class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListener {
 
 	private val locationListAdapter by lazy { LocationListAdapter(context, this) }
 	private var locationsLoaded = false
@@ -28,18 +28,14 @@ class DestinationChooserFragment : Fragment(), LocationListAdapter.OnClickListen
 		return inflater.inflate(R.layout.fragment_destination_chooser, container, false)
 	}
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-	}
-
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 
-		loading_icon.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.icon_spin))
+		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
 
 		val screenWidthInDp = resources.configuration.screenWidthDp
 		val columns = screenWidthInDp / 110
-		val gridLayoutManager = GridLayoutManager(activity, columns)
+		val gridLayoutManager = GridLayoutManager(context, columns)
 		gridLayoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int = if (position == 0) columns else 1
 		}
@@ -59,7 +55,7 @@ class DestinationChooserFragment : Fragment(), LocationListAdapter.OnClickListen
 			return
 		}
 
-		val attractions = OfflineDatabase(activity).getAttractions()
+		val attractions = OfflineDatabase(context).getAttractions()
 		locationListAdapter.attractions.clear()
 		locationListAdapter.attractions.addAll(attractions)
 		locationListAdapter.notifyDataSetChanged()
@@ -74,7 +70,7 @@ class DestinationChooserFragment : Fragment(), LocationListAdapter.OnClickListen
 	override fun onAttractionClick(type: Int, location: Location?) {
 		when (type) {
 			LocationListAdapter.TYPE_SEARCH -> startActivityForResult(
-					Intent(activity, LocationSearchActivity::class.java),
+					Intent(context, LocationSearchActivity::class.java),
 					LocationSearchActivity.REQUEST_CODE
 			)
 
@@ -92,8 +88,8 @@ class DestinationChooserFragment : Fragment(), LocationListAdapter.OnClickListen
 
 	private fun onDestinationSelected(locationId: String) {
 		val intent = Intent(MainActivity.GOTO_ROUTE_CHOOSER)
-		intent.putExtra("DESTINATION", locationId) // TODO: use constant
-		activity.sendBroadcast(intent)
+		intent.putExtra(RouteChooserFragment.DESTINATION, locationId)
+		context.sendBroadcast(intent)
 	}
 
 }

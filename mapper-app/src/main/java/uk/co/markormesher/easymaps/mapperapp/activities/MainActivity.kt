@@ -14,6 +14,7 @@ import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
+// TODO: fix service stops when opening dialog and when turning off screen
 
 class MainActivity: BaseActivity(), ServiceConnection {
 
@@ -42,26 +43,25 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		registerNavigationReceivers()
 	}
 
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-		super.onActivityResult(requestCode, resultCode, data)
-		// TODO: propagate results to child fragments
-		// the line below doesn't work
-		// supportFragmentManager.fragments.forEach { f -> f.onActivityResult(requestCode, resultCode, data) }
-	}
-
 	override fun onPause() {
 		super.onPause()
 		stopService()
 		unregisterNavigationReceivers()
 	}
 
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		// reinstate navigation receivers before passing this to fragments, in case it triggers a navigation event
+		registerNavigationReceivers()
+		super.onActivityResult(requestCode, resultCode, data)
+	}
+
 	/* service binding */
 
 	private fun startService() {
 		// create service and bind, or auto-bind if it already exists
-		val serviceIntent = Intent(baseContext, LocationService::class.java)
-		baseContext.startService(serviceIntent)
-		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
+		val serviceIntent = Intent(this, LocationService::class.java)
+		startService(serviceIntent)
+		bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
 		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
 		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
@@ -135,7 +135,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	private val gotoRouteChooserReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
-			gotoRouteChooser(intent?.getStringExtra("DESTINATION") ?: "unknown")
+			gotoRouteChooser(intent?.getStringExtra(RouteChooserFragment.DESTINATION) ?: "unknown")
 		}
 	}
 

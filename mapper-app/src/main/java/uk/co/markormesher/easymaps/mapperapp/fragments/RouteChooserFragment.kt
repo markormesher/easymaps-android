@@ -10,6 +10,10 @@ import uk.co.markormesher.easymaps.mapperapp.R
 
 class RouteChooserFragment(val initialDestination: String): Fragment() {
 
+	companion object {
+		val DESTINATION = "fragments.RouteChooserFragment:DESTINATION"
+	}
+
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		return inflater.inflate(R.layout.fragment_route_chooser, container, false)
 	}
