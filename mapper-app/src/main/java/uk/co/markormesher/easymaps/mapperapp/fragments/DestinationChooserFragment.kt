@@ -21,6 +21,8 @@ import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 
 class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListener {
 
+	private val COLUMN_WIDTH = 110 // dp
+
 	private val locationListAdapter by lazy { LocationListAdapter(context, this) }
 	private var locationsLoaded = false
 
@@ -34,7 +36,7 @@ class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListene
 		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
 
 		val screenWidthInDp = resources.configuration.screenWidthDp
-		val columns = screenWidthInDp / 110
+		val columns = screenWidthInDp / COLUMN_WIDTH
 		val gridLayoutManager = GridLayoutManager(context, columns)
 		gridLayoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
 			override fun getSpanSize(position: Int): Int = if (position == 0) columns else 1
@@ -47,6 +49,7 @@ class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListene
 
 	/* attraction list */
 
+	// TODO: this is not neat
 	private fun loadLocations() {
 		if (locationsLoaded) {
 			loading_icon.clearAnimation()

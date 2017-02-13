@@ -18,8 +18,6 @@ import uk.co.markormesher.easymaps.sdk.BaseActivity
 
 class MainActivity: BaseActivity(), ServiceConnection {
 
-	private var locationService: LocationService? = null
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
@@ -50,12 +48,15 @@ class MainActivity: BaseActivity(), ServiceConnection {
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		// reinstate navigation receivers before passing this to fragments, in case it triggers a navigation event
+		// reinstate navigation receivers before passing this to fragments,
+		// in case it triggers a navigation event
 		registerNavigationReceivers()
 		super.onActivityResult(requestCode, resultCode, data)
 	}
 
 	/* service binding */
+
+	private var locationService: LocationService? = null
 
 	private fun startService() {
 		// create service and bind, or auto-bind if it already exists
@@ -105,9 +106,9 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		val status = locationService?.locationState ?: LocationService.LocationState.SEARCHING
 		status_bar.setStatus(when (status) {
 			LocationService.LocationState.NONE -> LocationStatusBar.Status.WAITING
-			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
 			LocationService.LocationState.NO_WIFI -> LocationStatusBar.Status.WIFI_OFF
 			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
+			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
 			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
 		})
 		if (status == LocationService.LocationState.NO_LOCATION) {
@@ -140,6 +141,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 	}
 
 	// TODO: manage back-stack properly
+	// TODO: tidy up
 
 	private fun gotoDestinationChooser(initial: Boolean) {
 		val key = "destination-chooser"
