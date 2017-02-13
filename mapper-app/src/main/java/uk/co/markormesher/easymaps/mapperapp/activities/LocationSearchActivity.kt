@@ -12,15 +12,13 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_location_search.*
 import uk.co.markormesher.easymaps.mapperapp.R
-import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
+import uk.co.markormesher.easymaps.mapperapp.adapters.LocationSearchListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.sdk.AbstractTextWatcher
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-// TODO: pass result to activity
-
-class LocationSearchActivity: BaseActivity(), LocationListAdapter.OnSelectListener {
+class LocationSearchActivity: BaseActivity(), LocationSearchListAdapter.OnSelectListener {
 
 	companion object {
 		val REQUEST_CODE = 35157
@@ -29,11 +27,11 @@ class LocationSearchActivity: BaseActivity(), LocationListAdapter.OnSelectListen
 
 	private val iconSpinAnimation: Animation? by lazy { AnimationUtils.loadAnimation(this, R.anim.icon_spin) }
 
-	private val locationListAdapter by lazy { LocationListAdapter(this, this) }
+	private val locationListAdapter by lazy { LocationSearchListAdapter(this, this) }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+		requestWindowFeature(Window.FEATURE_NO_TITLE)
 		setFinishOnTouchOutside(false)
 		setContentView(R.layout.activity_location_search)
 		loading_icon.startAnimation(iconSpinAnimation)

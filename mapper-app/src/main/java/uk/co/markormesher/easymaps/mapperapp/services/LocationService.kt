@@ -47,13 +47,11 @@ class LocationService: WifiScannerService() {
 	}
 
 	override fun start() {
-		Log.d("LOC_SERVICE", "start()")
 		super.start()
 		initState()
 	}
 
 	override fun stop() {
-		Log.d("LOC_SERVICE", "stop()")
 		super.stop()
 		initState()
 		sendBroadcast(Intent(SERVICE_STOPPED))

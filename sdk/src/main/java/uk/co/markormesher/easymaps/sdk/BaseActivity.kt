@@ -2,12 +2,12 @@ package uk.co.markormesher.easymaps.sdk
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.FragmentActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import uk.co.chrisjenx.calligraphy.R
 
-open class BaseActivity : AppCompatActivity() {
+open class BaseActivity : FragmentActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

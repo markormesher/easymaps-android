@@ -110,6 +110,7 @@ class OfflineDataDownloadActivity: BaseActivity() {
 	private val downloaderServiceFinishedReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			if (OfflineDatabase.isPopulated(this@OfflineDataDownloadActivity)) {
+				startActivity(Intent(this@OfflineDataDownloadActivity, MainActivity::class.java))
 				finish()
 			} else {
 				promptDownload()
