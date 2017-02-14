@@ -38,7 +38,7 @@ class LocationListAdapter(val context: Context, val clickListener: OnClickListen
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		when (getItemViewType(position)) {
 			TYPE_INTRO -> with(holder as IntroViewHolder) {
-				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_INTRO) }
+				holder.rootView.setOnClickListener { clickListener?.onLocationClick(TYPE_INTRO) }
 				val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 				val softTime = if (hour >= 20) {
 					context.getString(R.string.select_attraction_suffix_night)
@@ -53,7 +53,7 @@ class LocationListAdapter(val context: Context, val clickListener: OnClickListen
 			}
 
 			TYPE_SEARCH -> with(holder as AttractionViewHolder) {
-				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_SEARCH) }
+				holder.rootView.setOnClickListener { clickListener?.onLocationClick(TYPE_SEARCH) }
 				title.text = context.getString(R.string.attraction_list_search)
 				icon.setImageResource(R.drawable.ic_search_white_48dp)
 				Picasso
@@ -65,7 +65,7 @@ class LocationListAdapter(val context: Context, val clickListener: OnClickListen
 
 			TYPE_ATTRACTION -> with(holder as AttractionViewHolder) {
 				val attraction = attractions[position - 2]
-				holder.rootView.setOnClickListener { clickListener?.onAttractionClick(TYPE_ATTRACTION, attraction) }
+				holder.rootView.setOnClickListener { clickListener?.onLocationClick(TYPE_ATTRACTION, attraction) }
 				title.text = attraction.title
 				icon.setImageDrawable(null)
 				Picasso
@@ -100,7 +100,7 @@ class LocationListAdapter(val context: Context, val clickListener: OnClickListen
 	}
 
 	interface OnClickListener {
-		fun onAttractionClick(type: Int, location: Location? = null)
+		fun onLocationClick(type: Int, location: Location? = null)
 	}
 
 }

@@ -10,14 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.fragment_destination_chooser.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-
-// TODO: better handling of init on new instance vs. re-visit
 
 class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListener {
 
@@ -26,15 +26,23 @@ class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListene
 	private val locationListAdapter by lazy { LocationListAdapter(context, this) }
 	private var locationsLoaded = false
 
+	private var cachedView: View? = null
+
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-		return inflater.inflate(R.layout.fragment_destination_chooser, container, false)
+		cachedView = cachedView ?: inflater.inflate(R.layout.fragment_destination_chooser, container, false)
+		return cachedView!!
 	}
 
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
-
 		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+		initLocationList()
+		loadAndShowLocations()
+	}
 
+	/* location list */
+
+	private fun initLocationList() {
 		val screenWidthInDp = resources.configuration.screenWidthDp
 		val columns = screenWidthInDp / COLUMN_WIDTH
 		val gridLayoutManager = GridLayoutManager(context, columns)
@@ -43,34 +51,26 @@ class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListene
 		}
 		location_grid.layoutManager = gridLayoutManager
 		location_grid.adapter = locationListAdapter
-
-		loadLocations()
 	}
 
-	/* attraction list */
+	private fun loadAndShowLocations() {
+		doAsync {
+			if (!locationsLoaded) {
+				locationListAdapter.attractions.clear()
+				locationListAdapter.attractions.addAll(OfflineDatabase(context).getAttractions())
+				locationListAdapter.notifyDataSetChanged()
+				locationsLoaded = true
+			}
 
-	// TODO: this is not neat
-	private fun loadLocations() {
-		if (locationsLoaded) {
-			loading_icon.clearAnimation()
-			loading_icon.visibility = View.GONE
-			location_grid.visibility = View.VISIBLE
-			return
+			uiThread {
+				loading_icon.clearAnimation()
+				loading_icon.visibility = View.GONE
+				location_grid.visibility = View.VISIBLE
+			}
 		}
-
-		val attractions = OfflineDatabase(context).getAttractions()
-		locationListAdapter.attractions.clear()
-		locationListAdapter.attractions.addAll(attractions)
-		locationListAdapter.notifyDataSetChanged()
-
-		loading_icon.clearAnimation()
-		loading_icon.visibility = View.GONE
-		location_grid.visibility = View.VISIBLE
-
-		locationsLoaded = true
 	}
 
-	override fun onAttractionClick(type: Int, location: Location?) {
+	override fun onLocationClick(type: Int, location: Location?) {
 		when (type) {
 			LocationListAdapter.TYPE_SEARCH -> startActivityForResult(
 					Intent(context, LocationSearchActivity::class.java),
