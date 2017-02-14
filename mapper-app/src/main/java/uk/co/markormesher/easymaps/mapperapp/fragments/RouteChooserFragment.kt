@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.fragment_route_chooser.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.BaseFragment
@@ -54,7 +52,8 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 	/* views */
 
 	private fun initViews() {
-		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+		loading_icon.visibility = View.GONE
+		centre_message.visibility = View.GONE
 
 		from_input.setOnClickListener {
 			lastRequestDirection = Direction.FROM
@@ -80,48 +79,49 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 	var toLocation: Location? = null
 
 	private fun setRouteInput(direction: Direction, id: String) {
-		debug("setRouteInput($id)")
 		if (id == DEFAULT_DESTINATION) {
-			when (direction) {
-				Direction.FROM -> {
-					fromLocation = null
-					from_input.text = ""
-				}
-
-				Direction.TO -> {
-					toLocation = null
-					to_input.text = ""
-				}
-			}
+			setInputLocation(direction, null)
 		} else {
 			doAsync {
 				val location = OfflineDatabase(context).getLocation(id)
 
-				if (location == null) {
-					setRouteInput(direction, DEFAULT_DESTINATION)
-					return@doAsync
-				}
-
 				uiThread {
-					when (direction) {
-						Direction.FROM -> {
-							fromLocation = location
-							from_input.text = location.getDisplayTitle(context)
-						}
-
-						Direction.TO -> {
-							toLocation = location
-							to_input.text = location.getDisplayTitle(context)
-						}
-					}
+					setInputLocation(direction, location)
 				}
 			}
 		}
 	}
 
+	private fun setInputLocation(direction: Direction, location: Location?) {
+		when (direction) {
+			Direction.FROM -> {
+				fromLocation = location
+				from_input.text = location?.getDisplayTitle(context) ?: ""
+			}
+
+			Direction.TO -> {
+				toLocation = location
+				to_input.text = location?.getDisplayTitle(context) ?: ""
+			}
+		}
+
+		routeInputUpdated()
+	}
+
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 		if (requestCode == LocationSearchActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK && lastRequestDirection != null) {
 			setRouteInput(lastRequestDirection!!, data?.getStringExtra(LocationSearchActivity.LOCATION_ID_KEY)!!)
+		}
+	}
+
+	private fun routeInputUpdated() {
+		if (toLocation == null || fromLocation == null) {
+			centre_message.text = getString(R.string.route_input_prompt)
+			centre_message.visibility = View.VISIBLE
+		} else {
+			// TODO: start route finding task on background thread
+			centre_message.text = "${fromLocation?.id} -> ${toLocation?.id}"
+			centre_message.visibility = View.VISIBLE
 		}
 	}
 
