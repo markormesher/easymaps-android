@@ -14,15 +14,13 @@ import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-// TODO: fix service stops when opening dialog and when turning off screen
-
 class MainActivity: BaseActivity(), ServiceConnection {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		gotoDestinationChooser(true)
+		initDestinationChooser()
 	}
 
 	override fun onStart() {
@@ -149,33 +147,27 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	private val gotoRouteChooserReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
-			gotoRouteChooser(intent?.getStringExtra(RouteChooserFragment.DESTINATION) ?: "unknown")
+			gotoRouteChooser(intent?.getStringExtra(RouteChooserFragment.DESTINATION) ?: "none")
 		}
 	}
 
-	// TODO: manage back-stack properly
-	// TODO: tidy up
-
-	private fun gotoDestinationChooser(initial: Boolean) {
-		val key = "destination-chooser"
-
-		val ft = supportFragmentManager.beginTransaction()
-		ft.replace(R.id.fragment_frame, DestinationChooserFragment(), key)
-		if (!initial) {
-			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-			ft.addToBackStack(key)
+	private fun initDestinationChooser() {
+		with(supportFragmentManager.beginTransaction()) {
+			add(R.id.fragment_frame, DestinationChooserFragment())
+			commit()
 		}
-		ft.commit()
 	}
 
-	private fun gotoRouteChooser(destination: String) {
-		val key = "route-chooser"
+	private fun gotoRouteChooser(destination: String? = null) {
+		val fragment = RouteChooserFragment.getInstance(destination)
+		val key = "${RouteChooserFragment.KEY}:${destination ?: RouteChooserFragment.DEFAULT_DESTINATION}"
 
-		val ft = supportFragmentManager.beginTransaction()
-		ft.replace(R.id.fragment_frame, RouteChooserFragment(destination), key)
-		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-		ft.addToBackStack(key)
-		ft.commit()
+		with(supportFragmentManager.beginTransaction()) {
+			replace(R.id.fragment_frame, fragment, key)
+			setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+			addToBackStack(key)
+			commit()
+		}
 	}
 
 }
