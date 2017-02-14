@@ -25,7 +25,7 @@
 	<string name="saving_offline_data_notification_title">Saving downloaded data (%1$d of %2$d)</string>
 	<string name="saving_offline_data_notification_title_no_number">Saving downloaded data</string>
 
-	<string name="loading_attractions">Loading locations…</string>
+	<string name="loading_locations">Loading locations…</string>
 	<string name="select_attraction">Where are you going %s?</string>
 	<string name="select_attraction_suffix_morning">this morning</string>
 	<string name="select_attraction_suffix_afternoon">this afternoon</string>

@@ -42,7 +42,7 @@
 				android:windowSoftInputMode="adjustResize"/>
 
 		<activity
-				android:name=".activities.RoutePlanningActivity"
+				android:name=".fragments.RouteChooserFragment"
 				android:launchMode="singleTask"/>
 
 		<service

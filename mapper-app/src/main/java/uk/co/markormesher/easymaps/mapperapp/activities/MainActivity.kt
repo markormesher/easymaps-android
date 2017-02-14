@@ -1,81 +1,88 @@
 package uk.co.markormesher.easymaps.mapperapp.activities
 
-import android.app.Activity
+import android.app.FragmentTransaction
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
-import android.support.v7.widget.GridLayoutManager
-import android.view.View
-import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.co.markormesher.easymaps.mapperapp.R
-import uk.co.markormesher.easymaps.mapperapp.adapters.AttractionListAdapter
-import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import uk.co.markormesher.easymaps.mapperapp.fragments.DestinationChooserFragment
+import uk.co.markormesher.easymaps.mapperapp.fragments.RouteChooserFragment
 import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnClickListener {
-
-	private val attractionListAdapter by lazy { AttractionListAdapter(this, this) }
-	private var attractionsLoaded = false
-
-	private var locationService: LocationService? = null
+class MainActivity: BaseActivity(), ServiceConnection {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
-		loading_icon.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_spin))
 
-		// set up attraction list
-		val screenWidthInDp = resources.configuration.screenWidthDp
-		val columns = screenWidthInDp / 110
-		val gridLayoutManager = GridLayoutManager(this, columns)
-		gridLayoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
-			override fun getSpanSize(position: Int): Int = if (position == 0) columns else 1
-		}
-		attraction_grid.layoutManager = gridLayoutManager
-		attraction_grid.adapter = attractionListAdapter
+		initDestinationChooser()
+	}
+
+	override fun onStart() {
+		super.onStart()
+		startService()
 	}
 
 	override fun onResume() {
 		super.onResume()
 
 		if (OfflineDatabase.isPopulated(this)) {
-			loadAttractions()
 			OfflineDatabase.startBackgroundUpdate(this)
 		} else {
 			startActivity(Intent(this, OfflineDataDownloadActivity::class.java))
+			finish()
 		}
 
-		startService()
 		updateLocationStatusFromService()
+
+		registerLocationServiceReceivers()
+		registerNavigationReceivers()
 	}
 
 	override fun onPause() {
 		super.onPause()
+		unregisterLocationServiceReceivers()
+		unregisterNavigationReceivers()
+	}
 
-		// TODO: check if navigation is in progress
+	override fun onStop() {
+		super.onStop()
 		stopService()
+	}
+
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		// reinstate navigation receivers before passing this to fragments,
+		// in case it triggers a navigation event
+		registerNavigationReceivers()
+		super.onActivityResult(requestCode, resultCode, data)
 	}
 
 	/* service binding */
 
-	private fun startService() {
-		// create service and bind, or auto-bind if it already exists
-		val serviceIntent = Intent(baseContext, LocationService::class.java)
-		baseContext.startService(serviceIntent)
-		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
+	private var locationService: LocationService? = null
 
-		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
-		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
+	private fun startService() {
+		val serviceIntent = Intent(this, LocationService::class.java)
+		bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
+		startService(serviceIntent)
+		sendBroadcast(Intent(LocationService.START_SERVICE))
 	}
 
 	private fun stopService() {
 		sendBroadcast(Intent(LocationService.STOP_SERVICE))
+	}
 
+	private fun registerLocationServiceReceivers() {
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
+	}
+
+	private fun unregisterLocationServiceReceivers() {
 		unregisterReceiver(locationStateUpdatedReceiver)
 		unregisterReceiver(locationServiceStoppedReceiver)
 	}
@@ -84,7 +91,6 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 		if (binder is LocationService.LocalBinder) {
 			locationService = binder.getLocationDetectionService()
 			sendBroadcast(Intent(LocationService.START_SERVICE))
-			updateLocationStatusFromService()
 		}
 	}
 
@@ -111,9 +117,9 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 		val status = locationService?.locationState ?: LocationService.LocationState.SEARCHING
 		status_bar.setStatus(when (status) {
 			LocationService.LocationState.NONE -> LocationStatusBar.Status.WAITING
-			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
 			LocationService.LocationState.NO_WIFI -> LocationStatusBar.Status.WIFI_OFF
 			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
+			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
 			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
 		})
 		if (status == LocationService.LocationState.NO_LOCATION) {
@@ -125,49 +131,43 @@ class MainActivity: BaseActivity(), ServiceConnection, AttractionListAdapter.OnC
 		}
 	}
 
-	/* attraction list */
+	/* navigation */
 
-	private fun loadAttractions() {
-		if (attractionsLoaded) {
-			return
-		}
-
-		val attractions = OfflineDatabase(this).getAttractions()
-		attractionListAdapter.attractions.clear()
-		attractionListAdapter.attractions.addAll(attractions)
-		attractionListAdapter.notifyDataSetChanged()
-
-		loading_icon.clearAnimation()
-		loading_icon.visibility = View.GONE
-		status_bar.visibility = View.VISIBLE
-		attraction_grid.visibility = View.VISIBLE
-
-		attractionsLoaded = true
+	companion object {
+		val GOTO_ROUTE_CHOOSER = "activities.MainActivity:GOTO_ROUTE_CHOOSER"
 	}
 
-	override fun onAttractionClick(type: Int, location: Location?) {
-		when (type) {
-			AttractionListAdapter.TYPE_SEARCH -> startActivityForResult(
-					Intent(this, LocationSearchActivity::class.java),
-					LocationSearchActivity.REQUEST_CODE
-			)
+	private fun registerNavigationReceivers() {
+		registerReceiver(gotoRouteChooserReceiver, IntentFilter(GOTO_ROUTE_CHOOSER))
+	}
 
-			AttractionListAdapter.TYPE_ATTRACTION -> if (location != null) {
-				onDestinationSelected(location.id)
-			}
+	private fun unregisterNavigationReceivers() {
+		unregisterReceiver(gotoRouteChooserReceiver)
+	}
+
+	private val gotoRouteChooserReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			gotoRouteChooser(intent?.getStringExtra(RouteChooserFragment.DESTINATION) ?: "none")
 		}
 	}
 
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		if (requestCode == LocationSearchActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-			onDestinationSelected(data?.getStringExtra(LocationSearchActivity.LOCATION_ID_KEY)!!)
+	private fun initDestinationChooser() {
+		with(supportFragmentManager.beginTransaction()) {
+			add(R.id.fragment_frame, DestinationChooserFragment())
+			commit()
 		}
 	}
 
-	private fun onDestinationSelected(locationId: String) {
-		val intent = Intent(this, RoutePlanningActivity::class.java)
-		intent.putExtra("DESTINATION", locationId)
-		startActivity(intent)
+	private fun gotoRouteChooser(destination: String? = null) {
+		val fragment = RouteChooserFragment.getInstance(destination)
+		val key = "${RouteChooserFragment.KEY}:${destination ?: RouteChooserFragment.DEFAULT_DESTINATION}"
+
+		with(supportFragmentManager.beginTransaction()) {
+			replace(R.id.fragment_frame, fragment, key)
+			setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+			addToBackStack(key)
+			commit()
+		}
 	}
 
 }

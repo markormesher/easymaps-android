@@ -7,32 +7,17 @@
 		android:layout_height="match_parent"
 		tools:context=".activities.MainActivity">
 
-	<ImageView
-			android:id="@+id/loading_icon"
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:layout_centerInParent="true"
-			android:src="@drawable/ic_hourglass_empty_white_48dp"
-			android:tint="@color/primary_dark"
-			android:contentDescription="@string/waiting_for_offline_data"/>
-
 	<uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 			android:id="@+id/status_bar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:visibility="gone"/>
+			android:layout_alignParentTop="true"/>
 
-	<android.support.v7.widget.RecyclerView
-			android:id="@+id/attraction_grid"
+	<FrameLayout
+			android:id="@+id/fragment_frame"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_below="@id/status_bar"
-			android:layout_alignParentBottom="true"
-			android:padding="@dimen/space_nano"
-			android:clipToPadding="false"
-			android:scrollbarStyle="outsideOverlay"
-			android:scrollbars="vertical"
-			android:visibility="gone"/>
+			android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

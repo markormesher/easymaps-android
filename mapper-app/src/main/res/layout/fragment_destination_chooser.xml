@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/drawer_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+	<ImageView
+			android:id="@+id/loading_icon"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_centerInParent="true"
+			android:src="@drawable/ic_hourglass_empty_white_48dp"
+			android:tint="@color/primary_dark"
+			android:contentDescription="@string/loading_locations"/>
+
+	<android.support.v7.widget.RecyclerView
+			android:id="@+id/location_grid"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/status_bar"
+			android:layout_alignParentBottom="true"
+			android:padding="@dimen/space_nano"
+			android:clipToPadding="false"
+			android:scrollbarStyle="outsideOverlay"
+			android:scrollbars="vertical"
+			android:visibility="gone"/>
+
+</RelativeLayout>
