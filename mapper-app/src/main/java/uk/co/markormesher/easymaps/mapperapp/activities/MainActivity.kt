@@ -25,6 +25,11 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		gotoDestinationChooser(true)
 	}
 
+	override fun onStart() {
+		super.onStart()
+		startService()
+	}
+
 	override fun onResume() {
 		super.onResume()
 
@@ -35,16 +40,21 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			finish()
 		}
 
-		startService()
 		updateLocationStatusFromService()
 
+		registerLocationServiceReceivers()
 		registerNavigationReceivers()
 	}
 
 	override fun onPause() {
 		super.onPause()
-		stopService()
+		unregisterLocationServiceReceivers()
 		unregisterNavigationReceivers()
+	}
+
+	override fun onStop() {
+		super.onStop()
+		stopService()
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -59,18 +69,22 @@ class MainActivity: BaseActivity(), ServiceConnection {
 	private var locationService: LocationService? = null
 
 	private fun startService() {
-		// create service and bind, or auto-bind if it already exists
 		val serviceIntent = Intent(this, LocationService::class.java)
-		startService(serviceIntent)
 		bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
-
-		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
-		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
+		startService(serviceIntent)
+		sendBroadcast(Intent(LocationService.START_SERVICE))
 	}
 
 	private fun stopService() {
 		sendBroadcast(Intent(LocationService.STOP_SERVICE))
+	}
 
+	private fun registerLocationServiceReceivers() {
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
+	}
+
+	private fun unregisterLocationServiceReceivers() {
 		unregisterReceiver(locationStateUpdatedReceiver)
 		unregisterReceiver(locationServiceStoppedReceiver)
 	}
@@ -79,7 +93,6 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		if (binder is LocationService.LocalBinder) {
 			locationService = binder.getLocationDetectionService()
 			sendBroadcast(Intent(LocationService.START_SERVICE))
-			updateLocationStatusFromService()
 		}
 	}
 

@@ -8,13 +8,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
-
-// TODO: decide what quit button should do
 
 class LocationService: WifiScannerService() {
 
@@ -43,12 +40,17 @@ class LocationService: WifiScannerService() {
 	}
 
 	private val stopServiceReceiver = object: BroadcastReceiver() {
-		override fun onReceive(context: Context?, intent: Intent?) = stop()
+		override fun onReceive(context: Context?, intent: Intent?) {
+			stop()
+			stopSelf()
+		}
 	}
 
 	override fun start() {
-		super.start()
-		initState()
+		if (!running) {
+			super.start()
+			initState()
+		}
 	}
 
 	override fun stop() {
