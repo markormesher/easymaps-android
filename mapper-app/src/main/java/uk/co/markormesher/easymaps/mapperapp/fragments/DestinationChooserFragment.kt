@@ -3,7 +3,6 @@ package uk.co.markormesher.easymaps.mapperapp.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +11,7 @@ import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.fragment_destination_chooser.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
@@ -19,30 +19,28 @@ import uk.co.markormesher.easymaps.mapperapp.adapters.LocationListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 
-class DestinationChooserFragment: Fragment(), LocationListAdapter.OnClickListener {
+class DestinationChooserFragment: BaseFragment(), LocationListAdapter.OnClickListener {
 
 	private val COLUMN_WIDTH = 110 // dp
 
 	private val locationListAdapter by lazy { LocationListAdapter(context, this) }
 	private var locationsLoaded = false
 
-	private var cachedView: View? = null
-
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-		cachedView = cachedView ?: inflater.inflate(R.layout.fragment_destination_chooser, container, false)
-		return cachedView!!
+		return inflater.inflate(R.layout.fragment_destination_chooser, container, false)
 	}
 
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
-		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-		initLocationList()
+		initViews()
 		loadAndShowLocations()
 	}
 
 	/* location list */
 
-	private fun initLocationList() {
+	private fun initViews() {
+		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+
 		val screenWidthInDp = resources.configuration.screenWidthDp
 		val columns = screenWidthInDp / COLUMN_WIDTH
 		val gridLayoutManager = GridLayoutManager(context, columns)

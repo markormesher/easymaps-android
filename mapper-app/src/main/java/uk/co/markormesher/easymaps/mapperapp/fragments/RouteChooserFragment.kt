@@ -1,14 +1,14 @@
 package uk.co.markormesher.easymaps.mapperapp.fragments
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_route_chooser.*
+import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 
-class RouteChooserFragment: Fragment() {
+class RouteChooserFragment: BaseFragment() {
 
 	companion object {
 		fun getInstance(destination: String?): RouteChooserFragment {
