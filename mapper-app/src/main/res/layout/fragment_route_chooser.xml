@@ -5,10 +5,85 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-	<TextView
-			android:id="@+id/destination"
-			android:layout_width="wrap_content"
+	<TableLayout
+			android:id="@+id/input_wrapper"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"/>
+			android:stretchColumns="2"
+			android:shrinkColumns="0,1"
+			android:paddingTop="@dimen/space_micro"
+			android:paddingBottom="@dimen/space_micro"
+			android:paddingLeft="@dimen/space_micro"
+			android:paddingRight="@dimen/space_micro"
+			android:background="@color/primary_light"
+			android:orientation="vertical">
+
+		<TableRow
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/space_micro"
+				android:orientation="horizontal">
+
+			<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end|center_vertical"
+					android:text="@string/route_input_from"
+					style="@style/Text.SubHeading"/>
+
+			<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
+
+			<TextView
+					android:id="@+id/from_input"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:padding="@dimen/space_micro"
+					android:background="@drawable/rounded_text_view_bg"
+					style="@style/Text"/>
+
+		</TableRow>
+
+		<TableRow
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+			<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end|center_vertical"
+					android:text="@string/route_input_to"
+					style="@style/Text.SubHeading"/>
+
+			<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
+
+			<TextView
+					android:id="@+id/to_input"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:padding="@dimen/space_micro"
+					android:background="@drawable/rounded_text_view_bg"
+					style="@style/Text"/>
+
+		</TableRow>
+
+	</TableLayout>
+
+	<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/input_wrapper"
+			android:layout_alignParentBottom="true">
+
+		<ImageView
+				android:id="@+id/loading_icon"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:layout_centerInParent="true"
+				android:src="@drawable/ic_hourglass_empty_white_48dp"
+				android:tint="@color/primary_dark"
+				android:contentDescription="@string/loading_locations"/>
+
+	</RelativeLayout>
 
 </RelativeLayout>

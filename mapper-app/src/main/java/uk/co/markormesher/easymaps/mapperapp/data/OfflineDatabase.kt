@@ -114,4 +114,16 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		return output
 	}
 
+	fun getLocation(id: String): Location? {
+		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
+		val cursor = db.rawQuery("SELECT * FROM ${LocationSchema._tableName} WHERE ${LocationSchema.id} = ?;", arrayOf(id))
+		var result: Location? = null
+		if (cursor.moveToFirst()) {
+			result = Location.fromCursor(cursor)
+		}
+		cursor.close()
+		db.close()
+		return result
+	}
+
 }

@@ -51,5 +51,8 @@
 	<string name="location_status_no_location_header">Location disabled!</string>
 	<string name="location_status_no_location_message">Tap here to enable</string>
 
+	<string name="route_input_from">From:</string>
+	<string name="route_input_to">To:</string>
+
 
 </resources>
