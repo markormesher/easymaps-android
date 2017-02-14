@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.fragment_route_chooser.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
@@ -15,6 +16,7 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearchRouteFinder
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger {
 
@@ -47,12 +49,14 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 		super.onActivityCreated(savedInstanceState)
 		initViews()
 		setRouteInput(Direction.TO, initialDestinationId)
+		routeFinder.loadConnections(context)
 	}
 
 	/* views */
 
 	private fun initViews() {
 		loading_icon.visibility = View.GONE
+		loading_icon.clearAnimation()
 		centre_message.visibility = View.GONE
 
 		from_input.setOnClickListener {
@@ -116,15 +120,29 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 
 	private fun routeInputUpdated() {
 		if (toLocation == null || fromLocation == null) {
+			loading_icon.visibility = View.GONE
+			loading_icon.clearAnimation()
+
 			centre_message.text = getString(R.string.route_input_prompt)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			// TODO: start route finding task on background thread
-			centre_message.text = "${fromLocation?.id} -> ${toLocation?.id}"
-			centre_message.visibility = View.VISIBLE
+			loading_icon.visibility = View.VISIBLE
+			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+			centre_message.visibility = View.GONE
+
+			routeFinder.findRoute(fromLocation!!, toLocation!!, { route ->
+				centre_message.text = route.joinToString(", ")
+				centre_message.visibility = View.VISIBLE
+				loading_icon.visibility = View.GONE
+				loading_icon.clearAnimation()
+			})
 		}
 	}
 
 	enum class Direction { TO, FROM }
+
+	/* route finding */
+
+	val routeFinder = BreadthFirstSearchRouteFinder()
 
 }
