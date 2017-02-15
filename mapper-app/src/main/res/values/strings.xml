@@ -56,6 +56,7 @@
 	<string name="route_input_prompt">Select a start and end location by tapping on the boxes above to see your route options.</string>
 
 	<string name="route_selection_calculating">Finding a route…</string>
+	<string name="no_route_found">No route found.</string>
 
 
 </resources>

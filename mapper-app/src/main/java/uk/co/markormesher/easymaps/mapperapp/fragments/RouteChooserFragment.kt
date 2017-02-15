@@ -55,9 +55,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 	/* views */
 
 	private fun initViews() {
-		loading_icon.visibility = View.GONE
-		loading_icon.clearAnimation()
-		centre_message.visibility = View.GONE
+		hideContentViews()
 
 		from_input.setOnClickListener {
 			lastRequestDirection = Direction.FROM
@@ -73,6 +71,13 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 					LocationSearchActivity.REQUEST_CODE
 			)
 		}
+	}
+
+	private fun hideContentViews() {
+		loading_icon.visibility = View.GONE
+		loading_icon.clearAnimation()
+		centre_message.visibility = View.GONE
+		route_list_wrapper.visibility = View.GONE
 	}
 
 	/* route input */
@@ -119,22 +124,22 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 	}
 
 	private fun routeInputUpdated() {
-		if (toLocation == null || fromLocation == null) {
-			loading_icon.visibility = View.GONE
-			loading_icon.clearAnimation()
+		hideContentViews()
 
+		if (toLocation == null || fromLocation == null) {
 			centre_message.text = getString(R.string.route_input_prompt)
 			centre_message.visibility = View.VISIBLE
 		} else {
 			loading_icon.visibility = View.VISIBLE
 			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-			centre_message.visibility = View.GONE
 
 			routeFinder.findRoute(fromLocation!!, toLocation!!, { route ->
 				if (route == null) {
-					centre_message.text = "No route found"
+					centre_message.text = getString(R.string.no_route_found)
+					centre_message.visibility = View.VISIBLE
 				} else {
-					with (StringBuilder()) {
+					with(StringBuilder()) {
+						// TODO: display route with better UI
 						route.locations.forEachIndexed { i, location ->
 							append(location)
 							append("\n")
@@ -144,10 +149,10 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 							}
 						}
 
-						centre_message.text = toString()
+						route_list.text = toString()
+						route_list_wrapper.visibility = View.VISIBLE
 					}
 				}
-				centre_message.visibility = View.VISIBLE
 				loading_icon.visibility = View.GONE
 				loading_icon.clearAnimation()
 			})
