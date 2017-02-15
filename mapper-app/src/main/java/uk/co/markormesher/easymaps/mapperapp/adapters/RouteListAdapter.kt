@@ -76,7 +76,17 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 			}
 			colourBar.requestLayout()
 
-			title.text = context.resources.getQuantityString(R.plurals.route_changes, routeSummary.changes, routeSummary.changes)
+			val summaryText = with(StringBuilder()) {
+				append(context.resources.getQuantityString(R.plurals.route_changes, routeSummary.changes, routeSummary.changes))
+				append("\n")
+				route.modes.forEachIndexed { i, mode ->
+					append(String.format(mode.verb, route.locations[i + 1].getDisplayTitle(context)))
+					append("\n")
+				}
+				toString()
+			}
+
+			title.text = summaryText
 
 			rootView.setOnClickListener { selectListener?.onRouteSelected(position) }
 		}

@@ -10,9 +10,14 @@ import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 
 abstract class RouteFinder: AnkoLogger {
 
-	fun loadConnections(context: Context) = doAsync {
-		OfflineDatabase(context).getConnections().forEach { c -> loadConnection(c) }
+	fun loadData(context: Context) = doAsync {
+		with(OfflineDatabase(context)) {
+			getLocations().forEach { l -> loadLocation(l) }
+			getConnections().forEach { c -> loadConnection(c) }
+		}
 	}
+
+	protected abstract fun loadLocation(location: Location)
 
 	protected abstract fun loadConnection(connection: Connection)
 

@@ -53,7 +53,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		super.onActivityCreated(savedInstanceState)
 		initViews()
 		setRouteInput(Direction.TO, initialDestinationId)
-		routeFinder.loadConnections(context)
+		routeFinder.loadData(context)
 	}
 
 	/* views */

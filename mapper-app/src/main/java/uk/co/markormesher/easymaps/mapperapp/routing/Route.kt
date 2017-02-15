@@ -1,10 +1,11 @@
 package uk.co.markormesher.easymaps.mapperapp.routing
 
+import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import java.util.*
 
 data class Route(
-		val locations: MutableList<String> = ArrayList<String>(),
+		val locations: MutableList<Location> = ArrayList<Location>(),
 		val modes: MutableList<TravelMode> = ArrayList<TravelMode>(),
 		var cost: Int = 0) {
 
