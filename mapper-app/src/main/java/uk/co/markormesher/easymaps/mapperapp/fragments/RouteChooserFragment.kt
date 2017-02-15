@@ -131,7 +131,22 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 			centre_message.visibility = View.GONE
 
 			routeFinder.findRoute(fromLocation!!, toLocation!!, { route ->
-				centre_message.text = route.joinToString(", ")
+				if (route == null) {
+					centre_message.text = "No route found"
+				} else {
+					with (StringBuilder()) {
+						route.locations.forEachIndexed { i, location ->
+							append(location)
+							append("\n")
+							if (i < route.modes.size) {
+								append(route.modes[i].toString())
+								append("\n")
+							}
+						}
+
+						centre_message.text = toString()
+					}
+				}
 				centre_message.visibility = View.VISIBLE
 				loading_icon.visibility = View.GONE
 				loading_icon.clearAnimation()

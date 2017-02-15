@@ -7,24 +7,40 @@ import java.util.*
 
 class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 
-	val adj = HashMap<String, ArrayList<String>>()
+	private val adj = HashMap<String, ArrayList<Connection>>()
 
 	override fun loadConnection(connection: Connection) {
-		adj.getOrPut(connection.from, { ArrayList<String>() }).add(connection.to)
+		adj.getOrPut(connection.from, { ArrayList<Connection>() }).add(connection)
 	}
 
-	override fun findRoute(from: Location, to: Location): List<String> {
-		Thread.sleep(4000)
+	override fun findRoute(from: Location, to: Location): Route? {
+		val open = LinkedList<Route>()
+		val closed = HashSet<String>()
 
-		val route = ArrayList<String>()
+		val init = Route()
+		init.locations.add(from.id)
 
-		route.add("This")
-		route.add("thing")
-		route.add("can't")
-		route.add("compute")
-		route.add("routes")
-		route.add("yet")
+		open.addLast(init)
 
-		return route
+		while (open.isNotEmpty()) {
+			val state = open.removeFirst()
+			val tip = state.locations.last()
+
+			closed.add(tip)
+
+			if (tip == to.id) {
+				return state
+			}
+
+			adj[tip]?.filter({ s -> !closed.contains(s.to) })?.forEach { edge ->
+				val nextState = state.clone()
+				nextState.locations.add(edge.to)
+				nextState.modes.add(edge.mode)
+				open.addLast(nextState)
+			}
+		}
+
+		return null
 	}
+
 }
