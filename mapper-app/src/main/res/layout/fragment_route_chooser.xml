@@ -96,20 +96,10 @@
 				android:tint="@color/primary_dark"
 				android:contentDescription="@string/route_selection_calculating"/>
 
-		<ScrollView
-				android:id="@+id/route_list_wrapper"
+		<android.support.v7.widget.RecyclerView
+				android:id="@+id/route_list"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent">
-
-			<TextView
-					android:id="@+id/route_list"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:padding="@dimen/space_small"
-					android:gravity="center"
-					style="@style/Text"/>
-
-		</ScrollView>
+				android:layout_height="match_parent"/>
 
 	</RelativeLayout>
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/space_nano"
+		android:background="?attr/selectableItemBackground">
+
+	<LinearLayout
+			android:id="@+id/route_colour_bar"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/space_small"
+			android:layout_marginBottom="@dimen/space_nano"
+			android:orientation="horizontal"
+			android:weightSum="100">
+
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="20"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
+
+	</LinearLayout>
+
+	<TextView
+			android:id="@+id/route_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="@style/Text.ListItem"/>
+
+</LinearLayout>

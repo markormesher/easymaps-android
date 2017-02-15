@@ -58,5 +58,10 @@
 	<string name="route_selection_calculating">Finding a route…</string>
 	<string name="no_route_found">No route found.</string>
 
+	<plurals name="route_changes">
+		<item quantity="zero">No changes</item>
+		<item quantity="one">1 change</item>
+		<item quantity="other">%d changes</item>
+	</plurals>
 
 </resources>
