@@ -16,15 +16,15 @@ abstract class RouteFinder: AnkoLogger {
 
 	protected abstract fun loadConnection(connection: Connection)
 
-	fun findRoute(from: Location, to: Location, callback: (route: Route?) -> Unit) {
+	fun findRoute(from: Location, to: Location, callback: (routes: List<Route>) -> Unit) {
 		doAsync {
-			val route = findRoute(from, to)
+			val routes = findRoute(from, to)
 			uiThread {
-				callback(route)
+				callback(routes)
 			}
 		}
 	}
 
-	protected abstract fun findRoute(from: Location, to: Location): Route?
+	protected abstract fun findRoute(from: Location, to: Location): List<Route>
 
 }

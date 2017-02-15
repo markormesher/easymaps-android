@@ -16,7 +16,9 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearchRouteFinder
+import java.util.*
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger {
 
@@ -133,20 +135,34 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger {
 			loading_icon.visibility = View.VISIBLE
 			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
 
-			routeFinder.findRoute(fromLocation!!, toLocation!!, { route ->
-				if (route == null) {
+			routeFinder.findRoute(fromLocation!!, toLocation!!, { routes ->
+				if (routes.isEmpty()) {
 					centre_message.text = getString(R.string.no_route_found)
 					centre_message.visibility = View.VISIBLE
 				} else {
 					with(StringBuilder()) {
 						// TODO: display route with better UI
-						route.locations.forEachIndexed { i, location ->
-							append(location)
-							append("\n")
-							if (i < route.modes.size) {
-								append(route.modes[i].toString())
-								append("\n")
+						routes.forEach { route ->
+							val uniqueModes = LinkedList<TravelMode>()
+							var changes = 0
+
+							route.modes.forEach { mode ->
+								if (uniqueModes.isEmpty()) {
+									uniqueModes.add(mode)
+								} else if (uniqueModes.last != mode) {
+									uniqueModes.add(mode)
+									if (uniqueModes.last != TravelMode.WALK && mode != TravelMode.WALK) {
+										++changes
+									}
+								}
 							}
+
+							append(uniqueModes.joinToString(", "))
+							append("\n")
+							append("Changes: $changes")
+							append("\n")
+							append("Cost: ${route.cost}")
+							append("\n\n")
 						}
 
 						route_list.text = toString()

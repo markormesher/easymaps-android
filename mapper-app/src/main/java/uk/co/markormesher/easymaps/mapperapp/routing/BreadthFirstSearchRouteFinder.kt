@@ -13,13 +13,13 @@ class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 		adj.getOrPut(connection.from, { ArrayList<Connection>() }).add(connection)
 	}
 
-	override fun findRoute(from: Location, to: Location): Route? {
+	override fun findRoute(from: Location, to: Location): List<Route> {
 		val open = LinkedList<Route>()
 		val closed = HashSet<String>()
+		val output = ArrayList<Route>()
 
 		val init = Route()
 		init.locations.add(from.id)
-
 		open.addLast(init)
 
 		while (open.isNotEmpty()) {
@@ -29,18 +29,21 @@ class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 			closed.add(tip)
 
 			if (tip == to.id) {
-				return state
+				output.add(state)
+				return output
 			}
 
 			adj[tip]?.filter({ s -> !closed.contains(s.to) })?.forEach { edge ->
 				val nextState = state.clone()
 				nextState.locations.add(edge.to)
 				nextState.modes.add(edge.mode)
+				nextState.cost += edge.cost
+
 				open.addLast(nextState)
 			}
 		}
 
-		return null
+		return output
 	}
 
 }
