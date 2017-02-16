@@ -37,7 +37,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 				route.modes.forEach { mode ->
 					if (lastMode != mode) {
 						if (lastMode != TravelMode.UNKNOWN) {
-							uniqueModes.add(Pair(lastMode, runLength))
+							travelSegments.add(TravelSegment(lastMode, runLength))
 							++changes
 						}
 						lastMode = mode
@@ -47,7 +47,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 					}
 					lastMode = mode
 				}
-				uniqueModes.add(Pair(lastMode, runLength))
+				travelSegments.add(TravelSegment(lastMode, runLength))
 				routeSummaries.add(this)
 			}
 		}
@@ -62,15 +62,16 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 			val route = routes[position]
 			val routeSummary = routeSummaries[position]
 
-			for (i in (0..colourBar.childCount - 1)) {
-				val block = colourBar.getChildAt(i)
+			colourBlocks.forEachIndexed { i, block ->
 				val lp = block.layoutParams as LinearLayout.LayoutParams
-				if (i < routeSummary.uniqueModes.size) {
-					val mode = routeSummary.uniqueModes[i]
-					lp.weight = (mode.second.toFloat() / route.modes.size) * 100
-					block.setBackgroundColor(mode.first.colourCode)
+				if (i < routeSummary.travelSegments.size) {
+					val segment = routeSummary.travelSegments[i]
+					lp.weight = segment.count.toFloat() / route.modes.size
+					block.setBackgroundColor(segment.mode.colourCode)
+					block.visibility = View.VISIBLE
 				} else {
 					lp.weight = 0.0f
+					block.visibility = View.GONE
 				}
 				block.layoutParams = lp
 			}
@@ -98,14 +99,17 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 		val rootView = v
 		val title = v.route_title!!
 		val colourBar = v.route_colour_bar!!
+		val colourBlocks = (0..colourBar.childCount - 1).map({ i -> colourBar.getChildAt(i) }).toList()
 	}
 
 	interface OnSelectListener {
 		fun onRouteSelected(index: Int)
 	}
 
+	private data class TravelSegment(val mode: TravelMode, val count: Int)
+
 	private data class RouteSummary(
-			val uniqueModes: LinkedList<Pair<TravelMode, Int>> = LinkedList<Pair<TravelMode, Int>>(),
+			val travelSegments: LinkedList<TravelSegment> = LinkedList<TravelSegment>(),
 			var changes: Int = 0,
 			var cost: Int = 0)
 

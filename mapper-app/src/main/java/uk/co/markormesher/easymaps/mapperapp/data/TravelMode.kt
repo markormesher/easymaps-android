@@ -14,57 +14,57 @@ enum class TravelMode(val key: String, val displayName: String, val colourCode: 
 	BAKERLOO("tube/bakerloo",
 			"Bakerloo line",
 			Color.parseColor("#b26400"),
-			"Take the Bakerloo line to %s"),
+			"Bakerloo line to %s"),
 
 	CENTRAL("tube/central",
 			"Central line",
 			Color.parseColor("#dc241f"),
-			"Take the Central line to %s"),
+			"Central line to %s"),
 
 	CIRCLE("tube/circle",
 			"Circle line",
 			Color.parseColor("#ffd329"),
-			"Take the Circle line to %s"),
+			"Circle line to %s"),
 
 	DISTRICT("tube/district",
 			"District line",
 			Color.parseColor("#007d32"),
-			"Take the District line to %s"),
+			"District line to %s"),
 
 	HAMMERSMITH_AND_CITY("tube/hammersmith-and-city",
 			"Hammersmith and City line",
 			Color.parseColor("#f4a9be"),
-			"Take the Hammersmith and City line to %s"),
+			"Hammersmith and City line to %s"),
 
 	JUBILEE("tube/jubilee",
 			"Jubilee line",
 			Color.parseColor("#a1a5a7"),
-			"Take the Jubilee line to %s"),
+			"Jubilee line to %s"),
 
 	METROPOLITAN("tube/metropolitan",
 			"Metropolitan line",
 			Color.parseColor("#9b0058"),
-			"Take the Metropolitan line to %s"),
+			"Metropolitan line to %s"),
 
 	NORTHERN("tube/northern",
 			"Northern line",
 			Color.parseColor("#000000"),
-			"Take the Northern line to %s"),
+			"Northern line to %s"),
 
 	PICCADILLY("tube/piccadilly",
 			"Piccadilly line",
 			Color.parseColor("#0019a8"),
-			"Take the Piccadilly line to %s"),
+			"Piccadilly line to %s"),
 
 	VICTORIA("tube/victoria",
 			"Victoria line",
 			Color.parseColor("#0098d8"),
-			"Take the Victoria line to %s"),
+			"Victoria line to %s"),
 
 	WATERLOO_AND_CITY("tube/waterloo-and-city",
 			"Waterloo and City line",
 			Color.parseColor("#93ceba"),
-			"Take the Waterloo and City line to %s");
+			"Waterloo and City line to %s");
 
 	companion object {
 		fun fromKey(key: String) = when (key) {

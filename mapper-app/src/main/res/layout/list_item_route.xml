@@ -13,10 +13,10 @@
 			android:layout_height="@dimen/space_small"
 			android:layout_marginBottom="@dimen/space_nano"
 			android:orientation="horizontal"
-			android:weightSum="100"
+			android:weightSum="1"
 			android:alpha="0.8">
 
-		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="20"/>
+		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
 		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
 		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
 		<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0"/>
