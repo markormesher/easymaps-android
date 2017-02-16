@@ -84,7 +84,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 					append(String.format(mode.verb, route.locations[i + 1].getDisplayTitle(context)))
 					append("\n")
 				}
-				toString()
+				toString().trim()
 			}
 
 			title.text = summaryText

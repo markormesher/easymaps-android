@@ -100,7 +100,6 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		} else {
 			doAsync {
 				val location = OfflineDatabase(context).getLocation(id)
-
 				uiThread {
 					setInputLocation(direction, location)
 				}
