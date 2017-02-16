@@ -3,6 +3,7 @@ package uk.co.markormesher.easymaps.mapperapp.routing
 import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.data.Connection
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.data.LocationType
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import java.util.*
 
@@ -38,18 +39,21 @@ class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 
 			closed.add(tip.id)
 
-			if (tip.id == to.id) {
-				output.add(state)
-				return output
-			}
-
 			edges[tip.id]?.filter({ e -> !closed.contains(e.destination.id) })?.forEach { edge ->
-				val nextState = state.clone()
-				nextState.locations.add(edge.destination)
-				nextState.modes.add(edge.mode)
-				nextState.cost += edge.cost
+				// this edge is useful if it doesn't go to an attraction, or if it goes to the attraction we're looking for
+				if (edge.destination.type != LocationType.ATTRACTION || edge.destination == to) {
+					val nextState = state.clone()
+					nextState.locations.add(edge.destination)
+					nextState.modes.add(edge.mode)
+					nextState.cost += edge.cost
 
-				open.addLast(nextState)
+					if (edge.destination == to) {
+						output.add(nextState)
+						return output
+					} else {
+						open.addLast(nextState)
+					}
+				}
 			}
 		}
 
