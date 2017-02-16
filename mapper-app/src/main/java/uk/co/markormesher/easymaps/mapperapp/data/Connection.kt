@@ -4,13 +4,13 @@ import android.content.ContentValues
 import android.database.Cursor
 import org.json.JSONObject
 
-data class Connection(val from: String, val to: String, val mode: String, val cost: Int) {
+data class Connection(val from: String, val to: String, val mode: TravelMode, val cost: Int) {
 
 	fun toContentValues(): ContentValues {
 		val cv = ContentValues()
 		cv.put(ConnectionSchema.from, from)
 		cv.put(ConnectionSchema.to, to)
-		cv.put(ConnectionSchema.mode, mode)
+		cv.put(ConnectionSchema.mode, mode.key)
 		cv.put(ConnectionSchema.cost, cost)
 		return cv
 	}
@@ -20,7 +20,7 @@ data class Connection(val from: String, val to: String, val mode: String, val co
 			return Connection(
 					from = cursor.getString(cursor.getColumnIndexOrThrow(ConnectionSchema.from)),
 					to = cursor.getString(cursor.getColumnIndexOrThrow(ConnectionSchema.to)),
-					mode = cursor.getString(cursor.getColumnIndexOrThrow(ConnectionSchema.mode)),
+					mode = TravelMode.fromKey(cursor.getString(cursor.getColumnIndexOrThrow(ConnectionSchema.mode))),
 					cost = cursor.getInt(cursor.getColumnIndexOrThrow(ConnectionSchema.cost))
 			)
 		}
@@ -29,7 +29,7 @@ data class Connection(val from: String, val to: String, val mode: String, val co
 			return Connection(
 					from = json.getString("from"),
 					to = json.getString("to"),
-					mode = json.getString("mode"),
+					mode = TravelMode.fromKey(json.getString("mode")),
 					cost = json.getInt("cost")
 			)
 		}

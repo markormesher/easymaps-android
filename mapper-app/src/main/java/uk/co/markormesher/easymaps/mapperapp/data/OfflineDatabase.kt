@@ -83,6 +83,32 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		db.close()
 	}
 
+	fun getLocation(id: String): Location? {
+		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
+		val cursor = db.rawQuery("SELECT * FROM ${LocationSchema._tableName} WHERE ${LocationSchema.id} = ?;", arrayOf(id))
+		var result: Location? = null
+		if (cursor.moveToFirst()) {
+			result = Location.fromCursor(cursor)
+		}
+		cursor.close()
+		db.close()
+		return result
+	}
+
+	fun getLocations(): List<Location> {
+		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
+		val cursor = db.rawQuery("SELECT * FROM ${LocationSchema._tableName};", emptyArray())
+		val output = ArrayList<Location>()
+		if (cursor.moveToFirst()) {
+			do {
+				output.add(Location.fromCursor(cursor))
+			} while (cursor.moveToNext())
+		}
+		cursor.close()
+		db.close()
+		return output
+	}
+
 	fun getAttractions(): List<Location> {
 		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
 		val cursor = db.rawQuery(
@@ -100,13 +126,13 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 		return output
 	}
 
-	fun getLocations(): List<Location> {
+	fun getConnections(): List<Connection> {
 		val db = readableDatabase ?: throw SQLiteException("Could not acquire readable database")
-		val cursor = db.rawQuery("SELECT * FROM ${LocationSchema._tableName};", emptyArray())
-		val output = ArrayList<Location>()
+		val cursor = db.rawQuery("SELECT * FROM ${ConnectionSchema._tableName};", emptyArray())
+		val output = ArrayList<Connection>()
 		if (cursor.moveToFirst()) {
 			do {
-				output.add(Location.fromCursor(cursor))
+				output.add(Connection.fromCursor(cursor))
 			} while (cursor.moveToNext())
 		}
 		cursor.close()

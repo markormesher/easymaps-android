@@ -51,5 +51,23 @@
 	<string name="location_status_no_location_header">Location disabled!</string>
 	<string name="location_status_no_location_message">Tap here to enable</string>
 
+	<string name="route_input_from">From:</string>
+	<string name="route_input_to">To:</string>
+	<string name="route_input_prompt">Select a start and end location by tapping on the boxes above to see your route options.</string>
+
+	<string name="route_selection_calculating">Finding a route…</string>
+	<string name="no_route_found">No route found.</string>
+
+	<plurals name="route_changes">
+		<item quantity="zero">No changes</item>
+		<item quantity="one">1 change</item>
+		<item quantity="other">%d changes</item>
+	</plurals>
+	<plurals name="route_duration">
+		<item quantity="zero">0 mins</item>
+		<item quantity="one">1 min</item>
+		<item quantity="other">%d mins</item>
+	</plurals>
+	<string name="route_details">%1$s, %2$s</string>
 
 </resources>
