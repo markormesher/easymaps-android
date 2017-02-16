@@ -37,7 +37,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 				route.modes.forEach { mode ->
 					if (lastMode != mode) {
 						if (lastMode != TravelMode.UNKNOWN) {
-							travelSegments.add(TravelSegment(lastMode, runLength))
+							segments.add(TravelSegment(lastMode, runLength))
 							++changes
 						}
 						lastMode = mode
@@ -47,7 +47,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 					}
 					lastMode = mode
 				}
-				travelSegments.add(TravelSegment(lastMode, runLength))
+				segments.add(TravelSegment(lastMode, runLength))
 				routeSummaries.add(this)
 			}
 		}
@@ -64,8 +64,8 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 
 			colourBlocks.forEachIndexed { i, block ->
 				val lp = block.layoutParams as LinearLayout.LayoutParams
-				if (i < routeSummary.travelSegments.size) {
-					val segment = routeSummary.travelSegments[i]
+				if (i < routeSummary.segments.size) {
+					val segment = routeSummary.segments[i]
 					lp.weight = segment.count.toFloat() / route.modes.size
 					block.setBackgroundColor(segment.mode.colourCode)
 					block.visibility = View.VISIBLE
@@ -77,9 +77,13 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 			}
 			colourBar.requestLayout()
 
+			val segmentSummary = routeSummary.segments.map({ s -> s.mode.displayName }).joinToString(", ")
 			val mins = Math.ceil(routeSummary.duration.toDouble() / 60).toInt()
-			duration.text = context.resources.getQuantityString(R.plurals.route_duration, mins, mins)
-			changes.text = context.resources.getQuantityString(R.plurals.route_changes, routeSummary.changes, routeSummary.changes)
+			val duration = context.resources.getQuantityString(R.plurals.route_duration, mins, mins)
+			val changes = context.resources.getQuantityString(R.plurals.route_changes, routeSummary.changes, routeSummary.changes)
+
+			summary.text = segmentSummary
+			details.text = context.getString(R.string.route_details, duration, changes)
 
 			rootView.setOnClickListener { selectListener?.onRouteSelected(position) }
 		}
@@ -89,8 +93,8 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 
 	class RouteViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val rootView = v
-		val duration = v.route_duration!!
-		val changes = v.route_changes!!
+		val summary = v.route_summary!!
+		val details = v.route_details!!
 		val colourBar = v.route_colour_bar!!
 		val colourBlocks = (0..colourBar.childCount - 1).map({ i -> colourBar.getChildAt(i) }).toList()
 	}
@@ -102,7 +106,7 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 	private data class TravelSegment(val mode: TravelMode, val count: Int)
 
 	private data class RouteSummary(
-			val travelSegments: LinkedList<TravelSegment> = LinkedList<TravelSegment>(),
+			val segments: LinkedList<TravelSegment> = LinkedList<TravelSegment>(),
 			var changes: Int = 0,
 			var duration: Int = 0)
 
