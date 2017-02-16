@@ -45,7 +45,7 @@ class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 					val nextState = state.clone()
 					nextState.locations.add(edge.destination)
 					nextState.modes.add(edge.mode)
-					nextState.cost += edge.cost
+					nextState.duration += edge.cost
 
 					if (edge.destination == to) {
 						output.add(nextState)

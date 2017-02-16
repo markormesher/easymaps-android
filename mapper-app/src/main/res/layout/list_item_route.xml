@@ -33,11 +33,26 @@
 		</LinearLayout>
 
 		<TextView
-				android:id="@+id/route_title"
-				android:layout_width="match_parent"
+				android:id="@+id/route_duration"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/route_colour_bar"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true"
 				android:layout_marginTop="@dimen/space_nano"
+				style="@style/Text.ListItem"/>
+
+		<TextView
+				android:id="@+id/route_changes"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentEnd="true"
+				android:layout_below="@id/route_colour_bar"
+				android:layout_toRightOf="@id/route_duration"
+				android:layout_toEndOf="@id/route_duration"
+				android:layout_marginTop="@dimen/space_nano"
+				android:gravity="end"
 				style="@style/Text.ListItem"/>
 
 	</RelativeLayout>

@@ -64,4 +64,10 @@
 		<item quantity="other">%d changes</item>
 	</plurals>
 
+	<plurals name="route_duration">
+		<item quantity="zero">0 mins</item>
+		<item quantity="one">1 min</item>
+		<item quantity="other">%d mins</item>
+	</plurals>
+
 </resources>

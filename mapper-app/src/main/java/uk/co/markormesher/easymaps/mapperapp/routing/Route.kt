@@ -7,13 +7,13 @@ import java.util.*
 data class Route(
 		val locations: MutableList<Location> = ArrayList<Location>(),
 		val modes: MutableList<TravelMode> = ArrayList<TravelMode>(),
-		var cost: Int = 0) {
+		var duration: Int = 0) {
 
 	fun clone(): Route {
 		val clone = Route()
 		clone.locations.addAll(locations)
 		clone.modes.addAll(modes)
-		clone.cost = cost
+		clone.duration = duration
 		return clone
 	}
 
