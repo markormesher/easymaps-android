@@ -3,11 +3,12 @@ package uk.co.markormesher.easymaps.mapperapp.routing
 import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.data.Connection
 import uk.co.markormesher.easymaps.mapperapp.data.Location
-import uk.co.markormesher.easymaps.mapperapp.data.LocationType
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import java.util.*
 
-class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
+class AStarSearchRouteFinder: RouteFinder(), AnkoLogger {
+
+	private val changePenalties = arrayOf(180, 240)
 
 	private val locations = HashMap<String, Location>()
 	private val edges = HashMap<String, ArrayList<Edge>>()
@@ -25,39 +26,49 @@ class BreadthFirstSearchRouteFinder: RouteFinder(), AnkoLogger {
 	}
 
 	override fun findRoute(from: Location, to: Location): ArrayList<Route> {
-		val open = LinkedList<Route>()
+		val setOfRoutes = HashSet<Route>()
+		changePenalties.forEach { penalty ->
+			val route = findRouteWithChangePenalty(from, to, penalty)
+			if (route != null) {
+				setOfRoutes.add(route)
+			}
+		}
+		return ArrayList(setOfRoutes)
+	}
+
+	private fun findRouteWithChangePenalty(from: Location, to: Location, penalty: Int): Route? {
+		val open = PriorityQueue<Route>(20, Comparator<Route> { a, b -> a.duration.compareTo(b.duration) })
 		val closed = HashSet<String>()
-		val output = ArrayList<Route>()
 
 		val init = Route()
 		init.locations.add(from)
-		open.addLast(init)
+		open.offer(init)
 
 		while (open.isNotEmpty()) {
-			val state = open.removeFirst()
-			val tip = state.locations.last()
+			val state = open.poll()
 
+			if (state.locations.last() == to) {
+				return state
+			}
+
+			val tip = state.locations.last()
 			closed.add(tip.id)
 
 			edges[tip.id]?.filter({ e -> !closed.contains(e.destination.id) })?.forEach { edge ->
-				// this edge is useful if it doesn't go to an attraction, or if it goes to the attraction we're looking for
-				if (edge.destination.type != LocationType.ATTRACTION || edge.destination == to) {
-					val nextState = state.clone()
-					nextState.locations.add(edge.destination)
-					nextState.modes.add(edge.mode)
-					nextState.duration += edge.cost
+				val nextState = state.clone()
+				nextState.locations.add(edge.destination)
+				nextState.modes.add(edge.mode)
+				nextState.duration += edge.cost
 
-					if (edge.destination == to) {
-						output.add(nextState)
-						return output
-					} else {
-						open.addLast(nextState)
-					}
+				if (state.modes.isNotEmpty() && state.modes.last() != edge.mode) {
+					nextState.duration += penalty
 				}
+
+				open.offer(nextState)
 			}
 		}
 
-		return output
+		return null
 	}
 
 	data class Edge(val destination: Location, val mode: TravelMode, val cost: Int)

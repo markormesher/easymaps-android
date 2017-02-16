@@ -7,6 +7,7 @@ import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.data.Connection
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
+import java.util.*
 
 abstract class RouteFinder: AnkoLogger {
 
@@ -21,7 +22,7 @@ abstract class RouteFinder: AnkoLogger {
 
 	protected abstract fun loadConnection(connection: Connection)
 
-	fun findRoute(from: Location, to: Location, callback: (routes: List<Route>) -> Unit) {
+	fun findRoute(from: Location, to: Location, callback: (routes: ArrayList<Route>) -> Unit) {
 		doAsync {
 			val routes = findRoute(from, to)
 			uiThread {
@@ -30,6 +31,6 @@ abstract class RouteFinder: AnkoLogger {
 		}
 	}
 
-	protected abstract fun findRoute(from: Location, to: Location): List<Route>
+	protected abstract fun findRoute(from: Location, to: Location): ArrayList<Route>
 
 }

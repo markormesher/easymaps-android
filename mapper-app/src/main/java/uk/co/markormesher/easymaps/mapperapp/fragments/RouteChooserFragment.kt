@@ -18,8 +18,9 @@ import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearchRouteFinder
+import uk.co.markormesher.easymaps.mapperapp.routing.AStarSearchRouteFinder
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
+import java.util.*
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelectListener {
 
@@ -38,7 +39,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	}
 
 	var initialDestinationId = DEFAULT_DESTINATION
-	val routeFinder = BreadthFirstSearchRouteFinder()
+	val routeFinder = AStarSearchRouteFinder()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -135,6 +136,9 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		if (toLocation == null || fromLocation == null) {
 			centre_message.text = getString(R.string.route_input_prompt)
 			centre_message.visibility = View.VISIBLE
+		} else if (toLocation == fromLocation) {
+			centre_message.text = getString(R.string.no_route_same_start_end)
+			centre_message.visibility = View.VISIBLE
 		} else {
 			loading_icon.visibility = View.VISIBLE
 			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
@@ -148,11 +152,12 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 
 	private val routeListAdapter by lazy { RouteListAdapter(context, this) }
 
-	private fun routesFound(routes: List<Route>) {
+	private fun routesFound(routes: ArrayList<Route>) {
 		if (routes.isEmpty()) {
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
+			routes.sort { a, b -> a.duration.compareTo(b.duration)}
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}

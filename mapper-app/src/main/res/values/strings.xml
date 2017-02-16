@@ -57,6 +57,7 @@
 
 	<string name="route_selection_calculating">Finding a route…</string>
 	<string name="no_route_found">No route found.</string>
+	<string name="no_route_same_start_end">Boom, you\'re already there! That was fast…</string>
 
 	<plurals name="route_changes">
 		<item quantity="zero">No changes</item>

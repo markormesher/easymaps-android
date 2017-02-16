@@ -19,17 +19,17 @@
 				android:orientation="horizontal"
 				android:weightSum="1">
 
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginLeft="1dp" android:layout_marginStart="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
-			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
 			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginEnd="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginRight="1dp" android:layout_marginLeft="1dp" android:layout_weight="0"/>
+			<View android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginLeft="1dp" android:layout_marginStart="1dp" android:layout_weight="0"/>
 
 		</LinearLayout>
 
