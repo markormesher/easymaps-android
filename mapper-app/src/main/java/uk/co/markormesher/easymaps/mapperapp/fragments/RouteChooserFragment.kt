@@ -18,8 +18,10 @@ import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.routing.GreedySearchRouteFinder
+import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearch
+import uk.co.markormesher.easymaps.mapperapp.routing.GreedySearch
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
+import uk.co.markormesher.easymaps.mapperapp.routing.RouteSearchManager
 import java.util.*
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelectListener {
@@ -39,7 +41,15 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	}
 
 	var initialDestinationId = DEFAULT_DESTINATION
-	val routeFinder = GreedySearchRouteFinder()
+
+	val routeSearchManager = RouteSearchManager()
+
+	init {
+		with(routeSearchManager) {
+			algorithms.add(BreadthFirstSearch(this))
+			algorithms.add(GreedySearch(this, 300))
+		}
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -54,7 +64,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		super.onActivityCreated(savedInstanceState)
 		initViews()
 		setRouteInput(Direction.TO, initialDestinationId)
-		routeFinder.loadData(context)
+		routeSearchManager.loadData(context)
 	}
 
 	/* views */
@@ -142,7 +152,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		} else {
 			loading_icon.visibility = View.VISIBLE
 			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-			routeFinder.findRoute(fromLocation!!, toLocation!!, { routes -> routesFound(routes) })
+			routeSearchManager.findRoutes(fromLocation!!, toLocation!!, { routes -> routesFound(routes) })
 		}
 	}
 
@@ -157,7 +167,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			routes.sort { a, b -> a.duration.compareTo(b.duration)}
+			routes.sort { a, b -> a.duration.compareTo(b.duration) }
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}
