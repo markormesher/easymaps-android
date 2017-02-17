@@ -6,7 +6,7 @@ import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import java.util.*
 
-class AStarSearchRouteFinder: RouteFinder(), AnkoLogger {
+class GreedySearchRouteFinder: RouteFinder(), AnkoLogger {
 
 	private val changePenalties = arrayOf(180, 240)
 

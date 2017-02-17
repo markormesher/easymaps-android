@@ -18,7 +18,7 @@ import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.routing.AStarSearchRouteFinder
+import uk.co.markormesher.easymaps.mapperapp.routing.GreedySearchRouteFinder
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import java.util.*
 
@@ -39,7 +39,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	}
 
 	var initialDestinationId = DEFAULT_DESTINATION
-	val routeFinder = AStarSearchRouteFinder()
+	val routeFinder = GreedySearchRouteFinder()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
