@@ -5,6 +5,10 @@ import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.LocationType
 import java.util.*
 
+/*
+Breadth-first search with a slight modification to avoid using attractions as mid-steps on routes.
+("Walk via Hyde Park" is not very efficient)
+ */
 class BreadthFirstSearch(val manager: RouteSearchManager): RouteSearchManager.RoutingAlgorithm, AnkoLogger {
 
 	override fun findRoutes(from: Location, to: Location): ArrayList<Route> {

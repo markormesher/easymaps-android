@@ -1,14 +1,16 @@
 package uk.co.markormesher.easymaps.mapperapp.routing
 
 import android.content.Context
+import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.info
 import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import java.util.*
 
-class RouteSearchManager {
+class RouteSearchManager: AnkoLogger {
 
 	val algorithms = ArrayList<RoutingAlgorithm>()
 
@@ -19,6 +21,7 @@ class RouteSearchManager {
 		with(OfflineDatabase(context)) {
 			getLocations().forEach { location ->
 				locations.put(location.id, location)
+				info(location)
 			}
 			getConnections().forEach { connection ->
 				edges.getOrPut(connection.from, { ArrayList<Edge>() }).add(Edge(

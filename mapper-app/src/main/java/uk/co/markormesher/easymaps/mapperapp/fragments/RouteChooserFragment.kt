@@ -18,10 +18,7 @@ import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearch
-import uk.co.markormesher.easymaps.mapperapp.routing.GreedySearch
-import uk.co.markormesher.easymaps.mapperapp.routing.Route
-import uk.co.markormesher.easymaps.mapperapp.routing.RouteSearchManager
+import uk.co.markormesher.easymaps.mapperapp.routing.*
 import java.util.*
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelectListener {
@@ -47,7 +44,8 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	init {
 		with(routeSearchManager) {
 			algorithms.add(BreadthFirstSearch(this))
-			algorithms.add(GreedySearch(this, 300))
+			algorithms.add(GreedySearch(this))
+			algorithms.add(AStarSearch(this, 300))
 		}
 	}
 
@@ -167,7 +165,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			routes.sort { a, b -> a.duration.compareTo(b.duration) }
+			routes.sort { a, b -> a.duration.compareTo(b.duration) } // TODO: consider changes as well
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}

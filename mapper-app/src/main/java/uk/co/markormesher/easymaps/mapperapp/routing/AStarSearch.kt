@@ -1,20 +1,19 @@
 package uk.co.markormesher.easymaps.mapperapp.routing
 
-import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.helpers.distanceInKm
 import java.util.*
 
 /*
-Greedy best-first search based on straight-line distance between locations.
+A* search based on h(s) = travel time + change time + walking distance to goal.
  */
-class GreedySearch(val data: RouteSearchManager): RouteSearchManager.RoutingAlgorithm, AnkoLogger {
+class AStarSearch(val data: RouteSearchManager, val penalty: Int = 0): RouteSearchManager.RoutingAlgorithm {
 
 	override fun findRoutes(from: Location, to: Location): ArrayList<Route> {
 		val open = PriorityQueue<Route>(20, Comparator<Route> { a, b ->
-			val aDist = distanceInKm(to, a.locations.last())
-			val bDist = distanceInKm(to, b.locations.last())
-			aDist.compareTo(bDist)
+			val aVal = a.duration + distanceInKm(a.locations.last(), to)
+			val bVal = b.duration + distanceInKm(b.locations.last(), to)
+			aVal.compareTo(bVal)
 		})
 		val closed = HashSet<String>()
 		val output = ArrayList<Route>()
@@ -39,6 +38,11 @@ class GreedySearch(val data: RouteSearchManager): RouteSearchManager.RoutingAlgo
 				nextState.locations.add(edge.destination)
 				nextState.modes.add(edge.mode)
 				nextState.duration += edge.cost
+
+				if (state.modes.isNotEmpty() && state.modes.last() != edge.mode) {
+					nextState.duration += penalty
+				}
+
 				open.offer(nextState)
 			}
 		}

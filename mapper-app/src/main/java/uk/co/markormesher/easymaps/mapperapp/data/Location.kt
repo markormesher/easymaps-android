@@ -25,6 +25,8 @@ data class Location(
 		cv.put(LocationSchema.title, title)
 		cv.put(LocationSchema.image, image)
 		cv.put(LocationSchema.type, type.id)
+		cv.put(LocationSchema.lat, lat)
+		cv.put(LocationSchema.lon, lon)
 		return cv
 	}
 
