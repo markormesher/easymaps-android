@@ -1,6 +1,7 @@
 package uk.co.markormesher.easymaps.mapperapp.routing
 
 import org.jetbrains.anko.AnkoLogger
+import uk.co.markormesher.easymaps.mapperapp.MODE_SWITCH_TIME
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.LocationType
 import java.util.*
@@ -27,19 +28,25 @@ class BreadthFirstSearch(val manager: RouteSearchManager): RouteSearchManager.Ro
 			closed.add(tip.id)
 
 			manager.edges[tip.id]?.filter({ e -> !closed.contains(e.destination.id) })?.forEach { edge ->
-				// this edge is useful if it doesn't go to an attraction, or if it goes to the attraction we're looking for
-				if (edge.destination.type != LocationType.ATTRACTION || edge.destination == to) {
-					val nextState = state.clone()
-					nextState.locations.add(edge.destination)
-					nextState.modes.add(edge.mode)
-					nextState.duration += edge.cost
+				// this edge is not useful if it goes to an attraction we're not looking for
+				if (edge.destination.type == LocationType.ATTRACTION && edge.destination != to) {
+					return@forEach
+				}
 
-					if (edge.destination == to) {
-						output.add(nextState)
-						return output
-					} else {
-						open.addLast(nextState)
-					}
+				val nextState = state.clone()
+				nextState.locations.add(edge.destination)
+				nextState.modes.add(edge.mode)
+				nextState.duration += edge.cost
+
+				if (state.modes.isNotEmpty() && state.modes.last() != edge.mode) {
+					nextState.duration += MODE_SWITCH_TIME
+				}
+
+				if (edge.destination == to) {
+					output.add(nextState)
+					return output
+				} else {
+					open.addLast(nextState)
 				}
 			}
 		}

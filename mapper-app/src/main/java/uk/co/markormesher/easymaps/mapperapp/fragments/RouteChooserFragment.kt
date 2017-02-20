@@ -45,7 +45,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		with(routeSearchManager) {
 			algorithms.add(BreadthFirstSearch(this))
 			algorithms.add(GreedySearch(this))
-			algorithms.add(AStarSearch(this, 300))
+			algorithms.add(AStarSearch(this))
 		}
 	}
 
