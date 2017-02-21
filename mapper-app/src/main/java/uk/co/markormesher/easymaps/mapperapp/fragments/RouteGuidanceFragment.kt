@@ -1,6 +1,5 @@
 package uk.co.markormesher.easymaps.mapperapp.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -11,11 +10,10 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
+import uk.co.markormesher.easymaps.mapperapp.adapters.RouteDisplayAdapter
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 
 /*
-TODO: pass route to recycler view adapter
-TODO: create adapter to display basic copies of route components
 TODO: persist session if a route is active
 TODO: open to route guidance fragment is a route is active
  */
@@ -35,8 +33,8 @@ class RouteGuidanceFragment: BaseFragment(), AnkoLogger {
 		val KEY = "fragments.RouteGuidanceFragment:KEY"
 	}
 
-	override fun onAttach(context: Context) {
-		super.onAttach(context)
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
 		activeRoute = (activity as MainActivity).locationAndRouteGuidanceService?.activeRoute
 	}
 
@@ -60,16 +58,13 @@ class RouteGuidanceFragment: BaseFragment(), AnkoLogger {
 		}
 	}
 
-	/* views */
-
 	private fun initViews() {
 		no_route_message.setOnClickListener { activity.onBackPressed() }
 
-		step_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-		//step_list.adapter = routeGuidanceAdapter
+		if (activeRoute != null) {
+			step_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+			step_list.adapter = RouteDisplayAdapter(context, activeRoute!!)
+		}
 	}
-
-	/* route guidance */
-
 
 }

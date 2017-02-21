@@ -132,8 +132,8 @@ class LocationAndRouteGuidanceService: WifiScannerService(), AnkoLogger {
 	var activeRoute: Route? = null
 		get() = field
 		set(value) {
-			//field = value
-
+			field = value
+			// TODO: route guidance mode
 		}
 
 	/* notification */
