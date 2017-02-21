@@ -20,7 +20,9 @@
 			android:theme="@style/AppTheme.NoActionBar"
 			tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-		<activity android:name=".activities.EntryActivity">
+		<activity
+				android:name=".activities.EntryActivity"
+				android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -29,17 +31,20 @@
 
 		<activity
 				android:name=".activities.OfflineDataDownloadActivity"
-				android:launchMode="singleTask"/>
+				android:launchMode="singleTask"
+				android:screenOrientation="portrait"/>
 
 		<activity
 				android:name=".activities.MainActivity"
-				android:launchMode="singleTask"/>
+				android:launchMode="singleTask"
+				android:screenOrientation="portrait"/>
 
 		<activity
 				android:name=".activities.LocationSearchActivity"
 				android:theme="@style/Theme.AppCompat.Light.Dialog"
 				android:excludeFromRecents="true"
-				android:windowSoftInputMode="adjustResize"/>
+				android:windowSoftInputMode="adjustResize"
+				android:screenOrientation="portrait"/>
 
 		<service
 				android:name=".services.DataDownloaderService"
