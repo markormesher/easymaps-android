@@ -5,69 +5,91 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-	<TableLayout
+	<RelativeLayout
 			android:id="@+id/input_wrapper"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:stretchColumns="2"
-			android:shrinkColumns="0,1"
 			android:paddingTop="@dimen/space_micro"
 			android:paddingBottom="@dimen/space_micro"
 			android:paddingLeft="@dimen/space_micro"
 			android:paddingRight="@dimen/space_micro"
-			android:background="@color/primary_light"
-			android:orientation="vertical">
+			android:background="@color/primary_light">
 
-		<TableRow
+		<TableLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/space_micro"
-				android:orientation="horizontal">
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true"
+				android:layout_toLeftOf="@+id/swap_to_from"
+				android:layout_toStartOf="@+id/swap_to_from"
+				android:stretchColumns="2"
+				android:shrinkColumns="0,1">
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="end|center_vertical"
-					android:text="@string/route_input_from"
-					style="@style/Text.SubHeading"/>
-
-			<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
-
-			<TextView
-					android:id="@+id/from_input"
+			<TableRow
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:padding="@dimen/space_micro"
-					android:background="@drawable/rounded_text_view_bg"
-					style="@style/Text"/>
+					android:layout_marginBottom="@dimen/space_micro"
+					android:orientation="horizontal">
 
-		</TableRow>
+				<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="end|center_vertical"
+						android:text="@string/route_input_from"
+						style="@style/Text.SubHeading"/>
 
-		<TableRow
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal">
+				<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
 
-			<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="end|center_vertical"
-					android:text="@string/route_input_to"
-					style="@style/Text.SubHeading"/>
+				<TextView
+						android:id="@+id/from_input"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="@dimen/space_micro"
+						android:background="@drawable/rounded_text_view_bg"
+						style="@style/Text"/>
 
-			<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
+			</TableRow>
 
-			<TextView
-					android:id="@+id/to_input"
+			<TableRow
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:padding="@dimen/space_micro"
-					android:background="@drawable/rounded_text_view_bg"
-					style="@style/Text"/>
+					android:orientation="horizontal">
 
-		</TableRow>
+				<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="end|center_vertical"
+						android:text="@string/route_input_to"
+						style="@style/Text.SubHeading"/>
 
-	</TableLayout>
+				<android.support.v4.widget.Space android:layout_width="@dimen/space_micro"/>
+
+				<TextView
+						android:id="@+id/to_input"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="@dimen/space_micro"
+						android:background="@drawable/rounded_text_view_bg"
+						style="@style/Text"/>
+
+			</TableRow>
+
+		</TableLayout>
+
+		<ImageView
+				android:id="@id/swap_to_from"
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentEnd="true"
+				android:layout_centerVertical="true"
+				android:layout_marginLeft="@dimen/space_nano"
+				android:layout_marginStart="@dimen/space_nano"
+				android:src="@drawable/ic_swap_vert_white_48dp"
+				android:contentDescription="@string/route_input_swap_to_from"
+				android:background="?attr/selectableItemBackground"/>
+
+	</RelativeLayout>
 
 	<RelativeLayout
 			android:layout_width="match_parent"

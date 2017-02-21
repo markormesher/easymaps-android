@@ -87,6 +87,9 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 					LocationSearchActivity.REQUEST_CODE
 			)
 		}
+		swap_to_from.setOnClickListener {
+			swapRouteInput()
+		}
 	}
 
 	private fun hideContentViews() {
@@ -116,7 +119,15 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		}
 	}
 
-	private fun setInputLocation(direction: Direction, location: Location?) {
+	private fun swapRouteInput() {
+		val oldTo = toLocation
+		val oldFrom = fromLocation
+		setInputLocation(Direction.TO, oldFrom, false)
+		setInputLocation(Direction.FROM, oldTo, false)
+		routeInputUpdated()
+	}
+
+	private fun setInputLocation(direction: Direction, location: Location?, update: Boolean = true) {
 		when (direction) {
 			Direction.FROM -> {
 				fromLocation = location
@@ -129,7 +140,9 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 			}
 		}
 
-		routeInputUpdated()
+		if (update) {
+			routeInputUpdated()
+		}
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
