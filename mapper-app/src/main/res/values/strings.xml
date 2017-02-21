@@ -77,4 +77,7 @@
 
 	<string name="route_guidance_none_active">Looks like you aren\'t going anywhere! Tap here to select a destination.</string>
 
+	<string name="route_guidance_walk_to">Walk to %s</string>
+	<string name="route_guidance_tube_to">Take the %1$s to %2$s</string>
+
 </resources>

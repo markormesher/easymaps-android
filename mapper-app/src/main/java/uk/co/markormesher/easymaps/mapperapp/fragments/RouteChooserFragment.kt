@@ -216,6 +216,8 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 	}
 
 	private fun onRouteSearchResult(routes: ArrayList<Route>) {
+		routes.sort { a, b -> a.duration.compareTo(b.duration) }
+
 		// only overwrite if the update is not from the internal set
 		if (routes != activeRoutes) {
 			activeRoutes.clear()
@@ -226,7 +228,6 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			routes.sort { a, b -> a.duration.compareTo(b.duration) }
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}
