@@ -8,12 +8,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
+import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
+import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 
-class LocationService: WifiScannerService() {
+class LocationAndRouteGuidanceService: WifiScannerService(), AnkoLogger {
 
 	companion object {
 		val STATE_UPDATED = "services.LocationDetectionService:STATE_UPDATED"
@@ -62,12 +64,12 @@ class LocationService: WifiScannerService() {
 	private val localBinder by lazy { LocalBinder() }
 
 	inner class LocalBinder: Binder() {
-		fun getLocationDetectionService() = this@LocationService
+		fun getLocationAndRouteGuidanceService() = this@LocationAndRouteGuidanceService
 	}
 
 	override fun getLocalBinder(): Binder = localBinder
 
-	/* scan results */
+	/* location scanning */
 
 	override val scanInterval = 10
 	override val statusCheckInterval = 10
@@ -125,9 +127,18 @@ class LocationService: WifiScannerService() {
 		NONE, SEARCHING, FOUND, NO_WIFI, NO_LOCATION
 	}
 
+	/* route guidance */
+
+	var activeRoute: Route? = null
+		get() = field
+		set(value) {
+			//field = value
+
+		}
+
 	/* notification */
 
-	private val NOTIFICATION_ID = 15995
+	private val NOTIFICATION_ID = "LocationAndRouteGuidanceService".hashCode().and(0xffff)
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 	private val notificationStyle = NotificationCompat.BigTextStyle()
 	private val returnToAppIntent by lazy { PendingIntent.getActivity(this, 0, Intent(this, EntryActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT) }

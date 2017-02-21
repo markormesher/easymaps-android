@@ -41,17 +41,13 @@
 				android:excludeFromRecents="true"
 				android:windowSoftInputMode="adjustResize"/>
 
-		<activity
-				android:name=".fragments.RouteChooserFragment"
-				android:launchMode="singleTask"/>
-
 		<service
 				android:name=".services.DataDownloaderService"
 				android:exported="false"
 				android:enabled="true"/>
 
 		<service
-				android:name=".services.LocationService"
+				android:name=".services.LocationAndRouteGuidanceService"
 				android:exported="false"
 				android:enabled="true"/>
 

@@ -33,14 +33,10 @@ class DestinationChooserFragment: BaseFragment(), LocationListAdapter.OnClickLis
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 		initViews()
-		loadAndShowLocations()
+		restoreState()
 	}
 
-	/* location list */
-
 	private fun initViews() {
-		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-
 		val screenWidthInDp = resources.configuration.screenWidthDp
 		val columns = screenWidthInDp / COLUMN_WIDTH
 		val gridLayoutManager = GridLayoutManager(context, columns)
@@ -51,21 +47,38 @@ class DestinationChooserFragment: BaseFragment(), LocationListAdapter.OnClickLis
 		location_grid.adapter = locationListAdapter
 	}
 
-	private fun loadAndShowLocations() {
+	private fun restoreState() {
+		if (locationsLoaded) {
+			showLocations()
+		} else {
+			loadLocations()
+		}
+	}
+
+	private fun loadLocations() {
+		if (locationsLoaded) {
+			showLocations()
+			return
+		}
+
+		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+
 		doAsync {
-			if (!locationsLoaded) {
-				locationListAdapter.attractions.clear()
-				locationListAdapter.attractions.addAll(OfflineDatabase(context).getAttractions())
-				locationListAdapter.notifyDataSetChanged()
-				locationsLoaded = true
-			}
+			locationListAdapter.attractions.clear()
+			locationListAdapter.attractions.addAll(OfflineDatabase(context).getAttractions())
 
 			uiThread {
-				loading_icon.clearAnimation()
-				loading_icon.visibility = View.GONE
-				location_grid.visibility = View.VISIBLE
+				locationListAdapter.notifyDataSetChanged()
+				locationsLoaded = true
+				showLocations()
 			}
 		}
+	}
+
+	private fun showLocations() {
+		loading_icon.clearAnimation()
+		loading_icon.visibility = View.GONE
+		location_grid.visibility = View.VISIBLE
 	}
 
 	override fun onLocationClick(type: Int, location: Location?) {

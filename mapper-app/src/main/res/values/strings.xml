@@ -72,4 +72,6 @@
 	</plurals>
 	<string name="route_details">%1$s, %2$s</string>
 
+	<string name="route_guidance_none_active">Looks like you aren\'t going anywhere! Tap here to select a destination.</string>
+
 </resources>

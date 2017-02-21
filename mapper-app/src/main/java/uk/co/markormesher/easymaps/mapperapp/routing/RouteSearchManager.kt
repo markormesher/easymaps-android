@@ -3,7 +3,6 @@ package uk.co.markormesher.easymaps.mapperapp.routing
 import android.content.Context
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.info
 import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
@@ -17,20 +16,28 @@ class RouteSearchManager: AnkoLogger {
 	val locations = HashMap<String, Location>()
 	val edges = HashMap<String, ArrayList<Edge>>()
 
-	fun loadData(context: Context) = doAsync {
-		with(OfflineDatabase(context)) {
-			getLocations().forEach { location ->
-				locations.put(location.id, location)
-				info(location)
+	private var loaded = false
+
+	fun loadData(context: Context) {
+		if (loaded) {
+			return
+		}
+
+		doAsync {
+			locations.clear()
+			edges.clear()
+			with(OfflineDatabase(context)) {
+				getLocations().forEach { location -> locations.put(location.id, location) }
+				getConnections().forEach { connection ->
+					edges.getOrPut(connection.from, { ArrayList<Edge>() }).add(Edge(
+							locations[connection.from]!!,
+							locations[connection.to]!!,
+							connection.mode,
+							connection.cost
+					))
+				}
 			}
-			getConnections().forEach { connection ->
-				edges.getOrPut(connection.from, { ArrayList<Edge>() }).add(Edge(
-						locations[connection.from]!!,
-						locations[connection.to]!!,
-						connection.mode,
-						connection.cost
-				))
-			}
+			loaded = true
 		}
 	}
 

@@ -9,19 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.fragment_route_chooser.*
-import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.enabled
 import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
+import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.routing.*
 import java.util.*
 
-class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelectListener {
+class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 
 	companion object {
 		fun getInstance(destination: String?): RouteChooserFragment {
@@ -34,12 +35,19 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 
 		val KEY = "fragments.RouteChooserFragment:KEY"
 		val DESTINATION = "fragments.RouteChooserFragment:DESTINATION"
-		val DEFAULT_DESTINATION = "none"
+		val NO_DESTINATION = "none"
 	}
 
-	var initialDestinationId = DEFAULT_DESTINATION
+	private var initialDestinationId = NO_DESTINATION
+	private var fromLocation: Location? = null
+	private var toLocation: Location? = null
+	private var lastSearchLocation: Direction? = null
 
-	val routeSearchManager = RouteSearchManager()
+	private val routeSearchManager = RouteSearchManager()
+	private var busySearching = false
+
+	private val routeListAdapter by lazy { RouteListAdapter(context, this) }
+	private val activeRoutes = ArrayList<Route>()
 
 	init {
 		with(routeSearchManager) {
@@ -51,7 +59,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		initialDestinationId = arguments.getString(DESTINATION, DEFAULT_DESTINATION)
+		initialDestinationId = arguments.getString(DESTINATION, NO_DESTINATION)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -61,11 +69,8 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 		initViews()
-		setRouteInput(Direction.TO, initialDestinationId)
-		routeSearchManager.loadData(context)
+		restoreState()
 	}
-
-	/* views */
 
 	private fun initViews() {
 		hideContentViews()
@@ -74,21 +79,27 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		route_list.adapter = routeListAdapter
 
 		from_input.setOnClickListener {
-			lastRequestDirection = Direction.FROM
-			startActivityForResult(
-					Intent(context, LocationSearchActivity::class.java),
-					LocationSearchActivity.REQUEST_CODE
-			)
+			if (!busySearching) {
+				lastSearchLocation = Direction.FROM
+				startActivityForResult(
+						Intent(context, LocationSearchActivity::class.java),
+						LocationSearchActivity.REQUEST_CODE
+				)
+			}
 		}
 		to_input.setOnClickListener {
-			lastRequestDirection = Direction.TO
-			startActivityForResult(
-					Intent(context, LocationSearchActivity::class.java),
-					LocationSearchActivity.REQUEST_CODE
-			)
+			if (!busySearching) {
+				lastSearchLocation = Direction.TO
+				startActivityForResult(
+						Intent(context, LocationSearchActivity::class.java),
+						LocationSearchActivity.REQUEST_CODE
+				)
+			}
 		}
 		swap_to_from.setOnClickListener {
-			swapRouteInput()
+			if (!busySearching) {
+				swapRouteInput()
+			}
 		}
 	}
 
@@ -99,32 +110,35 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		route_list.visibility = View.GONE
 	}
 
-	/* route input */
+	private fun restoreState() {
+		if (fromLocation == null && toLocation == null) {
+			// initial state
+			routeSearchManager.loadData(context)
+			setInputLocationWithId(Direction.TO, initialDestinationId)
+		} else {
+			setInputLocation(Direction.FROM, fromLocation, false)
+			setInputLocation(Direction.TO, toLocation, false)
+			onRouteSearchResult(activeRoutes)
+		}
+	}
 
-	var lastRequestDirection: Direction? = null
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		if (requestCode == LocationSearchActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK && lastSearchLocation != null) {
+			setInputLocationWithId(lastSearchLocation!!, data?.getStringExtra(LocationSearchActivity.LOCATION_ID_KEY)!!)
+		}
+	}
 
-	var fromLocation: Location? = null
-	var toLocation: Location? = null
-
-	private fun setRouteInput(direction: Direction, id: String) {
-		if (id == DEFAULT_DESTINATION) {
+	private fun setInputLocationWithId(direction: Direction, locationId: String) {
+		if (locationId == NO_DESTINATION) {
 			setInputLocation(direction, null)
 		} else {
 			doAsync {
-				val location = OfflineDatabase(context).getLocation(id)
+				val location = OfflineDatabase(context).getLocation(locationId)
 				uiThread {
 					setInputLocation(direction, location)
 				}
 			}
 		}
-	}
-
-	private fun swapRouteInput() {
-		val oldTo = toLocation
-		val oldFrom = fromLocation
-		setInputLocation(Direction.TO, oldFrom, false)
-		setInputLocation(Direction.FROM, oldTo, false)
-		routeInputUpdated()
 	}
 
 	private fun setInputLocation(direction: Direction, location: Location?, update: Boolean = true) {
@@ -141,17 +155,11 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		}
 
 		if (update) {
-			routeInputUpdated()
+			onRouteInputUpdated()
 		}
 	}
 
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		if (requestCode == LocationSearchActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK && lastRequestDirection != null) {
-			setRouteInput(lastRequestDirection!!, data?.getStringExtra(LocationSearchActivity.LOCATION_ID_KEY)!!)
-		}
-	}
-
-	private fun routeInputUpdated() {
+	private fun onRouteInputUpdated() {
 		hideContentViews()
 
 		if (toLocation == null || fromLocation == null) {
@@ -161,32 +169,78 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 			centre_message.text = getString(R.string.no_route_same_start_end)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			loading_icon.visibility = View.VISIBLE
-			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-			routeSearchManager.findRoutes(fromLocation!!, toLocation!!, { routes -> routesFound(routes) })
+			startSearch()
 		}
 	}
 
-	enum class Direction { TO, FROM }
+	private fun swapRouteInput() {
+		val oldTo = toLocation
+		val oldFrom = fromLocation
+		setInputLocation(Direction.TO, oldFrom, false)
+		setInputLocation(Direction.FROM, oldTo, false)
+		onRouteInputUpdated()
+	}
 
-	/* route display/selection */
+	private fun startSearch() {
+		if (busySearching) {
+			return
+		}
+		busySearching = true
 
-	private val routeListAdapter by lazy { RouteListAdapter(context, this) }
+		loading_icon.visibility = View.VISIBLE
+		loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
+		to_input.enabled = false
+		to_input.alpha = 0.8f
+		from_input.enabled = false
+		from_input.alpha = 0.8f
+		swap_to_from.isEnabled = false
+		swap_to_from.alpha = 0.8f
 
-	private fun routesFound(routes: ArrayList<Route>) {
+		routeSearchManager.findRoutes(fromLocation!!, toLocation!!, { routes -> onRouteSearchResult(routes) })
+	}
+
+	private fun finishSearch() {
+		if (!busySearching) {
+			return
+		}
+		busySearching = false
+
+		loading_icon.visibility = View.GONE
+		loading_icon.clearAnimation()
+		to_input.enabled = true
+		to_input.alpha = 1f
+		from_input.enabled = true
+		from_input.alpha = 1f
+		swap_to_from.isEnabled = true
+		swap_to_from.alpha = 1f
+	}
+
+	private fun onRouteSearchResult(routes: ArrayList<Route>) {
+		// only overwrite if the update is not from the internal set
+		if (routes != activeRoutes) {
+			activeRoutes.clear()
+			activeRoutes.addAll(routes)
+		}
+
 		if (routes.isEmpty()) {
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
-			routes.sort { a, b -> a.duration.compareTo(b.duration) } // TODO: consider changes as well
+			routes.sort { a, b -> a.duration.compareTo(b.duration) }
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}
-		loading_icon.visibility = View.GONE
-		loading_icon.clearAnimation()
+
+		finishSearch()
 	}
 
 	override fun onRouteSelected(index: Int) {
+		(activity as MainActivity).locationAndRouteGuidanceService?.activeRoute = activeRoutes[index]
+		context.sendBroadcast(Intent(MainActivity.GOTO_ROUTE_GUIDANCE))
+	}
 
+	enum class Direction {
+		TO,
+		FROM
 	}
 }
