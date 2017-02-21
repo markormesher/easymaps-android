@@ -18,8 +18,8 @@ import uk.co.markormesher.easymaps.mapperapp.activities.LocationSearchActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
-import uk.co.markormesher.easymaps.mapperapp.routing.BreadthFirstSearchRouteFinder
-import uk.co.markormesher.easymaps.mapperapp.routing.Route
+import uk.co.markormesher.easymaps.mapperapp.routing.*
+import java.util.*
 
 class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelectListener {
 
@@ -38,7 +38,16 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 	}
 
 	var initialDestinationId = DEFAULT_DESTINATION
-	val routeFinder = BreadthFirstSearchRouteFinder()
+
+	val routeSearchManager = RouteSearchManager()
+
+	init {
+		with(routeSearchManager) {
+			algorithms.add(BreadthFirstSearch(this))
+			algorithms.add(GreedySearch(this))
+			algorithms.add(AStarSearch(this))
+		}
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -53,7 +62,7 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		super.onActivityCreated(savedInstanceState)
 		initViews()
 		setRouteInput(Direction.TO, initialDestinationId)
-		routeFinder.loadData(context)
+		routeSearchManager.loadData(context)
 	}
 
 	/* views */
@@ -77,6 +86,9 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 					Intent(context, LocationSearchActivity::class.java),
 					LocationSearchActivity.REQUEST_CODE
 			)
+		}
+		swap_to_from.setOnClickListener {
+			swapRouteInput()
 		}
 	}
 
@@ -107,7 +119,15 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		}
 	}
 
-	private fun setInputLocation(direction: Direction, location: Location?) {
+	private fun swapRouteInput() {
+		val oldTo = toLocation
+		val oldFrom = fromLocation
+		setInputLocation(Direction.TO, oldFrom, false)
+		setInputLocation(Direction.FROM, oldTo, false)
+		routeInputUpdated()
+	}
+
+	private fun setInputLocation(direction: Direction, location: Location?, update: Boolean = true) {
 		when (direction) {
 			Direction.FROM -> {
 				fromLocation = location
@@ -120,7 +140,9 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 			}
 		}
 
-		routeInputUpdated()
+		if (update) {
+			routeInputUpdated()
+		}
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -135,10 +157,13 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 		if (toLocation == null || fromLocation == null) {
 			centre_message.text = getString(R.string.route_input_prompt)
 			centre_message.visibility = View.VISIBLE
+		} else if (toLocation == fromLocation) {
+			centre_message.text = getString(R.string.no_route_same_start_end)
+			centre_message.visibility = View.VISIBLE
 		} else {
 			loading_icon.visibility = View.VISIBLE
 			loading_icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.icon_spin))
-			routeFinder.findRoute(fromLocation!!, toLocation!!, { routes -> routesFound(routes) })
+			routeSearchManager.findRoutes(fromLocation!!, toLocation!!, { routes -> routesFound(routes) })
 		}
 	}
 
@@ -148,11 +173,12 @@ class RouteChooserFragment: BaseFragment(), AnkoLogger, RouteListAdapter.OnSelec
 
 	private val routeListAdapter by lazy { RouteListAdapter(context, this) }
 
-	private fun routesFound(routes: List<Route>) {
+	private fun routesFound(routes: ArrayList<Route>) {
 		if (routes.isEmpty()) {
 			centre_message.text = getString(R.string.no_route_found)
 			centre_message.visibility = View.VISIBLE
 		} else {
+			routes.sort { a, b -> a.duration.compareTo(b.duration) } // TODO: consider changes as well
 			routeListAdapter.updateRoutes(routes)
 			route_list.visibility = View.VISIBLE
 		}
