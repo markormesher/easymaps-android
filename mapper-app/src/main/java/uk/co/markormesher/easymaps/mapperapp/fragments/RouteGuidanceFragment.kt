@@ -6,19 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_route_guidance.*
-import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteDisplayAdapter
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 
-/*
-TODO: persist session if a route is active
-TODO: open to route guidance fragment is a route is active
- */
-
-class RouteGuidanceFragment: BaseFragment(), AnkoLogger {
+class RouteGuidanceFragment: BaseFragment() {
 
 	private var activeRoute: Route? = null
 
@@ -35,7 +29,7 @@ class RouteGuidanceFragment: BaseFragment(), AnkoLogger {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		activeRoute = (activity as MainActivity).locationAndRouteGuidanceService?.activeRoute
+		activeRoute = (activity as MainActivity).locationService?.activeRoute
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

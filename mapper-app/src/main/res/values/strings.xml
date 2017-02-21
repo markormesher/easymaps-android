@@ -40,16 +40,19 @@
 	<string name="location_status_waiting_message">Just a moment…</string>
 
 	<string name="location_status_searching_header">Searching for location</string>
-	<string name="location_status_searching_message">Just a moment…</string>
 
 	<string name="location_status_found_header">%s</string>
-	<string name="location_status_found_message">Info: %s</string>
 
 	<string name="location_status_no_wifi_header">WiFi disabled!</string>
 	<string name="location_status_no_wifi_message">Tap here to enable</string>
 
 	<string name="location_status_no_location_header">Location disabled!</string>
 	<string name="location_status_no_location_message">Tap here to enable</string>
+
+	<string name="location_status_pick_route">Pick a route to continue</string>
+	<string name="location_status_destination">Destination: %s</string>
+
+	<string name="location_service_quit_nav">Quit navigation</string>
 
 	<string name="route_input_from">From:</string>
 	<string name="route_input_to">To:</string>

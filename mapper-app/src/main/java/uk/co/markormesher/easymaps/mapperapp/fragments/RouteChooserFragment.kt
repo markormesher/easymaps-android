@@ -235,7 +235,7 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 	}
 
 	override fun onRouteSelected(index: Int) {
-		(activity as MainActivity).locationAndRouteGuidanceService?.activeRoute = activeRoutes[index]
+		(activity as MainActivity).locationService?.activeRoute = activeRoutes[index]
 		context.sendBroadcast(Intent(MainActivity.GOTO_ROUTE_GUIDANCE))
 	}
 

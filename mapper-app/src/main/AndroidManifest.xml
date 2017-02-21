@@ -47,7 +47,7 @@
 				android:enabled="true"/>
 
 		<service
-				android:name=".services.LocationAndRouteGuidanceService"
+				android:name=".services.LocationService"
 				android:exported="false"
 				android:enabled="true"/>
 

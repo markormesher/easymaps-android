@@ -12,7 +12,7 @@ import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.fragments.DestinationChooserFragment
 import uk.co.markormesher.easymaps.mapperapp.fragments.RouteChooserFragment
 import uk.co.markormesher.easymaps.mapperapp.fragments.RouteGuidanceFragment
-import uk.co.markormesher.easymaps.mapperapp.services.LocationAndRouteGuidanceService
+import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
@@ -54,7 +54,11 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 
 	override fun onStop() {
 		super.onStop()
-		stopService()
+
+		// kill service if we're not mid-navigation
+		if (locationService?.activeRoute == null) {
+			stopService()
+		}
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -66,22 +70,22 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 
 	/* service binding */
 
-	var locationAndRouteGuidanceService: LocationAndRouteGuidanceService? = null
+	var locationService: LocationService? = null
 
 	private fun startService() {
-		val serviceIntent = Intent(this, LocationAndRouteGuidanceService::class.java)
+		val serviceIntent = Intent(this, LocationService::class.java)
 		bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 		startService(serviceIntent)
-		sendBroadcast(Intent(LocationAndRouteGuidanceService.START_SERVICE))
+		sendBroadcast(Intent(LocationService.START_SERVICE))
 	}
 
 	private fun stopService() {
-		sendBroadcast(Intent(LocationAndRouteGuidanceService.STOP_SERVICE))
+		sendBroadcast(Intent(LocationService.STOP_SERVICE))
 	}
 
 	private fun registerLocationServiceReceivers() {
-		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationAndRouteGuidanceService.STATE_UPDATED))
-		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationAndRouteGuidanceService.SERVICE_STOPPED))
+		registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+		registerReceiver(locationServiceStoppedReceiver, IntentFilter(LocationService.SERVICE_STOPPED))
 	}
 
 	private fun unregisterLocationServiceReceivers() {
@@ -90,14 +94,16 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 	}
 
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-		if (binder is LocationAndRouteGuidanceService.LocalBinder) {
-			locationAndRouteGuidanceService = binder.getLocationAndRouteGuidanceService()
-			sendBroadcast(Intent(LocationAndRouteGuidanceService.START_SERVICE))
+		if (binder is LocationService.LocalBinder) {
+			locationService = binder.getService()
+			sendBroadcast(Intent(LocationService.START_SERVICE))
+			updateLocationStatusFromService()
+			gotoRouteGuidanceIfRouteActive()
 		}
 	}
 
 	override fun onServiceDisconnected(name: ComponentName?) {
-		locationAndRouteGuidanceService = null
+		locationService = null
 	}
 
 	private val locationStateUpdatedReceiver = object: BroadcastReceiver() {
@@ -113,23 +119,23 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 	}
 
 	private fun updateLocationStatusFromService() {
-		status_bar.setHeading(locationAndRouteGuidanceService?.locationStateHeader ?: "")
-		status_bar.setMessage(locationAndRouteGuidanceService?.locationStateMessage ?: "")
+		status_bar.setHeading(locationService?.locationStateHeader ?: "")
+		status_bar.setMessage(locationService?.locationStateMessage ?: "")
 
-		val status = locationAndRouteGuidanceService?.locationState ?: LocationAndRouteGuidanceService.LocationState.SEARCHING
+		val status = locationService?.locationState ?: LocationService.LocationState.SEARCHING
 		status_bar.setStatus(when (status) {
-			LocationAndRouteGuidanceService.LocationState.NONE -> LocationStatusBar.Status.WAITING
-			LocationAndRouteGuidanceService.LocationState.NO_WIFI -> LocationStatusBar.Status.WIFI_OFF
-			LocationAndRouteGuidanceService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
-			LocationAndRouteGuidanceService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
-			LocationAndRouteGuidanceService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
+			LocationService.LocationState.NONE -> LocationStatusBar.Status.WAITING
+			LocationService.LocationState.NO_WIFI -> LocationStatusBar.Status.WIFI_OFF
+			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
+			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
+			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
 		})
-		if (status == LocationAndRouteGuidanceService.LocationState.NO_LOCATION) {
+		if (status == LocationService.LocationState.NO_LOCATION) {
 			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
-		} else if (status == LocationAndRouteGuidanceService.LocationState.NO_WIFI) {
+		} else if (status == LocationService.LocationState.NO_WIFI) {
 			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_WIFI_SETTINGS)) }
 		} else {
-			status_bar.setOnClickListener { }
+			status_bar.setOnClickListener { gotoRouteGuidanceIfRouteActive() }
 		}
 	}
 
@@ -177,6 +183,12 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(key)
 				.commit()
+	}
+
+	private fun gotoRouteGuidanceIfRouteActive() {
+		if (locationService?.activeRoute != null && supportFragmentManager.findFragmentByTag(RouteGuidanceFragment.KEY)?.isDetached ?: true) {
+			gotoRouteGuidance()
+		}
 	}
 
 	private fun gotoRouteGuidance() {
