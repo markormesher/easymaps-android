@@ -24,7 +24,7 @@ class RouteGuidanceFragment: BaseFragment() {
 			return fragment
 		}
 
-		val KEY = "fragments.RouteGuidanceFragment:KEY"
+		val TAG = "fragments.RouteGuidanceFragment:TAG"
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {

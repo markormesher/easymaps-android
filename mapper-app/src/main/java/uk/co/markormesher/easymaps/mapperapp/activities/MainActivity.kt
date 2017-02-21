@@ -156,10 +156,27 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 		unregisterReceiver(gotoRouteGuidanceReceiver)
 	}
 
+	private fun initDestinationChooser() {
+		supportFragmentManager.beginTransaction()
+				.add(R.id.fragment_frame, DestinationChooserFragment())
+				.commit()
+	}
+
 	private val gotoRouteChooserReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			gotoRouteChooser(intent?.getStringExtra(RouteChooserFragment.DESTINATION) ?: "none")
 		}
+	}
+
+	private fun gotoRouteChooser(destination: String? = null) {
+		val fragment = RouteChooserFragment.getInstance(destination)
+		val tag = "${RouteChooserFragment.TAG}:${destination ?: RouteChooserFragment.NO_DESTINATION}"
+
+		supportFragmentManager.beginTransaction()
+				.replace(R.id.fragment_frame, fragment, tag)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.addToBackStack(tag)
+				.commit()
 	}
 
 	private val gotoRouteGuidanceReceiver = object: BroadcastReceiver() {
@@ -168,37 +185,20 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 		}
 	}
 
-	private fun initDestinationChooser() {
-		supportFragmentManager.beginTransaction()
-				.add(R.id.fragment_frame, DestinationChooserFragment())
-				.commit()
-	}
-
-	private fun gotoRouteChooser(destination: String? = null) {
-		val fragment = RouteChooserFragment.getInstance(destination)
-		val key = "${RouteChooserFragment.KEY}:${destination ?: RouteChooserFragment.NO_DESTINATION}"
-
-		supportFragmentManager.beginTransaction()
-				.replace(R.id.fragment_frame, fragment, key)
-				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-				.addToBackStack(key)
-				.commit()
-	}
-
 	private fun gotoRouteGuidanceIfRouteActive() {
-		if (locationService?.activeRoute != null && supportFragmentManager.findFragmentByTag(RouteGuidanceFragment.KEY)?.isDetached ?: true) {
+		if (locationService?.activeRoute != null && supportFragmentManager.findFragmentByTag(RouteGuidanceFragment.TAG)?.isDetached ?: true) {
 			gotoRouteGuidance()
 		}
 	}
 
 	private fun gotoRouteGuidance() {
 		val fragment = RouteGuidanceFragment.getInstance()
-		val key = RouteGuidanceFragment.KEY
+		val tag = RouteGuidanceFragment.TAG
 
 		supportFragmentManager.beginTransaction()
-				.replace(R.id.fragment_frame, fragment, key)
+				.replace(R.id.fragment_frame, fragment, tag)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-				.addToBackStack(key)
+				.addToBackStack(tag)
 				.commit()
 	}
 

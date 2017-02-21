@@ -33,7 +33,7 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 			return fragment
 		}
 
-		val KEY = "fragments.RouteChooserFragment:KEY"
+		val TAG = "fragments.RouteChooserFragment:TAG"
 		val DESTINATION = "fragments.RouteChooserFragment:DESTINATION"
 		val NO_DESTINATION = "none"
 	}
