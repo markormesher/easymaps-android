@@ -2,6 +2,7 @@ package uk.co.markormesher.easymaps.mapperapp.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +55,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 				}
 
 			} else if (nextMode == null) { // end of route
-				instruction = ""
+				instruction = context.getString(R.string.route_guidance_destination)
 
 			} else if (prevMode == TravelMode.WALK) { // mid-route, transition from walk
 				if (nextMode.isTube()) {
@@ -81,6 +82,17 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 				instructionView.visibility = View.VISIBLE
 				instructionView.text = instruction
 			}
+
+			if (prevMode == nextMode) {
+				changeMarker.visibility = View.INVISIBLE // GONE breaks layout
+				stationMarker.visibility = View.VISIBLE
+				stationMarker.setBackgroundColor(prevMode?.colourCode ?: Color.TRANSPARENT)
+			} else {
+				changeMarker.visibility = View.VISIBLE
+				stationMarker.visibility = View.GONE
+			}
+			topPipe.setBackgroundColor(prevMode?.colourCode ?: Color.TRANSPARENT)
+			bottomPipe.setBackgroundColor(nextMode?.colourCode ?: Color.TRANSPARENT)
 		}
 	}
 
@@ -90,6 +102,10 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 		val rootView = v
 		val locationNameView = v.location_name!!
 		val instructionView = v.instruction!!
+		val changeMarker = v.change_marker!!
+		val stationMarker = v.station_marker!!
+		val topPipe = v.top_pipe!!
+		val bottomPipe = v.bottom_pipe!!
 	}
 
 }

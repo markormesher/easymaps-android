@@ -3,20 +3,75 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:padding="@dimen/space_nano">
+		android:orientation="horizontal">
 
-	<TextView
-			android:id="@+id/location_name"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			style="@style/Text.ListTitle"/>
+	<RelativeLayout
+			android:id="@+id/icon_wrapper"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="@dimen/space_micro"
+			android:layout_marginStart="@dimen/space_micro">
 
-	<TextView
-			android:id="@+id/instruction"
+		<View
+				android:id="@+id/center_marker"
+				android:layout_width="1dp"
+				android:layout_height="1dp"
+				android:layout_centerInParent="true"/>
+
+		<View
+				android:id="@+id/top_pipe"
+				android:layout_width="6dp"
+				android:layout_height="match_parent"
+				android:layout_above="@id/center_marker"
+				android:layout_alignParentTop="true"
+				android:layout_centerHorizontal="true"/>
+
+		<View
+				android:id="@+id/bottom_pipe"
+				android:layout_width="6dp"
+				android:layout_height="match_parent"
+				android:layout_below="@id/center_marker"
+				android:layout_alignParentBottom="true"
+				android:layout_centerHorizontal="true"/>
+
+		<View
+				android:id="@+id/station_marker"
+				android:layout_width="8dp"
+				android:layout_height="4dp"
+				android:layout_centerVertical="true"
+				android:layout_marginLeft="3dp"
+				android:layout_marginStart="3dp"/>
+
+		<View
+				android:id="@+id/change_marker"
+				android:layout_width="12dp"
+				android:layout_height="12dp"
+				android:layout_centerInParent="true"
+				android:background="@drawable/route_step_dot"/>
+
+	</RelativeLayout>
+
+	<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="@dimen/space_nano"
-			style="@style/Text.Note"/>
+			android:layout_marginBottom="@dimen/space_nano"
+			android:layout_marginLeft="@dimen/space_micro"
+			android:layout_marginRight="@dimen/space_micro"
+			android:orientation="vertical">
+
+		<TextView
+				android:id="@+id/location_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				style="@style/Text.ListTitle"/>
+
+		<TextView
+				android:id="@+id/instruction"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				style="@style/Text.Note"/>
+
+	</LinearLayout>
 
 </LinearLayout>
