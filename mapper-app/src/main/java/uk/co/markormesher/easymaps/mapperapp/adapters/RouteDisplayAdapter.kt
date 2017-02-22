@@ -1,7 +1,6 @@
 package uk.co.markormesher.easymaps.mapperapp.adapters
 
 import android.content.Context
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.util.SparseIntArray
 import android.view.LayoutInflater
@@ -84,12 +83,12 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 
 			if (prevMode == nextMode) {
 				indicator.setIndicatorType(RouteStepIndicator.IndicatorType.STATION)
-				indicator.setStationMarkerColour(prevMode?.colourCode ?: Color.TRANSPARENT)
+				indicator.setStationMarkerMode(prevMode)
 			} else {
 				indicator.setIndicatorType(RouteStepIndicator.IndicatorType.CHANGE)
 			}
-			indicator.setTopPipeColour(prevMode?.colourCode ?: Color.TRANSPARENT)
-			indicator.setBottomPipeColour(nextMode?.colourCode ?: Color.TRANSPARENT)
+			indicator.setTopPipeMode(prevMode)
+			indicator.setBottomPipeMode(nextMode)
 		}
 	}
 
