@@ -11,7 +11,8 @@
 		android:orientation="horizontal"
 		android:gravity="center_vertical"
 		android:weightSum="1"
-		android:background="@color/primary">
+		android:background="@color/primary"
+		>
 
 	<ImageView
 			android:id="@+id/status_icon"
@@ -20,13 +21,15 @@
 			android:layout_marginRight="@dimen/space_micro"
 			android:layout_marginEnd="@dimen/space_micro"
 			android:src="@drawable/ic_info_outline_white_48dp"
-			android:tint="@color/white"/>
+			android:tint="@color/white"
+			/>
 
 	<LinearLayout
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			>
 
 		<TextView
 				android:id="@+id/status_heading"
@@ -37,7 +40,8 @@
 				android:fadingEdge="horizontal"
 				android:marqueeRepeatLimit="marquee_forever"
 				android:textColor="@color/white"
-				style="@style/Text.SubHeading"/>
+				style="@style/Text.SubHeading"
+				/>
 
 		<TextView
 				android:id="@+id/status_message"
@@ -48,7 +52,8 @@
 				android:fadingEdge="horizontal"
 				android:marqueeRepeatLimit="marquee_forever"
 				android:textColor="@color/white"
-				style="@style/Text"/>
+				style="@style/Text"
+				/>
 
 	</LinearLayout>
 
