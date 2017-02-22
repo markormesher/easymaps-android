@@ -1,22 +1,21 @@
 package uk.co.markormesher.easymaps.mapperapp.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
+import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.list_item_route_step.view.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
+import uk.co.markormesher.easymaps.mapperapp.helpers.set
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
-import java.util.*
 
 class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-	@SuppressLint("UseSparseArrays")
-	private val modeEndIndexes = HashMap<Int, Int>()
+	private val modeEndIndexes = SparseIntArray()
 	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
 	init {
@@ -38,7 +37,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		with(holder as RouteStepViewHolder) {
 			val location = route.locations[position]
-			val modeEndIndex = modeEndIndexes[position] ?: -1
+			val modeEndIndex = modeEndIndexes[position]
 			val modeEndLocation = if (modeEndIndex >= 0) route.locations[modeEndIndex] else null
 			val prevMode = if (position > 0) route.modes[position - 1] else null
 			val nextMode = if (position < route.modes.size) route.modes[position] else null
@@ -84,7 +83,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 			}
 
 			if (prevMode == nextMode) {
-				changeMarker.visibility = View.INVISIBLE // GONE breaks layout
+				changeMarker.visibility = View.INVISIBLE // GONE breaks layout spacing
 				stationMarker.visibility = View.VISIBLE
 				stationMarker.setBackgroundColor(prevMode?.colourCode ?: Color.TRANSPARENT)
 			} else {
@@ -99,7 +98,6 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 	override fun getItemCount() = route.locations.size
 
 	class RouteStepViewHolder(v: View): RecyclerView.ViewHolder(v) {
-		val rootView = v
 		val locationNameView = v.location_name!!
 		val instructionView = v.instruction!!
 		val changeMarker = v.change_marker!!
