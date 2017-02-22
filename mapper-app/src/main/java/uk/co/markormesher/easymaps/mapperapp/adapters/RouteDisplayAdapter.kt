@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.list_item_route_step.view.*
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
+import uk.co.markormesher.easymaps.mapperapp.helpers.oneRandom
 import uk.co.markormesher.easymaps.mapperapp.helpers.set
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 
@@ -19,6 +20,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 	private val layoutInflater by lazy { LayoutInflater.from(context)!! }
 
 	init {
+		// find the indexes of the last location in each mode
 		var lastChangeIndex = 0
 		for (i in 1..route.locations.size - 1) {
 			val prevMode = if (i > 0) route.modes[i - 1] else null
@@ -46,7 +48,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 
 			if (prevMode == null) { // start of route
 				if (nextMode == null) {
-					instruction = ""
+					// illegal state
 				} else if (nextMode == TravelMode.WALK) {
 					instruction = context.getString(R.string.route_guidance_walk_to, modeEndLocation?.getDisplayTitle(context))
 				} else if (nextMode.isTube()) {
@@ -54,7 +56,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 				}
 
 			} else if (nextMode == null) { // end of route
-				instruction = context.getString(R.string.route_guidance_destination)
+				instruction = context.resources.getStringArray(R.array.route_guidance_destination).oneRandom()
 
 			} else if (prevMode == TravelMode.WALK) { // mid-route, transition from walk
 				if (nextMode.isTube()) {
@@ -65,13 +67,10 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 				if (nextMode == TravelMode.WALK) {
 					instruction = context.getString(R.string.route_guidance_walk_to, modeEndLocation?.getDisplayTitle(context))
 				} else if (prevMode == nextMode) {
-					instruction = ""
+					// nothing to do
 				} else if (nextMode.isTube()) {
 					instruction = context.getString(R.string.route_guidance_tube_to, nextMode.displayName, modeEndLocation?.getDisplayTitle(context))
 				}
-
-			} else {
-				instruction = ""
 			}
 
 			locationNameView.text = location.getDisplayTitle(context)
