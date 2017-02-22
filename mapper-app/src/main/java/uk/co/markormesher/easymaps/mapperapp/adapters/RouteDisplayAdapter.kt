@@ -13,6 +13,7 @@ import uk.co.markormesher.easymaps.mapperapp.data.TravelMode
 import uk.co.markormesher.easymaps.mapperapp.helpers.oneRandom
 import uk.co.markormesher.easymaps.mapperapp.helpers.set
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
+import uk.co.markormesher.easymaps.mapperapp.ui.RouteStepIndicator
 
 class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -82,15 +83,13 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 			}
 
 			if (prevMode == nextMode) {
-				changeMarker.visibility = View.INVISIBLE // GONE breaks layout spacing
-				stationMarker.visibility = View.VISIBLE
-				stationMarker.setBackgroundColor(prevMode?.colourCode ?: Color.TRANSPARENT)
+				indicator.setIndicatorType(RouteStepIndicator.IndicatorType.STATION)
+				indicator.setStationMarkerColour(prevMode?.colourCode ?: Color.TRANSPARENT)
 			} else {
-				changeMarker.visibility = View.VISIBLE
-				stationMarker.visibility = View.GONE
+				indicator.setIndicatorType(RouteStepIndicator.IndicatorType.CHANGE)
 			}
-			topPipe.setBackgroundColor(prevMode?.colourCode ?: Color.TRANSPARENT)
-			bottomPipe.setBackgroundColor(nextMode?.colourCode ?: Color.TRANSPARENT)
+			indicator.setTopPipeColour(prevMode?.colourCode ?: Color.TRANSPARENT)
+			indicator.setBottomPipeColour(nextMode?.colourCode ?: Color.TRANSPARENT)
 		}
 	}
 
@@ -99,10 +98,7 @@ class RouteDisplayAdapter(val context: Context, val route: Route): RecyclerView.
 	class RouteStepViewHolder(v: View): RecyclerView.ViewHolder(v) {
 		val locationNameView = v.location_name!!
 		val instructionView = v.instruction!!
-		val changeMarker = v.change_marker!!
-		val stationMarker = v.station_marker!!
-		val topPipe = v.top_pipe!!
-		val bottomPipe = v.bottom_pipe!!
+		val indicator = v.indicator!!
 	}
 
 }

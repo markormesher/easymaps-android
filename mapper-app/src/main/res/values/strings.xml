@@ -82,7 +82,8 @@
 	<string-array name="route_guidance_destination">
 		<item>Hooray, you made it!</item>
 		<item>Touchdown!</item>
-		<item>Ah, I\'ve been expecting you.</item>
+		<item>Thank you for travelling with EasyMaps!</item>
+		<item>That\'s all for now, folks!</item>
 	</string-array>
 
 </resources>
