@@ -6,15 +6,17 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.fragments.DestinationChooserFragment
 import uk.co.markormesher.easymaps.mapperapp.fragments.RouteChooserFragment
+import uk.co.markormesher.easymaps.mapperapp.fragments.RouteGuidanceFragment
 import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import uk.co.markormesher.easymaps.mapperapp.ui.LocationStatusBar
 import uk.co.markormesher.easymaps.sdk.BaseActivity
 
-class MainActivity: BaseActivity(), ServiceConnection {
+class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -52,7 +54,11 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	override fun onStop() {
 		super.onStop()
-		stopService()
+
+		// kill service if we're not mid-navigation
+		if (locationService?.activeRoute == null) {
+			stopService()
+		}
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -64,7 +70,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	/* service binding */
 
-	private var locationService: LocationService? = null
+	var locationService: LocationService? = null
 
 	private fun startService() {
 		val serviceIntent = Intent(this, LocationService::class.java)
@@ -89,8 +95,10 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
 		if (binder is LocationService.LocalBinder) {
-			locationService = binder.getLocationDetectionService()
+			locationService = binder.getService()
 			sendBroadcast(Intent(LocationService.START_SERVICE))
+			updateLocationStatusFromService()
+			gotoRouteGuidanceIfRouteActive()
 		}
 	}
 
@@ -127,7 +135,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		} else if (status == LocationService.LocationState.NO_WIFI) {
 			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_WIFI_SETTINGS)) }
 		} else {
-			status_bar.setOnClickListener { }
+			status_bar.setOnClickListener { gotoRouteGuidanceIfRouteActive() }
 		}
 	}
 
@@ -135,14 +143,23 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	companion object {
 		val GOTO_ROUTE_CHOOSER = "activities.MainActivity:GOTO_ROUTE_CHOOSER"
+		val GOTO_ROUTE_GUIDANCE = "activities.MainActivity:GOTO_ROUTE_GUIDANCE"
 	}
 
 	private fun registerNavigationReceivers() {
 		registerReceiver(gotoRouteChooserReceiver, IntentFilter(GOTO_ROUTE_CHOOSER))
+		registerReceiver(gotoRouteGuidanceReceiver, IntentFilter(GOTO_ROUTE_GUIDANCE))
 	}
 
 	private fun unregisterNavigationReceivers() {
 		unregisterReceiver(gotoRouteChooserReceiver)
+		unregisterReceiver(gotoRouteGuidanceReceiver)
+	}
+
+	private fun initDestinationChooser() {
+		supportFragmentManager.beginTransaction()
+				.add(R.id.fragment_frame, DestinationChooserFragment())
+				.commit()
 	}
 
 	private val gotoRouteChooserReceiver = object: BroadcastReceiver() {
@@ -151,23 +168,38 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		}
 	}
 
-	private fun initDestinationChooser() {
-		with(supportFragmentManager.beginTransaction()) {
-			add(R.id.fragment_frame, DestinationChooserFragment())
-			commit()
+	private fun gotoRouteChooser(destination: String? = null) {
+		val fragment = RouteChooserFragment.getInstance(destination)
+		val tag = "${RouteChooserFragment.TAG}:${destination ?: RouteChooserFragment.NO_DESTINATION}"
+
+		supportFragmentManager.beginTransaction()
+				.replace(R.id.fragment_frame, fragment, tag)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.addToBackStack(tag)
+				.commit()
+	}
+
+	private val gotoRouteGuidanceReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			gotoRouteGuidance()
 		}
 	}
 
-	private fun gotoRouteChooser(destination: String? = null) {
-		val fragment = RouteChooserFragment.getInstance(destination)
-		val key = "${RouteChooserFragment.KEY}:${destination ?: RouteChooserFragment.DEFAULT_DESTINATION}"
-
-		with(supportFragmentManager.beginTransaction()) {
-			replace(R.id.fragment_frame, fragment, key)
-			setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-			addToBackStack(key)
-			commit()
+	private fun gotoRouteGuidanceIfRouteActive() {
+		if (locationService?.activeRoute != null && supportFragmentManager.findFragmentByTag(RouteGuidanceFragment.TAG)?.isDetached ?: true) {
+			gotoRouteGuidance()
 		}
+	}
+
+	private fun gotoRouteGuidance() {
+		val fragment = RouteGuidanceFragment.getInstance()
+		val tag = RouteGuidanceFragment.TAG
+
+		supportFragmentManager.beginTransaction()
+				.replace(R.id.fragment_frame, fragment, tag)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.addToBackStack(tag)
+				.commit()
 	}
 
 }

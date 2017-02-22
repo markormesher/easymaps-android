@@ -8,12 +8,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.support.v4.app.NotificationCompat
+import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
+import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
 
-class LocationService: WifiScannerService() {
+class LocationService: WifiScannerService(), AnkoLogger {
 
 	companion object {
 		val STATE_UPDATED = "services.LocationDetectionService:STATE_UPDATED"
@@ -62,61 +65,77 @@ class LocationService: WifiScannerService() {
 	private val localBinder by lazy { LocalBinder() }
 
 	inner class LocalBinder: Binder() {
-		fun getLocationDetectionService() = this@LocationService
+		fun getService() = this@LocationService
 	}
 
 	override fun getLocalBinder(): Binder = localBinder
 
-	/* scan results */
+	/* location scanning */
 
 	override val scanInterval = 10
 	override val statusCheckInterval = 10
 
+	var currentLocation: Location? = null
 	var locationState = LocationState.NONE
 	var locationStateHeader = ""
 	var locationStateMessage = ""
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
 		// TODO: actually determine location
-
 		locationState = LocationState.SEARCHING
-		locationStateHeader = getString(R.string.location_status_searching_header)
-		locationStateMessage = "${results.size} MACs found"
-
 		stateUpdated()
 	}
 
-	override fun onStatusChange(newStatus: ScannerStatus) = when (newStatus) {
-		ScannerStatus.OKAY -> {
-			locationState = LocationState.NONE
-			locationStateHeader = getString(R.string.location_status_waiting_header)
-			locationStateMessage = getString(R.string.location_status_waiting_message)
-			stateUpdated()
+	override fun onStatusChange(newStatus: ScannerStatus) {
+		locationState = when (newStatus) {
+			ScannerStatus.OKAY -> LocationState.NONE
+			ScannerStatus.NO_LOCATION -> LocationState.NO_LOCATION
+			ScannerStatus.NO_WIFI -> LocationState.NO_WIFI
 		}
-
-		ScannerStatus.NO_LOCATION -> {
-			locationState = LocationState.NO_LOCATION
-			locationStateHeader = getString(R.string.location_status_no_location_header)
-			locationStateMessage = getString(R.string.location_status_no_location_message)
-			stateUpdated()
-		}
-
-		ScannerStatus.NO_WIFI -> {
-			locationState = LocationState.NO_WIFI
-			locationStateHeader = getString(R.string.location_status_no_wifi_header)
-			locationStateMessage = getString(R.string.location_status_no_wifi_message)
-			stateUpdated()
-		}
+		stateUpdated()
 	}
 
 	private fun initState() {
 		locationState = LocationState.NONE
-		locationStateHeader = getString(R.string.location_status_waiting_header)
-		locationStateMessage = getString(R.string.location_status_waiting_message)
 		stateUpdated()
 	}
 
 	override fun stateUpdated() {
+		when (locationState) {
+			LocationService.LocationState.NONE -> {
+				locationStateHeader = getString(R.string.location_status_waiting_header)
+				locationStateMessage = getString(R.string.location_status_waiting_message)
+			}
+
+			LocationService.LocationState.SEARCHING -> {
+				locationStateHeader = getString(R.string.location_status_searching_header)
+				if (activeRoute == null) {
+					locationStateMessage = getString(R.string.location_status_pick_route)
+				} else {
+					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.locations?.last()?.getDisplayTitle(this) ?: "?")
+				}
+			}
+
+			LocationService.LocationState.FOUND -> {
+				locationStateHeader = getString(R.string.location_status_found_header, currentLocation?.getDisplayTitle(this) ?: "?")
+				if (activeRoute == null) {
+					locationStateMessage = getString(R.string.location_status_pick_route)
+				} else {
+					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.locations?.last()?.getDisplayTitle(this) ?: "?")
+				}
+			}
+
+			LocationService.LocationState.NO_WIFI -> {
+				locationStateHeader = getString(R.string.location_status_no_wifi_header)
+				locationStateMessage = getString(R.string.location_status_no_wifi_message)
+			}
+
+			LocationService.LocationState.NO_LOCATION -> {
+				locationStateHeader = getString(R.string.location_status_no_location_header)
+				locationStateMessage = getString(R.string.location_status_no_location_message)
+			}
+		}
+
 		updateNotification()
 		sendBroadcast(Intent(STATE_UPDATED))
 	}
@@ -125,13 +144,21 @@ class LocationService: WifiScannerService() {
 		NONE, SEARCHING, FOUND, NO_WIFI, NO_LOCATION
 	}
 
+	/* route guidance */
+
+	var activeRoute: Route? = null
+		set(value) {
+			field = value
+			stateUpdated()
+		}
+
 	/* notification */
 
-	private val NOTIFICATION_ID = 15995
+	private val NOTIFICATION_ID = "LocationService".hashCode().and(0xffff)
 	private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 	private val notificationStyle = NotificationCompat.BigTextStyle()
 	private val returnToAppIntent by lazy { PendingIntent.getActivity(this, 0, Intent(this, EntryActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT) }
-	private val stopScannerIntent by lazy { PendingIntent.getBroadcast(this, 0, Intent().setAction(STOP_SERVICE), PendingIntent.FLAG_UPDATE_CURRENT) }
+	private val stopServiceIntent by lazy { PendingIntent.getBroadcast(this, 0, Intent().setAction(STOP_SERVICE), PendingIntent.FLAG_UPDATE_CURRENT) }
 
 	private fun updateNotification() {
 		if (running) {
@@ -141,7 +168,11 @@ class LocationService: WifiScannerService() {
 				setStyle(notificationStyle.bigText(locationStateMessage))
 				setSmallIcon(R.drawable.ic_mapper_app_white)
 				setContentIntent(returnToAppIntent)
-				addAction(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.quit), stopScannerIntent)
+				if (activeRoute != null) {
+					addAction(android.R.drawable.ic_menu_close_clear_cancel, getString(R.string.location_service_quit_nav), stopServiceIntent)
+				} else {
+					addAction(android.R.drawable.ic_menu_directions, getString(R.string.quit), returnToAppIntent)
+				}
 				startForeground(NOTIFICATION_ID, build())
 			}
 		} else {

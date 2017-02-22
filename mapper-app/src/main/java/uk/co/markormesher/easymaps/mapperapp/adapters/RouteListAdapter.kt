@@ -67,7 +67,11 @@ class RouteListAdapter(val context: Context, val selectListener: OnSelectListene
 				if (i < routeSummary.segments.size) {
 					val segment = routeSummary.segments[i]
 					lp.weight = segment.count.toFloat() / route.modes.size
-					block.setBackgroundColor(segment.mode.colourCode)
+					if (segment.mode == TravelMode.WALK) {
+						block.setBackgroundResource(R.drawable.walking_bg_horizontal)
+					} else {
+						block.setBackgroundColor(segment.mode.colourCode)
+					}
 					block.visibility = View.VISIBLE
 				} else {
 					lp.weight = 0.0f
