@@ -3,7 +3,8 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/drawer_layout"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		>
 
 	<ImageView
 			android:id="@+id/loading_icon"
@@ -12,7 +13,8 @@
 			android:layout_centerInParent="true"
 			android:src="@drawable/ic_hourglass_empty_white_48dp"
 			android:tint="@color/primary_dark"
-			android:contentDescription="@string/loading_locations"/>
+			android:contentDescription="@string/loading_locations"
+			/>
 
 	<android.support.v7.widget.RecyclerView
 			android:id="@+id/location_grid"
@@ -24,6 +26,7 @@
 			android:clipToPadding="false"
 			android:scrollbarStyle="outsideOverlay"
 			android:scrollbars="vertical"
-			android:visibility="gone"/>
+			android:visibility="gone"
+			/>
 
 </RelativeLayout>

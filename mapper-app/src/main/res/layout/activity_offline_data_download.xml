@@ -2,22 +2,24 @@
 <LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:tools="http://schemas.android.com/tools"
+		tools:context=".activities.OfflineDataDownloadActivity"
+		tools:ignore="UseCompoundDrawables"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
 		android:padding="@dimen/space_micro"
 		android:gravity="center"
-		tools:context=".activities.OfflineDataDownloadActivity"
-		tools:ignore="UseCompoundDrawables">
+		>
 
 	<ImageView
+			tools:ignore="ContentDescription"
 			android:id="@+id/status_icon"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:layout_marginBottom="@dimen/space_micro"
 			android:src="@drawable/ic_hourglass_empty_white_48dp"
 			android:tint="@color/primary_dark"
-			tools:ignore="ContentDescription"/>
+			/>
 
 	<ProgressBar
 			android:id="@+id/status_progress"
@@ -27,12 +29,14 @@
 			android:layout_marginLeft="@dimen/space_medium"
 			android:layout_marginRight="@dimen/space_medium"
 			android:visibility="gone"
-			style="?android:attr/progressBarStyleHorizontal"/>
+			style="?android:attr/progressBarStyleHorizontal"
+			/>
 
 	<TextView
 			android:id="@+id/status_message"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			style="@style/Text"/>
+			style="@style/Text"
+			/>
 
 </LinearLayout>
