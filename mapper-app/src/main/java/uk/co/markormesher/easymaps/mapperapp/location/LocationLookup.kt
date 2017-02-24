@@ -32,6 +32,8 @@ class LocationLookup(val context: Context): AnkoLogger {
 		db.close()
 	}
 
+	fun lookupById(id: String) = db.getLocation(id)
+
 	fun lookupByMajority(scanResults: Set<WifiScanResult>): Location? {
 		if (!running) {
 			return null
@@ -52,7 +54,7 @@ class LocationLookup(val context: Context): AnkoLogger {
 		var result: Location? = null
 		locationIdCounts.forEach { id, count ->
 			if (count > totalLocationIds / 2) {
-				result = db.getLocation(id)
+				result = lookupById(id)
 				return@forEach
 			}
 		}

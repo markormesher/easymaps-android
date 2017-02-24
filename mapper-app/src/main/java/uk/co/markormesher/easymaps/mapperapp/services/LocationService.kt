@@ -25,6 +25,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		val START_SERVICE = "services.LocationDetectionService:START_SERVICE"
 		val STOP_SERVICE = "services.LocationDetectionService:STOP_SERVICE"
 		val SERVICE_STOPPED = "services.LocationDetectionService:SERVICE_STOPPED"
+		val SPOOF = "services.LocationDetectionService:SPOOF"
 	}
 
 	override fun onCreate() {
@@ -32,6 +33,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		locationLookup = LocationLookup(this)
 		registerReceiver(startServiceReceiver, IntentFilter(START_SERVICE))
 		registerReceiver(stopServiceReceiver, IntentFilter(STOP_SERVICE))
+		registerReceiver(spoofReceiver, IntentFilter(SPOOF))
 		initState()
 	}
 
@@ -40,6 +42,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		locationLookup.teardown()
 		unregisterReceiver(startServiceReceiver)
 		unregisterReceiver(stopServiceReceiver)
+		unregisterReceiver(spoofReceiver)
 	}
 
 	private val startServiceReceiver = object: BroadcastReceiver() {
@@ -50,6 +53,40 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			stop()
 			stopSelf()
+		}
+	}
+
+	private val spoofReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			val data = intent?.getStringExtra("data")
+			when (data) {
+				null -> {}
+				"on" -> {
+					spoofingEnabled = true
+					currentLocation = null
+					locationState = LocationState.SEARCHING
+					stateUpdated()
+				}
+				"off" -> {
+					spoofingEnabled = false
+					currentLocation = null
+					locationState = LocationState.SEARCHING
+					stateUpdated()
+				}
+				"lost" -> {
+					if (spoofingEnabled) {
+						locationState = LocationState.LOST
+						stateUpdated()
+					}
+				}
+				else -> {
+					if (spoofingEnabled) {
+						currentLocation = locationLookup.lookupById(data)
+						locationState = LocationState.FOUND
+						stateUpdated()
+					}
+				}
+			}
 		}
 	}
 
@@ -81,12 +118,18 @@ class LocationService: WifiScannerService(), AnkoLogger {
 
 	private lateinit var locationLookup: LocationLookup
 
+	private var spoofingEnabled = false
+
 	var currentLocation: Location? = null
 	var locationState = LocationState.NONE
 	var locationStateHeader = ""
 	var locationStateMessage = ""
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
+		if (spoofingEnabled) {
+			return
+		}
+
 		val potentialLocation = locationLookup.lookupByMajority(results)
 
 		if (potentialLocation == null) {

@@ -57,6 +57,7 @@ class RouteGuidanceFragment: BaseFragment() {
 			step_list.visibility = View.VISIBLE
 		}
 
+		updateCurrentLocation()
 		context.registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
 	}
 
@@ -72,7 +73,6 @@ class RouteGuidanceFragment: BaseFragment() {
 			routeAdapter = RouteDisplayAdapter(context, activeRoute!!)
 			step_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 			step_list.adapter = routeAdapter
-			updateCurrentLocation()
 		}
 	}
 
