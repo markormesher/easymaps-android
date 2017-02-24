@@ -12,6 +12,7 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.routing.AugmentedRoute
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
 import uk.co.markormesher.easymaps.sdk.WifiScannerService
@@ -112,7 +113,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 				if (activeRoute == null) {
 					locationStateMessage = getString(R.string.location_status_pick_route)
 				} else {
-					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.locations?.last()?.getDisplayTitle(this) ?: "?")
+					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.stages?.last()?.location?.getDisplayTitle(this) ?: "?")
 				}
 			}
 
@@ -121,7 +122,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 				if (activeRoute == null) {
 					locationStateMessage = getString(R.string.location_status_pick_route)
 				} else {
-					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.locations?.last()?.getDisplayTitle(this) ?: "?")
+					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.stages?.last()?.location?.getDisplayTitle(this) ?: "?")
 				}
 			}
 
@@ -146,11 +147,15 @@ class LocationService: WifiScannerService(), AnkoLogger {
 
 	/* route guidance */
 
-	var activeRoute: Route? = null
-		set(value) {
+	var activeRoute: AugmentedRoute? = null
+		private set(value) {
 			field = value
 			stateUpdated()
 		}
+
+	fun setActiveRoute(route: Route) {
+		activeRoute = AugmentedRoute(route, this)
+	}
 
 	/* notification */
 

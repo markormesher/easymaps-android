@@ -10,11 +10,11 @@ import uk.co.markormesher.easymaps.mapperapp.BaseFragment
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteDisplayAdapter
-import uk.co.markormesher.easymaps.mapperapp.routing.Route
+import uk.co.markormesher.easymaps.mapperapp.routing.AugmentedRoute
 
 class RouteGuidanceFragment: BaseFragment() {
 
-	private var activeRoute: Route? = null
+	private var activeRoute: AugmentedRoute? = null
 
 	companion object {
 		fun getInstance(): RouteGuidanceFragment {

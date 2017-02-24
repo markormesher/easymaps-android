@@ -79,6 +79,7 @@
 
 	<string name="route_guidance_walk_to">Walk to %s</string>
 	<string name="route_guidance_tube_to">Take the %1$s to %2$s</string>
+	<string name="route_guidance_continue_on">Continue on the %1$s to %2$s</string>
 	<string-array name="route_guidance_destination">
 		<item>Hooray, you made it!</item>
 		<item>Touchdown!</item>
