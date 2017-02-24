@@ -1,5 +1,9 @@
 package uk.co.markormesher.easymaps.mapperapp.fragments
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -11,10 +15,12 @@ import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.MainActivity
 import uk.co.markormesher.easymaps.mapperapp.adapters.RouteDisplayAdapter
 import uk.co.markormesher.easymaps.mapperapp.routing.AugmentedRoute
+import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 
 class RouteGuidanceFragment: BaseFragment() {
 
 	private var activeRoute: AugmentedRoute? = null
+	private var routeAdapter: RouteDisplayAdapter? = null
 
 	companion object {
 		fun getInstance(): RouteGuidanceFragment {
@@ -50,15 +56,32 @@ class RouteGuidanceFragment: BaseFragment() {
 			no_route_message.visibility = View.GONE
 			step_list.visibility = View.VISIBLE
 		}
+
+		updateCurrentLocation()
+		context.registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+	}
+
+	override fun onPause() {
+		super.onPause()
+		context.unregisterReceiver(locationStateUpdatedReceiver)
 	}
 
 	private fun initViews() {
 		no_route_message.setOnClickListener { activity.onBackPressed() }
 
 		if (activeRoute != null) {
+			routeAdapter = RouteDisplayAdapter(context, activeRoute!!)
 			step_list.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-			step_list.adapter = RouteDisplayAdapter(context, activeRoute!!)
+			step_list.adapter = routeAdapter
 		}
+	}
+
+	private fun updateCurrentLocation() {
+		routeAdapter?.currentLocation = (activity as MainActivity).locationService?.currentLocation
+	}
+
+	private val locationStateUpdatedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) = updateCurrentLocation()
 	}
 
 }

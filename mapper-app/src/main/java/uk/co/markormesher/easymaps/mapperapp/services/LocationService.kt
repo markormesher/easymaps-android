@@ -12,6 +12,7 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.location.LocationLookup
 import uk.co.markormesher.easymaps.mapperapp.routing.AugmentedRoute
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
@@ -24,19 +25,24 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		val START_SERVICE = "services.LocationDetectionService:START_SERVICE"
 		val STOP_SERVICE = "services.LocationDetectionService:STOP_SERVICE"
 		val SERVICE_STOPPED = "services.LocationDetectionService:SERVICE_STOPPED"
+		val SPOOF = "services.LocationDetectionService:SPOOF"
 	}
 
 	override fun onCreate() {
 		super.onCreate()
+		locationLookup = LocationLookup(this)
 		registerReceiver(startServiceReceiver, IntentFilter(START_SERVICE))
 		registerReceiver(stopServiceReceiver, IntentFilter(STOP_SERVICE))
+		registerReceiver(spoofReceiver, IntentFilter(SPOOF))
 		initState()
 	}
 
 	override fun onDestroy() {
 		super.onDestroy()
+		locationLookup.teardown()
 		unregisterReceiver(startServiceReceiver)
 		unregisterReceiver(stopServiceReceiver)
+		unregisterReceiver(spoofReceiver)
 	}
 
 	private val startServiceReceiver = object: BroadcastReceiver() {
@@ -47,6 +53,40 @@ class LocationService: WifiScannerService(), AnkoLogger {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			stop()
 			stopSelf()
+		}
+	}
+
+	private val spoofReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) {
+			val data = intent?.getStringExtra("data")
+			when (data) {
+				null -> {}
+				"on" -> {
+					spoofingEnabled = true
+					currentLocation = null
+					locationState = LocationState.SEARCHING
+					stateUpdated()
+				}
+				"off" -> {
+					spoofingEnabled = false
+					currentLocation = null
+					locationState = LocationState.SEARCHING
+					stateUpdated()
+				}
+				"lost" -> {
+					if (spoofingEnabled) {
+						locationState = LocationState.LOST
+						stateUpdated()
+					}
+				}
+				else -> {
+					if (spoofingEnabled) {
+						currentLocation = locationLookup.lookupById(data)
+						locationState = LocationState.FOUND
+						stateUpdated()
+					}
+				}
+			}
 		}
 	}
 
@@ -76,14 +116,33 @@ class LocationService: WifiScannerService(), AnkoLogger {
 	override val scanInterval = 10
 	override val statusCheckInterval = 10
 
+	private lateinit var locationLookup: LocationLookup
+
+	private var spoofingEnabled = false
+
 	var currentLocation: Location? = null
 	var locationState = LocationState.NONE
 	var locationStateHeader = ""
 	var locationStateMessage = ""
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
-		// TODO: actually determine location
-		locationState = LocationState.SEARCHING
+		if (spoofingEnabled) {
+			return
+		}
+
+		val potentialLocation = locationLookup.lookupByMajority(results)
+
+		if (potentialLocation == null) {
+			if (currentLocation != null) {
+				locationState = LocationState.LOST
+			} else {
+				locationState = LocationState.SEARCHING
+			}
+		} else {
+			currentLocation = potentialLocation
+			locationState = LocationState.FOUND
+		}
+
 		stateUpdated()
 	}
 
@@ -117,12 +176,17 @@ class LocationService: WifiScannerService(), AnkoLogger {
 				}
 			}
 
-			LocationService.LocationState.FOUND -> {
+			LocationService.LocationState.FOUND,
+			LocationService.LocationState.LOST -> {
 				locationStateHeader = getString(R.string.location_status_found_header, currentLocation?.getDisplayTitle(this) ?: "?")
 				if (activeRoute == null) {
 					locationStateMessage = getString(R.string.location_status_pick_route)
 				} else {
 					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.stages?.last()?.location?.getDisplayTitle(this) ?: "?")
+					val stageId = activeRoute?.locationIndexes?.get(currentLocation?.id) ?: -1
+					if (stageId >= 0) {
+						locationStateMessage = activeRoute?.stages?.get(stageId)?.instruction ?: locationStateMessage
+					}
 				}
 			}
 
@@ -142,7 +206,12 @@ class LocationService: WifiScannerService(), AnkoLogger {
 	}
 
 	enum class LocationState {
-		NONE, SEARCHING, FOUND, NO_WIFI, NO_LOCATION
+		NONE, // service is still warming up
+		SEARCHING, // looking for location (no previous known)
+		LOST, // looking for location (previous still known)
+		FOUND, // current location known
+		NO_WIFI, // error
+		NO_LOCATION // error
 	}
 
 	/* route guidance */

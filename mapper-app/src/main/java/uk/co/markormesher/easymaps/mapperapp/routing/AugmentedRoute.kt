@@ -12,9 +12,13 @@ class AugmentedRoute(val route: Route, val context: Context) {
 	val stages = ArrayList<Stage>(route.locations.size)
 
 	private val modeEndIndexes = IntArray(route.locations.size, { -1 })
+	val locationIndexes = HashMap<String, Int>()
 
 	init {
+		computeLocationIndexes()
+
 		computeModeIndexes()
+
 		for (i in 0..route.locations.size - 1) {
 			val location = route.locations[i]
 
@@ -78,6 +82,10 @@ class AugmentedRoute(val route: Route, val context: Context) {
 
 			stages.add(Stage(location, prevMode, nextMode, instruction, isMajor))
 		}
+	}
+
+	private fun computeLocationIndexes() {
+		route.locations.forEachIndexed { i, location -> locationIndexes[location.id] = i }
 	}
 
 	private fun computeModeIndexes() {
