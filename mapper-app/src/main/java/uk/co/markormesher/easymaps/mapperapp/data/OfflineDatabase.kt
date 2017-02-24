@@ -5,15 +5,20 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
+import uk.co.markormesher.easymaps.mapperapp.BLOOM_K
+import uk.co.markormesher.easymaps.mapperapp.BLOOM_M
 import uk.co.markormesher.easymaps.mapperapp.helpers.getLatestDataPackVersion
 import uk.co.markormesher.easymaps.mapperapp.helpers.getLatestLabellingVersion
+import uk.co.markormesher.easymaps.mapperapp.helpers.setBloomFilterCache
 import uk.co.markormesher.easymaps.mapperapp.services.DataDownloaderService
 import java.util.*
 
 val DB_NAME = "OfflineData"
 val DB_VERSION = 3
 
-class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
+class OfflineDatabase(val context: Context): SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION), AnkoLogger {
 
 	companion object {
 		fun isPopulated(context: Context): Boolean {
@@ -54,12 +59,16 @@ class OfflineDatabase(context: Context): SQLiteOpenHelper(context, DB_NAME, null
 	}
 
 	fun updateLabels(labels: List<Label>, statusCallback: (qtyDone: Int) -> Unit) {
+		val bloom = StringSetBloomFilter(BLOOM_M, BLOOM_K)
 		val db = writableDatabase ?: throw SQLiteException("Could not acquire writable database")
 		db.delete(LabelSchema._tableName, null, null)
 		labels.forEachIndexed { i, l ->
+			bloom.insert(l.macAddress)
 			db.insert(LabelSchema._tableName, null, l.toContentValues())
 			statusCallback(i + 1)
 		}
+		info(bloom.export())
+		context.setBloomFilterCache(bloom.export())
 		db.close()
 	}
 

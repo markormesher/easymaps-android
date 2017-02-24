@@ -12,6 +12,7 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.R
 import uk.co.markormesher.easymaps.mapperapp.activities.EntryActivity
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.location.LocationLookup
 import uk.co.markormesher.easymaps.mapperapp.routing.AugmentedRoute
 import uk.co.markormesher.easymaps.mapperapp.routing.Route
 import uk.co.markormesher.easymaps.sdk.WifiScanResult
@@ -28,6 +29,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 
 	override fun onCreate() {
 		super.onCreate()
+		locationLookup = LocationLookup(this)
 		registerReceiver(startServiceReceiver, IntentFilter(START_SERVICE))
 		registerReceiver(stopServiceReceiver, IntentFilter(STOP_SERVICE))
 		initState()
@@ -35,6 +37,7 @@ class LocationService: WifiScannerService(), AnkoLogger {
 
 	override fun onDestroy() {
 		super.onDestroy()
+		locationLookup.teardown()
 		unregisterReceiver(startServiceReceiver)
 		unregisterReceiver(stopServiceReceiver)
 	}
@@ -76,6 +79,8 @@ class LocationService: WifiScannerService(), AnkoLogger {
 	override val scanInterval = 10
 	override val statusCheckInterval = 10
 
+	private lateinit var locationLookup: LocationLookup
+
 	var currentLocation: Location? = null
 	var locationState = LocationState.NONE
 	var locationStateHeader = ""
@@ -83,6 +88,9 @@ class LocationService: WifiScannerService(), AnkoLogger {
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
 		// TODO: actually determine location
+
+		locationLookup.lookup(results)
+
 		locationState = LocationState.SEARCHING
 		stateUpdated()
 	}
