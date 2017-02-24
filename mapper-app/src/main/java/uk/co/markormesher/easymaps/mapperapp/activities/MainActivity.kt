@@ -129,6 +129,7 @@ class MainActivity: BaseActivity(), ServiceConnection, AnkoLogger {
 			LocationService.LocationState.NO_LOCATION -> LocationStatusBar.Status.LOCATION_OFF
 			LocationService.LocationState.SEARCHING -> LocationStatusBar.Status.SEARCHING
 			LocationService.LocationState.FOUND -> LocationStatusBar.Status.LOCATION_ON
+			LocationService.LocationState.LOST -> LocationStatusBar.Status.LOCATION_ON
 		})
 		if (status == LocationService.LocationState.NO_LOCATION) {
 			status_bar.setOnClickListener { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }

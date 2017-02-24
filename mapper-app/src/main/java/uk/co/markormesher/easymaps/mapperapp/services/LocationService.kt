@@ -87,11 +87,19 @@ class LocationService: WifiScannerService(), AnkoLogger {
 	var locationStateMessage = ""
 
 	override fun onNewScanResults(results: Set<WifiScanResult>) {
-		// TODO: actually determine location
+		val potentialLocation = locationLookup.lookupByMajority(results)
 
-		locationLookup.lookup(results)
+		if (potentialLocation == null) {
+			if (currentLocation != null) {
+				locationState = LocationState.LOST
+			} else {
+				locationState = LocationState.SEARCHING
+			}
+		} else {
+			currentLocation = potentialLocation
+			locationState = LocationState.FOUND
+		}
 
-		locationState = LocationState.SEARCHING
 		stateUpdated()
 	}
 
@@ -125,7 +133,8 @@ class LocationService: WifiScannerService(), AnkoLogger {
 				}
 			}
 
-			LocationService.LocationState.FOUND -> {
+			LocationService.LocationState.FOUND,
+			LocationService.LocationState.LOST -> {
 				locationStateHeader = getString(R.string.location_status_found_header, currentLocation?.getDisplayTitle(this) ?: "?")
 				if (activeRoute == null) {
 					locationStateMessage = getString(R.string.location_status_pick_route)
@@ -150,7 +159,12 @@ class LocationService: WifiScannerService(), AnkoLogger {
 	}
 
 	enum class LocationState {
-		NONE, SEARCHING, FOUND, NO_WIFI, NO_LOCATION
+		NONE, // service is still warming up
+		SEARCHING, // looking for location (no previous known)
+		LOST, // looking for location (previous still known)
+		FOUND, // current location known
+		NO_WIFI, // error
+		NO_LOCATION // error
 	}
 
 	/* route guidance */
