@@ -140,6 +140,10 @@ class LocationService: WifiScannerService(), AnkoLogger {
 					locationStateMessage = getString(R.string.location_status_pick_route)
 				} else {
 					locationStateMessage = getString(R.string.location_status_destination, activeRoute?.stages?.last()?.location?.getDisplayTitle(this) ?: "?")
+					val stageId = activeRoute?.locationIndexes?.get(currentLocation?.id) ?: -1
+					if (stageId >= 0) {
+						locationStateMessage = activeRoute?.stages?.get(stageId)?.instruction ?: locationStateMessage
+					}
 				}
 			}
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<color name="active_route_step_background">@color/light_grey</color>
+
+</resources>
