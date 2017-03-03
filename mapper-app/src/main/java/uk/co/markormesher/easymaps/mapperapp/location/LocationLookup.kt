@@ -5,6 +5,7 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.BLOOM_K
 import uk.co.markormesher.easymaps.mapperapp.BLOOM_M
 import uk.co.markormesher.easymaps.mapperapp.data.Location
+import uk.co.markormesher.easymaps.mapperapp.data.LruCache
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.data.StringSetBloomFilter
 import uk.co.markormesher.easymaps.mapperapp.helpers.getBloomFilterCache
@@ -15,6 +16,7 @@ class LocationLookup(val context: Context): AnkoLogger {
 
 	var running = false
 	val bloomFilter: StringSetBloomFilter
+	val cache = LruCache<String, String?>(512)
 	val db = OfflineDatabase(context)
 
 	init {
@@ -44,7 +46,8 @@ class LocationLookup(val context: Context): AnkoLogger {
 		scanResults
 				.filter { r -> bloomFilter.mightContain(r.mac) }
 				.forEach { r ->
-					val locationId = db.getLocationIdFromLabel(r.mac)
+					val locationId = cache[r.mac] ?: db.getLocationIdFromLabel(r.mac)
+					cache[r.mac] = locationId
 					if (locationId != null) {
 						++totalLocationIds
 						locationIdCounts[locationId] = (locationIdCounts[locationId] ?: 0) + 1
