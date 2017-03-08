@@ -1,9 +1,14 @@
 package uk.co.markormesher.easymaps.mapperapp.fragments
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +25,7 @@ import uk.co.markormesher.easymaps.mapperapp.adapters.RouteListAdapter
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
 import uk.co.markormesher.easymaps.mapperapp.routing.*
+import uk.co.markormesher.easymaps.mapperapp.services.LocationService
 import java.util.*
 
 class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
@@ -72,6 +78,16 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 		restoreState()
 	}
 
+	override fun onResume() {
+		super.onResume()
+		context.registerReceiver(locationStateUpdatedReceiver, IntentFilter(LocationService.STATE_UPDATED))
+	}
+
+	override fun onPause() {
+		super.onPause()
+		context.unregisterReceiver(locationStateUpdatedReceiver)
+	}
+
 	private fun initViews() {
 		hideContentViews()
 
@@ -96,6 +112,12 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 				)
 			}
 		}
+		use_current.setOnClickListener {
+			val current = (activity as MainActivity).locationService?.currentLocation
+			if (current != null) {
+				setInputLocation(Direction.FROM, current)
+			}
+		}
 		swap_to_from.setOnClickListener {
 			if (!busySearching) {
 				swapRouteInput()
@@ -110,16 +132,26 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 		route_list.visibility = View.GONE
 	}
 
+	private fun hideOrShowUseCurrentButton() {
+		if ((activity as MainActivity).locationService?.currentLocation != null) {
+			use_current.visibility = View.VISIBLE
+		} else {
+			use_current.visibility = View.GONE
+		}
+	}
+
 	private fun restoreState() {
 		if (fromLocation == null && toLocation == null) {
 			// initial state
 			routeSearchManager.loadData(context)
+			setInputLocation(Direction.FROM, (activity as MainActivity).locationService?.currentLocation, false)
 			setInputLocationWithId(Direction.TO, initialDestinationId)
 		} else {
 			setInputLocation(Direction.FROM, fromLocation, false)
 			setInputLocation(Direction.TO, toLocation, false)
 			onRouteSearchResult(activeRoutes)
 		}
+		hideOrShowUseCurrentButton()
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -179,6 +211,10 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 		setInputLocation(Direction.TO, oldFrom, false)
 		setInputLocation(Direction.FROM, oldTo, false)
 		onRouteInputUpdated()
+	}
+
+	private val locationStateUpdatedReceiver = object: BroadcastReceiver() {
+		override fun onReceive(context: Context?, intent: Intent?) = hideOrShowUseCurrentButton()
 	}
 
 	private fun startSearch() {

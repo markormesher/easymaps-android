@@ -3,6 +3,7 @@ package uk.co.markormesher.easymaps.mapperapp.routing
 import android.content.Context
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.info
 import org.jetbrains.anko.uiThread
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.OfflineDatabase
@@ -43,6 +44,9 @@ class RouteSearchManager: AnkoLogger {
 
 	fun findRoutes(from: Location, to: Location, callback: (routes: ArrayList<Route>) -> Unit) {
 		doAsync {
+			while (!loaded) {
+				Thread.sleep(50)
+			}
 			val routes = ArrayList<Route>()
 			algorithms.forEach { algorithm -> routes.addAll(algorithm.findRoutes(from, to)) }
 			uiThread {
