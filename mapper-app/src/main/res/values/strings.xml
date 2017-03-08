@@ -57,6 +57,7 @@
 	<string name="route_input_from">From:</string>
 	<string name="route_input_to">To:</string>
 	<string name="route_input_swap_to_from">Swap \'to\' and \'from\'</string>
+	<string name="route_input_use_current">Use the current location</string>
 	<string name="route_input_prompt">Select a start and end location by tapping on the boxes above to see your route options.</string>
 
 	<string name="route_selection_calculating">Finding a route…</string>
