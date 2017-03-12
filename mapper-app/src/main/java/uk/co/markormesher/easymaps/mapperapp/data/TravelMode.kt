@@ -12,6 +12,7 @@ enum class TravelMode(val key: String, val displayName: String, val colourCode: 
 	CENTRAL("tube/central", "Central line", Color.parseColor("#dc241f")),
 	CIRCLE("tube/circle", "Circle line", Color.parseColor("#ffd329")),
 	DISTRICT("tube/district", "District line", Color.parseColor("#007d32")),
+	DLR("tube/dlr", "DLR", Color.parseColor("#00afad")),
 	HAMMERSMITH_AND_CITY("tube/hammersmith-and-city", "Hammersmith and City line", Color.parseColor("#f4a9be")),
 	JUBILEE("tube/jubilee", "Jubilee line", Color.parseColor("#a1a5a7")),
 	METROPOLITAN("tube/metropolitan", "Metropolitan line", Color.parseColor("#9b0058")),
@@ -29,6 +30,7 @@ enum class TravelMode(val key: String, val displayName: String, val colourCode: 
 			"tube/central" -> CENTRAL
 			"tube/circle" -> CIRCLE
 			"tube/district" -> DISTRICT
+			"tube/dlr" -> DLR
 			"tube/hammersmith-and-city" -> HAMMERSMITH_AND_CITY
 			"tube/jubilee" -> JUBILEE
 			"tube/metropolitan" -> METROPOLITAN
