@@ -5,10 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -252,7 +250,7 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 	}
 
 	private fun onRouteSearchResult(routes: ArrayList<Route>) {
-		routes.sort { a, b -> a.duration.compareTo(b.duration) }
+		routes.sortWith(kotlin.Comparator { a, b -> a.duration.compareTo(b.duration) })
 
 		// only overwrite if the update is not from the internal set
 		if (routes != activeRoutes) {
