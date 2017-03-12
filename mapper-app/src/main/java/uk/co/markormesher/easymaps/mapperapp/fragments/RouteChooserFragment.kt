@@ -249,8 +249,8 @@ class RouteChooserFragment: BaseFragment(), RouteListAdapter.OnSelectListener {
 		swap_to_from.alpha = 1f
 	}
 
-	private fun onRouteSearchResult(routes: ArrayList<Route>) {
-		routes.sortWith(kotlin.Comparator { a, b -> a.duration.compareTo(b.duration) })
+	private fun onRouteSearchResult(allRoutes: ArrayList<Route>) {
+		val routes = allRoutes.distinct().toMutableList().sortedBy(Route::quality)
 
 		// only overwrite if the update is not from the internal set
 		if (routes != activeRoutes) {
