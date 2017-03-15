@@ -17,6 +17,7 @@
 	<string name="prizes_title">Prizes</string>
 	<string name="prizes_body"><![CDATA[
 		Three volunteers will win a £20 Amazon voucher at the end of this project, and the more you scan, the better your odds!
+		Tap \'Did I Win?\' in the app menu to check whether you\'re a winner.
 		Full details: http://easymaps.markormesher.co.uk.
 	]]></string>
 
@@ -111,5 +112,25 @@
 	<string name="change_network_set_to">Network set to \'%s\'</string>
 	<string name="change_network_invalid_input">Sorry, that\'s not a valid network</string>
 	<string name="scan_status_network">Network: \'%s\'</string>
+
+	<string name="menu_option_winner_check">Did I Win?</string>
+	<string name="winner_check_checking">Checking…</string>
+	<string name="winner_check_check_failed">Sorry, that didn\'t work! Make sure you\'re online.</string>
+	<string name="winner_check_too_soon"><![CDATA[
+		Looks like the results aren\'t out yet!
+		<br /><br />
+		Winners should be announced in early-April, so sit tight!
+	]]></string>
+	<string name="winner_check_nope"><![CDATA[
+		<strong>Sorry</strong>, you weren\'t a winner!
+		<br /><br />
+		But hey, winning isn\'t everything. You\'ve still been part of a project that could have huge impacts, and I really appreciate your help!
+	]]></string>
+	<string name="winner_check_nice_try">Nice try.</string>
+	<string name="winner_check_winner"><![CDATA[
+		<strong>Congratulations, you\'re a winner! Well done!</strong>
+		<br /><br />
+		Your Amazon gift code has been copied to your clipboard - make sure you paste it into a note or a blank message to keep it safe!
+	]]></string>
 
 </resources>
