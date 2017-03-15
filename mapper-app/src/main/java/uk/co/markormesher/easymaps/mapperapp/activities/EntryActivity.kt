@@ -8,7 +8,7 @@ import uk.co.markormesher.easymaps.sdk.checkPermissionList
 import uk.co.markormesher.easymaps.sdk.checkPermissionRequestResult
 import uk.co.markormesher.easymaps.sdk.requestPermissionList
 
-class EntryActivity : BaseActivity() {
+class EntryActivity: BaseActivity() {
 
 	val REQUIRED_PERMISSIONS = arrayOf(
 			Manifest.permission.ACCESS_WIFI_STATE,
@@ -16,7 +16,8 @@ class EntryActivity : BaseActivity() {
 			Manifest.permission.ACCESS_COARSE_LOCATION,
 			Manifest.permission.ACCESS_FINE_LOCATION,
 			Manifest.permission.ACCESS_NETWORK_STATE,
-			Manifest.permission.INTERNET
+			Manifest.permission.INTERNET,
+			Manifest.permission.WAKE_LOCK
 	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {

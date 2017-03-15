@@ -6,6 +6,7 @@ import android.os.*
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.text.InputType
+import android.text.Spanned
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -52,7 +53,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 		baseContext.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE)
 
 		registerReceiver(scanStateUpdatedReceiver, IntentFilter(getString(R.string.intent_scan_status_updated)))
-		updateStatusFromService()
+		updateScanStatusFromService()
 
 		checkSettings()
 
@@ -77,7 +78,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 	override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
 		if (binder is ScannerService.LocalBinder) {
 			scannerService = binder.getScannerService()
-			updateStatusFromService()
+			updateScanStatusFromService()
 		}
 	}
 
@@ -87,11 +88,11 @@ class MainActivity: BaseActivity(), ServiceConnection {
 
 	private val scanStateUpdatedReceiver = object: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
-			updateStatusFromService()
+			updateScanStatusFromService()
 		}
 	}
 
-	private fun updateStatusFromService() {
+	private fun updateScanStatusFromService() {
 		toggle_scanning_button.isEnabled = scannerService != null
 		toggle_scanning_button.text = getString(if (scannerService?.running ?: false) R.string.scan_toggle_stop else R.string.scan_toggle_start)
 
@@ -138,7 +139,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			setPositiveButton(R.string.ok) { p0, p1 ->
 				setIsSuperUser(input.text.toString() == SUPER_USER_PIN)
 				invalidateOptionsMenu()
-				updateStatusFromService()
+				updateScanStatusFromService()
 			}
 			create().show()
 		}
@@ -161,12 +162,13 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			R.id.scan_interval -> changeScanInterval()
 			R.id.withdraw -> startWithdrawal()
 			R.id.change_network -> changeNetwork()
+			R.id.winner_check -> winnerCheck()
 		}
 		return super.onOptionsItemSelected(item)
 	}
 
 	private fun displayUserId() {
-		copyToClipboard(getString(R.string.debug_report_title), readDeviceID())
+		copyToClipboard(getString(R.string.app_name), readDeviceID())
 		Toast.makeText(this, R.string.user_id_copied, Toast.LENGTH_SHORT).show()
 
 		val alertBuilder = AlertDialog.Builder(this)
@@ -231,15 +233,14 @@ class MainActivity: BaseActivity(), ServiceConnection {
 			setCancelable(true)
 			setPositiveButton(R.string.ok, { p0, p1 ->
 				setScanInterval(numberPicker.value)
-				updateStatusFromService()
+				updateScanStatusFromService()
 			})
 			create().show()
 		}
 	}
 
 	private fun startWithdrawal() {
-		val alertBuilder = AlertDialog.Builder(this)
-		with(alertBuilder) {
+		with(AlertDialog.Builder(this)) {
 			setTitle(R.string.withdraw_data_confirm_title)
 			setMessage(makeHtml(R.string.withdraw_data_confirm_body))
 			setCancelable(false)
@@ -260,7 +261,7 @@ class MainActivity: BaseActivity(), ServiceConnection {
 					}
 				})
 			}
-			setNegativeButton(R.string.no) { p0, p1 -> }
+			setNegativeButton(R.string.no, null)
 			create().show()
 		}
 	}
@@ -290,11 +291,48 @@ class MainActivity: BaseActivity(), ServiceConnection {
 				} else {
 					setNetwork(inputValue)
 					Toast.makeText(this@MainActivity, getString(R.string.change_network_set_to, inputValue), Toast.LENGTH_SHORT).show()
-					updateStatusFromService()
+					updateScanStatusFromService()
 				}
 			}
 			create().show()
 		}
+	}
+
+	private fun winnerCheck() {
+		Toast.makeText(this, R.string.winner_check_checking, Toast.LENGTH_SHORT).show()
+		val requestBody = FormBody.Builder()
+				.add("id", readDeviceID())
+				.add("secret", getSha256Digest(readDeviceID() + WINNER_CHECK_SALT))
+				.build()
+		val request = Request.Builder().url(WINNER_CHECK_URL).post(requestBody).build()
+		OkHttpClient().newCall(request).enqueue(object: Callback {
+			override fun onFailure(call: Call?, e: IOException?) = runOnUiThread {
+				Toast.makeText(this@MainActivity, R.string.winner_check_check_failed, Toast.LENGTH_SHORT).show()
+			}
+
+			override fun onResponse(call: Call?, response: Response?) = runOnUiThread {
+				if (response == null || !response.isSuccessful) {
+					Toast.makeText(this@MainActivity, R.string.winner_check_check_failed, Toast.LENGTH_SHORT).show()
+				} else {
+					val status = response.body().string()
+					val message: Spanned
+					when (status) {
+						"TOO SOON" -> message = makeHtml(R.string.winner_check_too_soon)
+						"NOPE" -> message = makeHtml(R.string.winner_check_nope)
+						"NICE TRY" -> message = makeHtml(R.string.winner_check_nice_try)
+						else -> {
+							message = makeHtml(R.string.winner_check_winner, status)
+							copyToClipboard(getString(R.string.app_name), status)
+						}
+					}
+					with(AlertDialog.Builder(this@MainActivity)) {
+						setMessage(message)
+						setPositiveButton(R.string.ok, null)
+						create().show()
+					}
+				}
+			}
+		})
 	}
 
 	/* settings watchers */

@@ -6,10 +6,28 @@
 	It is set in BaseActivity.
 	-->
 
-	<style name="Text" parent="TextAppearance.AppCompat"/>
+	<style name="Text" parent="TextAppearance.AppCompat">
+		<item name="android:textSize">14sp</item>
+		<item name="android:textColor">@color/primary_text</item>
+	</style>
+
+	<style name="Text.Heading" parent="Text">
+		<item name="fontPath">fonts/Lato-Bold.ttf</item>
+		<item name="android:textSize">22sp</item>
+	</style>
 
 	<style name="Text.SubHeading" parent="Text">
 		<item name="fontPath">fonts/Lato-Bold.ttf</item>
+		<item name="android:textSize">16sp</item>
+	</style>
+
+	<style name="Text.ListTitle" parent="Text">
+		<item name="android:textSize">16sp</item>
+	</style>
+
+	<style name="Text.ListDetail" parent="Text">
+		<item name="fontPath">fonts/Lato-Light.ttf</item>
+		<item name="android:textSize">16sp</item>
 	</style>
 
 	<style name="Text.Note" parent="Text">

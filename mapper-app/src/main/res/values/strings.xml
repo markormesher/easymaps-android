@@ -3,8 +3,89 @@
 
 	<string name="app_name">EasyMaps</string>
 
-	<string name="nav_home">Home</string>
-	<string name="nav_settings">Settings</string>
-	<string name="nav_about">About</string>
+	<string name="location_attraction_display_template">%s</string>
+	<string name="location_station_display_template">%s Station</string>
+
+	<string name="checking_for_offline_data">Checking for offline data…</string>
+	<string name="waiting_for_offline_data">Waiting for offline data…</string>
+	<string name="offline_data_download_failed">Failed to download offline data! Tap to retry.</string>
+	<string name="no_offline_data">No offline data! Tap to download.</string>
+
+	<string name="initial_download_title">Offline Data</string>
+	<string name="initial_download_body"><![CDATA[
+		Before using this app for the first time, you need to let it download some data about London.
+		Once this is done, you\'ll be able to use the app offline and underground.
+		<br /><br />
+		Make sure you\'re connected to the Internet, then click \'Proceed\' below.
+	]]></string>
+	<string name="initial_download_btn_positive">Proceed</string>
+	<string name="initial_download_btn_negative">Later</string>
+
+	<string name="downloading_offline_data_notification_title">Downloading offline data (%1$d of %2$d)</string>
+	<string name="saving_offline_data_notification_title">Saving downloaded data (%1$d of %2$d)</string>
+	<string name="saving_offline_data_notification_title_no_number">Saving downloaded data</string>
+
+	<string name="loading_locations">Loading locations…</string>
+	<string name="select_attraction">Where are you going %s?</string>
+	<string name="select_attraction_suffix_morning">this morning</string>
+	<string name="select_attraction_suffix_afternoon">this afternoon</string>
+	<string name="select_attraction_suffix_evening">this evening</string>
+	<string name="select_attraction_suffix_night">tonight</string>
+	<string name="attraction_list_search">Search…</string>
+
+	<string name="select_location_search">Search…</string>
+	<string name="select_location_no_locations">Sorry, no locations match \'%s\'.</string>
+
+	<string name="location_status_waiting_header">Waiting for location service</string>
+	<string name="location_status_waiting_message">Just a moment…</string>
+
+	<string name="location_status_searching_header">Searching for location</string>
+
+	<string name="location_status_found_header">%s</string>
+
+	<string name="location_status_no_wifi_header">WiFi disabled!</string>
+	<string name="location_status_no_wifi_message">Tap here to enable</string>
+
+	<string name="location_status_no_location_header">Location disabled!</string>
+	<string name="location_status_no_location_message">Tap here to enable</string>
+
+	<string name="location_status_pick_route">Pick a route to continue</string>
+	<string name="location_status_destination">Destination: %s</string>
+
+	<string name="location_service_quit_nav">Quit navigation</string>
+
+	<string name="route_input_from">From:</string>
+	<string name="route_input_to">To:</string>
+	<string name="route_input_swap_to_from">Swap \'to\' and \'from\'</string>
+	<string name="route_input_use_current">Use the current location</string>
+	<string name="route_input_prompt">Select a start and end location by tapping on the boxes above to see your route options.</string>
+
+	<string name="route_selection_calculating">Finding a route…</string>
+	<string name="no_route_found">No route found.</string>
+	<string name="no_route_same_start_end">Boom, you\'re already there! That was fast…</string>
+
+	<plurals name="route_changes">
+		<item quantity="zero">No changes</item>
+		<item quantity="one">1 change</item>
+		<item quantity="other">%d changes</item>
+	</plurals>
+	<plurals name="route_duration">
+		<item quantity="zero">0 mins</item>
+		<item quantity="one">1 min</item>
+		<item quantity="other">%d mins</item>
+	</plurals>
+	<string name="route_details">%1$s, %2$s</string>
+
+	<string name="route_guidance_none_active">Looks like you aren\'t going anywhere! Tap here to select a destination.</string>
+
+	<string name="route_guidance_walk_to">Walk to %s</string>
+	<string name="route_guidance_tube_to">Take the %1$s to %2$s</string>
+	<string name="route_guidance_continue_on">Continue on the %1$s to %2$s</string>
+	<string-array name="route_guidance_destination">
+		<item>Hooray, you made it!</item>
+		<item>Touchdown!</item>
+		<item>Thank you for travelling with EasyMaps!</item>
+		<item>That\'s all for now, folks!</item>
+	</string-array>
 
 </resources>
