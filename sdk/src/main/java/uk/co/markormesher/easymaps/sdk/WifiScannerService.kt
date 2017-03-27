@@ -37,7 +37,7 @@ abstract class WifiScannerService: Service() {
 	var running = false
 
 	@CallSuper
-	open protected fun start() {
+	open fun start() {
 		if (running) return
 		running = true
 
@@ -54,7 +54,7 @@ abstract class WifiScannerService: Service() {
 	}
 
 	@CallSuper
-	open protected fun stop() {
+	open fun stop() {
 		if (!running) return
 		running = false
 
