@@ -3,7 +3,7 @@ package uk.co.markormesher.easymaps.mapperapp.routing
 import uk.co.markormesher.easymaps.mapperapp.MODE_SWITCH_TIME
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.LocationType
-import uk.co.markormesher.easymaps.mapperapp.helpers.distanceInKm
+import uk.co.markormesher.easymaps.mapperapp.helpers.distanceInMetres
 import java.util.*
 
 /*
@@ -13,8 +13,8 @@ class AStarSearch(val data: RouteSearchManager): RouteSearchManager.RoutingAlgor
 
 	override fun findRoutes(from: Location, to: Location): ArrayList<Route> {
 		val open = PriorityQueue<Route>(20, Comparator<Route> { a, b ->
-			val aVal = a.duration + distanceInKm(a.locations.last(), to)
-			val bVal = b.duration + distanceInKm(b.locations.last(), to)
+			val aVal = a.duration + distanceInMetres(a.locations.last(), to)
+			val bVal = b.duration + distanceInMetres(b.locations.last(), to)
 			aVal.compareTo(bVal)
 		})
 		val closed = HashSet<String>()

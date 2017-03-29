@@ -4,7 +4,7 @@ import org.jetbrains.anko.AnkoLogger
 import uk.co.markormesher.easymaps.mapperapp.MODE_SWITCH_TIME
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 import uk.co.markormesher.easymaps.mapperapp.data.LocationType
-import uk.co.markormesher.easymaps.mapperapp.helpers.distanceInKm
+import uk.co.markormesher.easymaps.mapperapp.helpers.distanceInMetres
 import java.util.*
 
 /*
@@ -14,8 +14,8 @@ class GreedySearch(val data: RouteSearchManager): RouteSearchManager.RoutingAlgo
 
 	override fun findRoutes(from: Location, to: Location): ArrayList<Route> {
 		val open = PriorityQueue<Route>(20, Comparator<Route> { a, b ->
-			val aDist = distanceInKm(to, a.locations.last())
-			val bDist = distanceInKm(to, b.locations.last())
+			val aDist = distanceInMetres(to, a.locations.last())
+			val bDist = distanceInMetres(to, b.locations.last())
 			aDist.compareTo(bDist)
 		})
 		val closed = HashSet<String>()

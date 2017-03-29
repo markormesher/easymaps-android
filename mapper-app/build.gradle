@@ -30,6 +30,7 @@ android {
 		targetSdkVersion 24
 		versionCode = appProperties['VERSION_CODE'].toInteger()
 		versionName = appProperties['VERSION_NAME']
+		testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 	}
 
 	signingConfigs {
@@ -83,4 +84,9 @@ dependencies {
 	compile 'org.jetbrains.anko:anko-sdk15:0.9.1'
 
 	testCompile 'junit:junit:4.12'
+
+	androidTestCompile 'com.android.support:support-annotations:24.2.1'
+	androidTestCompile 'com.android.support.test:runner:0.5'
+	androidTestCompile 'com.android.support.test:rules:0.5'
+	androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 }
