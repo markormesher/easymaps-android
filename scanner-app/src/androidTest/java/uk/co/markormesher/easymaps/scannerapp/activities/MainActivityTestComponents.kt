@@ -26,7 +26,7 @@ fun ActivityTestRule<MainActivity>.startStopScanningButtonIsPressed() {
 
 // then
 
-fun ActivityTestRule<MainActivity>.wifiWarningShouldNotBeShown() {
+fun ActivityTestRule<MainActivity>.settingWarningShouldNotBeShown() {
 	onView(withId(R.id.setting_warning))
 			.check(matches(not(isDisplayed())))
 }
