@@ -11,7 +11,7 @@ import uk.co.markormesher.easymaps.scannerapp.*
 class MainActivityTests {
 
 	/*
-	Manual Tests
+	MANUAL TESTS
 
 	Given: the main activity is running
 	When: WiFi scanning is disabled
