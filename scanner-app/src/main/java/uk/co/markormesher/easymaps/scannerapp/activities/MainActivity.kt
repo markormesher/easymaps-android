@@ -25,7 +25,7 @@ import java.util.*
 
 class MainActivity: BaseActivity(), ServiceConnection {
 
-	private var scannerService: ScannerService? = null
+	var scannerService: ScannerService? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

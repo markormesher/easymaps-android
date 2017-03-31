@@ -2,11 +2,11 @@ package uk.co.markormesher.easymaps.mapperapp.helpers
 
 import uk.co.markormesher.easymaps.mapperapp.data.Location
 
-fun distanceInKm(location1: Location, location2: Location): Double {
-	return distanceInKm(location1.lat, location1.lon, location2.lat, location2.lon)
+fun distanceInMetres(location1: Location, location2: Location): Double {
+	return distanceInMetres(location1.lat, location1.lon, location2.lat, location2.lon)
 }
 
-fun distanceInKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+fun distanceInMetres(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
 	val earthRadius = 6371
 
 	val latDistance = toRadians(lat2 - lat1)
